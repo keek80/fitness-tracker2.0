@@ -1,0 +1,84 @@
+const CACHE_NAME = 'flt-v14';
+const ASSETS = [
+    './',
+    './index.html',
+    './css/styles.css',
+    './js/supabase.js',
+    './js/auth.js',
+    './js/data.js',
+    './js/storage.js',
+    './js/dashboard.js',
+    './js/weighin.js',
+    './js/gym.js',
+    './js/analytics.js',
+    './js/meals.js',
+    './js/program.js',
+    './js/exercises.js',
+    './js/settings.js',
+    './js/goals.js',
+    './js/app.js',
+    './manifest.json',
+    './icons/icon-192.png',
+    './icons/icon-512.png'
+];
+
+// Install: cache all assets and activate immediately
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => cache.addAll(ASSETS))
+            .then(() => self.skipWaiting()) // Activate new SW immediately
+    );
+});
+
+// Activate: wipe ALL old caches instantly, take control of all pages
+self.addEventListener('activate', event => {
+    event.waitUntil(
+        caches.keys()
+            .then(keys => Promise.all(
+                keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+            ))
+            .then(() => self.clients.claim()) // Take control without waiting for reload
+    );
+});
+
+// Fetch: network-first for JS/CSS/HTML so updates are picked up immediately,
+// cache-first for images/icons since they rarely change.
+self.addEventListener('fetch', event => {
+    const url = event.request.url;
+
+    // Always go to network for Supabase + CDN
+    if (url.includes('supabase.co') || url.includes('cdn.jsdelivr.net')) {
+        event.respondWith(
+            fetch(event.request).catch(() => caches.match(event.request))
+        );
+        return;
+    }
+
+    // Network-first for JS, CSS, HTML — picks up updates immediately
+    if (url.includes('.js') || url.includes('.css') || url.includes('.html')
+        || url.endsWith('/') || url.includes('index.html')) {
+        event.respondWith(
+            fetch(event.request)
+                .then(networkRes => {
+                    // Update the cache with the fresh response
+                    const clone = networkRes.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                    return networkRes;
+                })
+                .catch(() => caches.match(event.request)) // Fallback to cache if offline
+        );
+        return;
+    }
+
+    // Cache-first for everything else (icons, images)
+    event.respondWith(
+        caches.match(event.request)
+            .then(cached => cached || fetch(event.request))
+    );
+});
+
+// Listen for SKIP_WAITING message from the app
+self.addEventListener('message', event => {
+    if (event.data === 'SKIP_WAITING') self.skipWaiting();
+});
