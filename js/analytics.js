@@ -37,6 +37,7 @@ function renderAnalytics() {
 
 // ========== STATS ANALYTICS ==========
 
+// ========== STATS ANALYTICS ==========
 function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
     const totalWeighIns = weighIns.length;
     const totalWorkouts = gymLogs.length;
@@ -67,26 +68,33 @@ function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
     const consistency = totalWeighIns > 0 ? 
         Math.round((lossWeeks / Math.max(1, totalWeighIns - 1)) * 100) : 0;
 
-    // === Rolling 30-day Avg Workouts/Week ===
+    // === IMPROVED Rolling 30-day Avg Workouts/Week ===
     let workoutsPerWeek = '—';
     if (gymLogs.length > 0) {
         const now = new Date();
-        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        now.setHours(23, 59, 59, 999); // End of today
         
-        const recentLogs = gymLogs.filter(log => new Date(log.date) >= thirtyDaysAgo);
+        const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+        const recentLogs = gymLogs.filter(log => {
+            const logDate = new Date(log.date);
+            return logDate >= thirtyDaysAgo && logDate <= now;
+        });
+
         const recentCount = recentLogs.length;
 
-        if (recentCount >= 1) {
-            const uniqueDates = [...new Set(recentLogs.map(l => l.date))];
-            if (uniqueDates.length === 1 && recentCount > 1) {
-                workoutsPerWeek = `${recentCount}/day`;  // e.g. "4/day"
-            } else {
-                workoutsPerWeek = (recentCount / 4.2857).toFixed(1); // 30 days ≈ 4.2857 weeks
-            }
+        if (recentCount > 0) {
+            // Calculate exact weeks spanned in the last 30 days
+            const firstRecent = new Date(Math.min(...recentLogs.map(l => new Date(l.date))));
+            const spanDays = (now - firstRecent) / (24 * 60 * 60 * 1000);
+            const spanWeeks = Math.max(spanDays / 7, 1);
+            
+            workoutsPerWeek = (recentCount / spanWeeks).toFixed(1);
         }
     }
 
-    // Exercise progress summary
+    // Exercise progress summary (unchanged)
     const program = getTrainingProgram();
     let totalExercisesTracked = 0;
     let exercisesImproving = 0;
