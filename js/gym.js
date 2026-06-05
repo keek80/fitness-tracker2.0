@@ -212,15 +212,22 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-                             <!-- Floating Rest Timer -->
-        <div id="rest-timer" onclick="toggleRestTimer()" 
-             style="position:fixed !important; bottom:90px !important; right:20px !important; 
-                    background:#00d4ff !important; color:white !important; width:72px !important; 
-                    height:72px !important; border-radius:50% !important; display:flex !important; 
-                    align-items:center !important; justify-content:center !important; font-size:24px !important; 
-                    font-weight:800 !important; box-shadow:0 8px 25px rgba(0,212,255,0.6) !important; 
-                    z-index:99999 !important; cursor:pointer !important; border:4px solid white !important;">
-            60
+         <!-- Floating Rest Timer -->
+        <div style="position:fixed; bottom:85px; right:20px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:6px;">
+            <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
+                    style="background:#1e2937; color:white; border:none; border-radius:20px; padding:4px 10px; font-size:12px; z-index:100000;">
+                <option value="30">30s</option>
+                <option value="60" selected>60s</option>
+                <option value="90">90s</option>
+            </select>
+            
+            <div id="rest-timer" onclick="toggleRestTimer()" 
+                 style="background:#00d4ff; color:white; width:72px; height:72px; border-radius:50%; 
+                        display:flex; align-items:center; justify-content:center; font-size:24px; 
+                        font-weight:800; box-shadow:0 8px 25px rgba(0,212,255,0.6); 
+                        cursor:pointer; border:4px solid white;">
+                60
+            </div>
         </div>
 
         <div id="gymHistorySection" class="hidden" style="margin-top:16px">
@@ -488,57 +495,27 @@ function toggleRestTimer() {
     if (!timerEl) return;
 
     if (restTimerInterval) {
-        // Pause
         clearInterval(restTimerInterval);
         restTimerInterval = null;
         timerEl.classList.add('paused');
         timerEl.textContent = '⏸';
     } else {
-        // Start
         if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
         startRestTimer();
     }
 }
 
-// Cycle presets: 30 → 60 → 90 (long press)
-function cycleTimerPreset() {
-    const presets = [30, 60, 90];
-    const currentIndex = presets.indexOf(currentTimerPreset);
-    currentTimerPreset = presets[(currentIndex + 1) % 3];
-    restTimeLeft = currentTimerPreset;
-
+function changeTimerDuration(seconds) {
+    currentTimerPreset = seconds;
+    restTimeLeft = seconds;
+    
     const timerEl = document.getElementById('rest-timer');
     if (timerEl) {
-        timerEl.textContent = currentTimerPreset;
-        timerEl.style.transition = 'all 0.2s';
+        timerEl.textContent = seconds;
+        if (restTimerInterval) {
+            // If timer is running, restart with new duration
+            toggleRestTimer(); // pause
+            setTimeout(() => toggleRestTimer(), 100); // start again
+        }
     }
 }
-
-// Setup long-press detection
-function setupTimerLongPress() {
-    const timerEl = document.getElementById('rest-timer');
-    if (!timerEl) return;
-
-    let pressTimer;
-
-    timerEl.addEventListener('mousedown', (e) => {
-        pressTimer = setTimeout(() => {
-            cycleTimerPreset();
-        }, 600); // Hold for 600ms to cycle
-    });
-
-    timerEl.addEventListener('mouseup', () => clearTimeout(pressTimer));
-    timerEl.addEventListener('mouseleave', () => clearTimeout(pressTimer));
-
-    // Mobile support
-    timerEl.addEventListener('touchstart', (e) => {
-        pressTimer = setTimeout(() => {
-            cycleTimerPreset();
-        }, 600);
-    });
-
-    timerEl.addEventListener('touchend', () => clearTimeout(pressTimer));
-}
-
-// Initialize long press after render
-setTimeout(setupTimerLongPress, 500);
