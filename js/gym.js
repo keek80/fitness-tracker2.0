@@ -212,8 +212,16 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-        <!-- Floating Rest Timer -->
-        <div id="rest-timer" onclick="toggleRestTimer()">90</div>
+                <!-- Floating Rest Timer - INLINE STYLES -->
+        <div id="rest-timer" onclick="toggleRestTimer()" 
+             style="position:fixed !important; bottom:90px !important; right:20px !important; 
+                    background:#00d4ff !important; color:white !important; width:72px !important; 
+                    height:72px !important; border-radius:50% !important; display:flex !important; 
+                    align-items:center !important; justify-content:center !important; font-size:24px !important; 
+                    font-weight:800 !important; box-shadow:0 8px 25px rgba(0,212,255,0.6) !important; 
+                    z-index:99999 !important; cursor:pointer !important; border:4px solid white !important;">
+            90
+        </div>
 
         <div id="gymHistorySection" class="hidden" style="margin-top:16px">
             <div class="section-title">📋 Recent ${day.name} Sessions</div>
