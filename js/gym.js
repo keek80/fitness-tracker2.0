@@ -410,3 +410,49 @@ function isLightColor(hex) {
     const b = parseInt(hex.slice(5,7), 16);
     return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
+// ========== FLOATING REST TIMER ==========
+let restTimerInterval = null;
+let restTimeLeft = 90;
+
+function startRestTimer(seconds = 90) {
+    if (restTimerInterval) clearInterval(restTimerInterval);
+    
+    restTimeLeft = seconds;
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    timerEl.classList.remove('paused');
+    timerEl.textContent = restTimeLeft;
+
+    restTimerInterval = setInterval(() => {
+        restTimeLeft--;
+        if (timerEl) timerEl.textContent = restTimeLeft;
+
+        if (restTimeLeft <= 0) {
+            clearInterval(restTimerInterval);
+            restTimerInterval = null;
+            if (timerEl) {
+                timerEl.textContent = '✓';
+                timerEl.classList.add('paused');
+            }
+            if (navigator.vibrate) navigator.vibrate([150, 100, 150]);
+            setTimeout(() => {
+                if (timerEl) timerEl.textContent = '90';
+            }, 2000);
+        }
+    }, 1000);
+}
+
+function toggleRestTimer() {
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        timerEl.classList.add('paused');
+        timerEl.textContent = '⏸';
+    } else {
+        startRestTimer(90);
+    }
+}
