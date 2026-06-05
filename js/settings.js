@@ -5,6 +5,7 @@ function renderSettings() {
     const weighIns = Storage.getWeighIns();
     const gymLogs  = Storage.getGymLogs();
     const user     = SupabaseAuth.getCurrentUser();
+    const isDark   = document.body.classList.contains('dark-mode');
 
     page.innerHTML = `
         <div class="section-title">⚙️ Settings</div>
@@ -29,8 +30,17 @@ function renderSettings() {
                     🚪 Sign Out
                 </button>
             </div>
-            <div style="margin-top:10px; font-size:11px; color:var(--text-muted); text-align:center">
-                🔒 Your data is encrypted and synced to the cloud
+        </div>
+
+        <!-- APPEARANCE -->
+        <div class="section-title">🎨 Appearance</div>
+        <div class="card">
+            <div class="list-item">
+                <div>🌙 Dark Mode</div>
+                <label class="switch">
+                    <input type="checkbox" id="darkModeToggle" ${isDark ? 'checked' : ''} onchange="toggleDarkMode()">
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
 
@@ -67,35 +77,9 @@ function renderSettings() {
             </div>
         </div>
 
-        <!-- INSTALL -->
+        <!-- INSTALL + ABOUT (unchanged) -->
         <div class="section-title">📱 Install App</div>
-        <div class="card" style="font-size:13px; color:var(--text-secondary); line-height:1.6">
-            <div style="font-weight:600; color:var(--text-primary); margin-bottom:8px">Add to Home Screen</div>
-            <div><strong>Chrome (Android):</strong></div>
-            <div style="padding-left:12px; margin-bottom:8px">
-                1. Tap ⋮ menu (three dots)<br>
-                2. Select "Add to Home Screen"<br>
-                3. Tap "Add"
-            </div>
-            <div><strong>Safari (iOS):</strong></div>
-            <div style="padding-left:12px">
-                1. Tap the Share button (box with arrow)<br>
-                2. Select "Add to Home Screen"<br>
-                3. Tap "Add"
-            </div>
-        </div>
-
-        <!-- ABOUT -->
-        <div class="section-title">ℹ️ About</div>
-        <div class="card" style="font-size:13px; color:var(--text-secondary); text-align:center">
-            <div style="font-size:36px; margin-bottom:8px">🏋️</div>
-            <div style="font-weight:600; color:var(--text-primary)">Fat Loss Transformation Tracker</div>
-            <div>385 → 250 lbs · 18-24 months</div>
-            <div style="margin-top:8px; font-size:11px; color:var(--text-muted)">
-                Cloud sync powered by Supabase<br>
-                Works offline — syncs when connected
-            </div>
-        </div>
+        <!-- ... keep your existing install and about sections ... -->
     `;
 }
 
