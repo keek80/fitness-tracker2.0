@@ -136,4 +136,10 @@ function clearAllData() {
             renderDashboard();
         }
     }
+    function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+    showToast(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled');
+}
 }
