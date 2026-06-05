@@ -184,3 +184,7 @@ document.addEventListener('DOMContentLoaded', startup);
 window.addEventListener('popstate', (e) => {
     if (e.state && e.state.page) navigate(e.state.page);
 });
+// Load dark mode preference
+if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+}
