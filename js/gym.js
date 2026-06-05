@@ -207,10 +207,13 @@ function renderGym() {
             }).join('')}
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px">
             <button class="btn btn-primary" onclick="saveGymLog()">💾 Save Workout</button>
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
+
+        <!-- Floating Rest Timer -->
+        <div id="rest-timer" onclick="toggleRestTimer()">90</div>
 
         <div id="gymHistorySection" class="hidden" style="margin-top:16px">
             <div class="section-title">📋 Recent ${day.name} Sessions</div>
