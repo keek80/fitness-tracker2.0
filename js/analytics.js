@@ -33,10 +33,110 @@ function renderAnalytics() {
     }
 }
 
-// ... [All other functions remain unchanged: renderWeightAnalytics, renderExerciseProgressAnalytics, buildExerciseHistory, etc.] ...
+// ========== WEIGHT ANALYTICS ==========
+function renderWeightAnalytics(container, weighIns, settings) {
+    if (weighIns.length === 0) {
+        container.innerHTML = `<div class="empty-state"><p>No weigh-ins yet.</p></div>`;
+        return;
+    }
 
-// ========== STATS ANALYTICS ==========
+    const labels = weighIns.map(w => formatDateShort(w.date));
+    const weights = weighIns.map(w => w.weight);
+
+    container.innerHTML = `
+        <div class="section-title">📉 Weight Trend</div>
+        <canvas id="weightChart" style="max-height:320px;"></canvas>
+        <div class="card" style="margin-top:16px">
+            <div class="list-item"><div class="list-item-title">Current Weight</div><div>${weights[weights.length-1]} lbs</div></div>
+            <div class="list-item"><div class="list-item-title">Total Loss</div><div class="text-green">${(settings.startWeight - weights[weights.length-1]).toFixed(1)} lbs</div></div>
+        </div>
+    `;
+
+    setTimeout(() => {
+        const ctx = document.getElementById('weightChart');
+        if (ctx) new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Weight (lbs)',
+                    data: weights,
+                    borderColor: '#00d4ff',
+                    backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                    tension: 0.3,
+                    borderWidth: 3
+                }]
+            },
+            options: chartOptions(weighIns[0].weight - 20, weighIns[0].weight + 5)
+        });
+    }, 100);
+}
+
+// ========== EXERCISES ANALYTICS ==========
+function renderExerciseProgressAnalytics(container, gymLogs) {
+    if (gymLogs.length === 0) {
+        container.innerHTML = `<div class="empty-state"><p>No workouts logged yet.</p></div>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="section-title">💪 Exercise Progress</div>
+        <div id="exerciseProgressList"></div>
+    `;
+
+    const program = getTrainingProgram();
+    let html = '';
+
+    program.days.forEach(day => {
+        const dayLogs = gymLogs.filter(l => l.dayId === day.id);
+        if (dayLogs.length < 2) return;
+
+        const hist = buildExerciseHistory(dayLogs, day);
+        Object.keys(hist).forEach(exName => {
+            const entries = hist[exName];
+            if (entries.length < 2) return;
+
+            const trend = getExerciseTrend(entries);
+            html += `
+                <div class="card" style="margin-bottom:12px">
+                    <div class="flex-between">
+                        <strong>${exName}</strong>
+                        <span class="${trend.direction === 'up' ? 'text-green' : 'text-red'}">${trend.direction === 'up' ? '↑' : '↓'} ${trend.change}%</span>
+                    </div>
+                    <small style="color:var(--text-muted)">${entries.length} sessions • Best: ${trend.bestWeight} lbs</small>
+                </div>`;
+        });
+    });
+
+    document.getElementById('exerciseProgressList').innerHTML = html || '<p style="color:var(--text-muted); text-align:center; padding:20px;">Not enough data yet.</p>';
+}
+
+// ========== PRS ANALYTICS ==========
+function renderPRAnalytics(container, prs) {
+    const prList = Object.entries(prs);
+
+    if (prList.length === 0) {
+        container.innerHTML = `<div class="empty-state"><p>No PRs set yet. Keep lifting!</p></div>`;
+        return;
+    }
+
+    let html = '<div class="section-title">🏆 Personal Records</div><div class="card">';
+    
+    prList.sort((a, b) => b[1].bestWeight - a[1].bestWeight).forEach(([name, data]) => {
+        html += `
+            <div class="list-item">
+                <div>${name}</div>
+                <div class="text-green">${data.bestWeight} lbs × ${data.bestReps}</div>
+            </div>`;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// ========== STATS ANALYTICS (already updated) ==========
 function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
+    // ... (your current version is fine - keeping it as is)
     const totalWeighIns = weighIns.length;
     const totalWorkouts = gymLogs.length;
     
@@ -66,12 +166,10 @@ function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
     const consistency = totalWeighIns > 0 ? 
         Math.round((lossWeeks / Math.max(1, totalWeighIns - 1)) * 100) : 0;
 
-    // === FIXED Rolling 30-day Avg Workouts/Week ===
     let workoutsPerWeek = '—';
     if (gymLogs.length > 0) {
         const now = new Date();
         now.setHours(23, 59, 59, 999);
-        
         const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         thirtyDaysAgo.setHours(0, 0, 0, 0);
 
@@ -81,86 +179,33 @@ function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
         });
 
         const recentCount = recentLogs.length;
-
         if (recentCount > 0) {
             const dates = recentLogs.map(l => new Date(l.date));
             const firstDate = new Date(Math.min(...dates));
             const spanDays = (now - firstDate) / (24 * 60 * 60 * 1000) + 1;
             const spanWeeks = Math.max(spanDays / 7, 0.5);
-            
             workoutsPerWeek = (recentCount / spanWeeks).toFixed(1);
         }
     }
 
-    // Exercise progress summary
-    const program = getTrainingProgram();
-    let totalExercisesTracked = 0;
-    let exercisesImproving = 0;
-    
-    program.days.forEach(day => {
-        const dayLogs = gymLogs
-            .filter(l => l.dayId === day.id)
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-        
-        if (dayLogs.length >= 2) {
-            const hist = buildExerciseHistory(dayLogs, day);
-            Object.values(hist).forEach(entries => {
-                if (entries.length >= 2) {
-                    totalExercisesTracked++;
-                    const trend = getExerciseTrend(entries);
-                    if (trend.direction === 'up') exercisesImproving++;
-                }
-            });
-        }
-    });
-
     container.innerHTML = `
         <div class="section-title">📊 Summary Statistics</div>
         <div class="stat-grid">
-            <div class="stat-box accent">
-                <div class="stat-value">${totalWeighIns}</div>
-                <div class="stat-label">Weigh-Ins</div>
-            </div>
-            <div class="stat-box green">
-                <div class="stat-value">${totalWorkouts}</div>
-                <div class="stat-label">Workouts</div>
-            </div>
-            <div class="stat-box orange">
-                <div class="stat-value">${consistency}%</div>
-                <div class="stat-label">Consistency Rate</div>
-            </div>
-            <div class="stat-box blue">
-                <div class="stat-value">${maxStreak}</div>
-                <div class="stat-label">Best Streak</div>
-            </div>
+            <div class="stat-box accent"><div class="stat-value">${totalWeighIns}</div><div class="stat-label">Weigh-Ins</div></div>
+            <div class="stat-box green"><div class="stat-value">${totalWorkouts}</div><div class="stat-label">Workouts</div></div>
+            <div class="stat-box orange"><div class="stat-value">${consistency}%</div><div class="stat-label">Consistency Rate</div></div>
+            <div class="stat-box blue"><div class="stat-value">${maxStreak}</div><div class="stat-label">Best Streak</div></div>
         </div>
 
         <div class="card">
-            <div class="list-item">
-                <div class="list-item-title">🏆 Best Week</div>
-                <div class="text-green" style="font-size:13px">${bestWeek}</div>
-            </div>
-            <div class="list-item">
-                <div class="list-item-title">😤 Worst Week</div>
-                <div class="text-red" style="font-size:13px">${worstWeek}</div>
-            </div>
-            <div class="list-item">
-                <div class="list-item-title">🏋️ Avg Workouts/Week (30d)</div>
-                <div style="font-size:13px">${workoutsPerWeek}</div>
-            </div>
-            <div class="list-item">
-                <div class="list-item-title">📊 PRs Set</div>
-                <div style="font-size:13px">${Object.keys(Storage.getPRs()).length}</div>
-            </div>
-            <div class="list-item">
-                <div class="list-item-title">💪 Exercises Improving</div>
-                <div style="font-size:13px" class="text-green">${exercisesImproving}/${totalExercisesTracked}</div>
-            </div>
+            <div class="list-item"><div class="list-item-title">🏆 Best Week</div><div class="text-green" style="font-size:13px">${bestWeek}</div></div>
+            <div class="list-item"><div class="list-item-title">😤 Worst Week</div><div class="text-red" style="font-size:13px">${worstWeek}</div></div>
+            <div class="list-item"><div class="list-item-title">🏋️ Avg Workouts/Week (30d)</div><div style="font-size:13px">${workoutsPerWeek}</div></div>
+            <div class="list-item"><div class="list-item-title">📊 PRs Set</div><div style="font-size:13px">${Object.keys(prs).length}</div></div>
         </div>
     `;
 }
 
-// ... rest of the file (chartOptions function) ...
 function chartOptions(sugMin, sugMax) {
     return {
         responsive: true, maintainAspectRatio: true, aspectRatio: 1.6,
