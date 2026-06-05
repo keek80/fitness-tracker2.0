@@ -1355,4 +1355,19 @@ select.form-input {
     text-align: center;
     padding-top: 8px;
     border-top: 1px solid var(--border);
+    /* Dark Mode */
+body.dark-mode {
+    --bg: #0f0f17;
+    --surface: #1a1a2e;
+    --card: #16213e;
+    --text: #e0e0ff;
+    --text-muted: #a0aec0;
+    --border: #334155;
+    --accent: #00d4ff;
+}
+
+body.dark-mode .stat-box, body.dark-mode .card {
+    background: var(--card);
+    border-color: var(--border);
+}
 }
