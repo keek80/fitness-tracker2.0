@@ -1370,4 +1370,28 @@ body.dark-mode .stat-box, body.dark-mode .card {
     background: var(--card);
     border-color: var(--border);
 }
+    /* Workout Timer */
+#rest-timer {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+    z-index: 1000;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#rest-timer.paused {
+    background: #64748b;
+}
 }
