@@ -423,9 +423,39 @@ function isLightColor(hex) {
 }
 // ========== FLOATING REST TIMER ==========
 let restTimerInterval = null;
-let restTimeLeft = 90;
+let restTimeLeft = 60;   // Changed to 60 seconds
 
-function startRestTimer(seconds = 90) {
+function playTimerCompleteSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // First beep
+        gain.gain.setValueAtTime(0.6, audioContext.currentTime);
+        
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        oscillator.start();
+        
+        // Two beeps
+        setTimeout(() => {
+            oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+        }, 150);
+        
+        setTimeout(() => {
+            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.4);
+            oscillator.stop(audioContext.currentTime + 0.6);
+        }, 600);
+    } catch (e) {
+        // Fallback: vibration only
+        if (navigator.vibrate) navigator.vibrate([100, 80, 100, 80, 100]);
+    }
+}
+
+function startRestTimer(seconds = 60) {
     if (restTimerInterval) clearInterval(restTimerInterval);
     
     restTimeLeft = seconds;
@@ -442,14 +472,17 @@ function startRestTimer(seconds = 90) {
         if (restTimeLeft <= 0) {
             clearInterval(restTimerInterval);
             restTimerInterval = null;
+            
             if (timerEl) {
                 timerEl.textContent = '✓';
                 timerEl.classList.add('paused');
             }
-            if (navigator.vibrate) navigator.vibrate([150, 100, 150]);
+            
+            playTimerCompleteSound();
+            
             setTimeout(() => {
-                if (timerEl) timerEl.textContent = '90';
-            }, 2000);
+                if (timerEl) timerEl.textContent = '60';
+            }, 2500);
         }
     }, 1000);
 }
@@ -464,6 +497,6 @@ function toggleRestTimer() {
         timerEl.classList.add('paused');
         timerEl.textContent = '⏸';
     } else {
-        startRestTimer(90);
+        startRestTimer(60);   // Default is now 60 seconds
     }
 }
