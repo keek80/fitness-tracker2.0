@@ -212,7 +212,7 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-                      <!-- Floating Rest Timer -->
+                             <!-- Floating Rest Timer -->
         <div id="rest-timer" onclick="toggleRestTimer()" 
              style="position:fixed !important; bottom:90px !important; right:20px !important; 
                     background:#00d4ff !important; color:white !important; width:72px !important; 
@@ -424,7 +424,7 @@ function isLightColor(hex) {
 // ========== FLOATING REST TIMER ==========
 let restTimerInterval = null;
 let restTimeLeft = 60;
-let currentTimerPreset = 60; // 30, 60, or 90
+let currentTimerPreset = 60;
 
 function playRingingSound() {
     try {
@@ -438,40 +438,47 @@ function playRingingSound() {
         
         oscillator.connect(gain);
         gain.connect(audioContext.destination);
-        
         oscillator.start();
         
-        // Ringing effect
         setTimeout(() => oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.1), 100);
-        setTimeout(() => oscillator.frequency.setValueAtTime(620, audioContext.currentTime + 0.3), 300);
-        setTimeout(() => oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.5), 500);
+        setTimeout(() => oscillator.frequency.setValueAtTime(620, audioContext.currentTime + 0.4), 400);
         
         setTimeout(() => {
-            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.8);
-            oscillator.stop(audioContext.currentTime + 1.2);
-        }, 800);
+            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.9);
+            oscillator.stop(audioContext.currentTime + 1.3);
+        }, 900);
     } catch (e) {
-        // Fallback
-        if (navigator.vibrate) navigator.vibrate([150, 100, 200, 100, 150]);
+        if (navigator.vibrate) navigator.vibrate([120, 80, 180, 80, 120]);
     }
 }
 
-function startRestTimer(seconds = 60) {
+function startRestTimer() {
     if (restTimerInterval) clearInterval(restTimerInterval);
-    
-    restTimeLeft = seconds;
-    currentTimerPreset = seconds;
     
     const timerEl = document.getElementById('rest-timer');
     if (!timerEl) return;
 
     timerEl.classList.remove('paused');
     timerEl.textContent = restTimeLeft;
-}
 
-function updateTimerDisplay() {
-    const timerEl = document.getElementById('rest-timer');
-    if (timerEl) timerEl.textContent = restTimeLeft;
+    restTimerInterval = setInterval(() => {
+        restTimeLeft--;
+        timerEl.textContent = restTimeLeft;
+
+        if (restTimeLeft <= 0) {
+            clearInterval(restTimerInterval);
+            restTimerInterval = null;
+            
+            timerEl.textContent = '✓';
+            timerEl.classList.add('paused');
+            
+            playRingingSound();
+            
+            setTimeout(() => {
+                if (timerEl) timerEl.textContent = currentTimerPreset;
+            }, 2500);
+        }
+    }, 1000);
 }
 
 function toggleRestTimer() {
@@ -485,57 +492,30 @@ function toggleRestTimer() {
         timerEl.classList.add('paused');
         timerEl.textContent = '⏸';
     } else {
-        // Start / Resume
-        restTimerInterval = setInterval(() => {
-            restTimeLeft--;
-            updateTimerDisplay();
-
-            if (restTimeLeft <= 0) {
-                clearInterval(restTimerInterval);
-                restTimerInterval = null;
-                
-                if (timerEl) {
-                    timerEl.textContent = '✓';
-                    timerEl.classList.add('paused');
-                }
-                
-                playRingingSound();
-                
-                setTimeout(() => {
-                    if (timerEl) timerEl.textContent = currentTimerPreset;
-                }, 2800);
-            }
-        }, 1000);
-
+        // Start timer
         if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
-        updateTimerDisplay();
+        startRestTimer();
     }
 }
 
-// Tap timer to cycle presets: 30 → 60 → 90
 function cycleTimerPreset() {
-    const timerEl = document.getElementById('rest-timer');
-    if (!timerEl) return;
-
-    if (restTimerInterval) {
-        // If running, just pause first
-        toggleRestTimer();
-    }
-
-    // Cycle presets
-    if (currentTimerPreset === 30) currentTimerPreset = 60;
-    else if (currentTimerPreset === 60) currentTimerPreset = 90;
-    else currentTimerPreset = 30;
-
+    const presets = [30, 60, 90];
+    const currentIndex = presets.indexOf(currentTimerPreset);
+    currentTimerPreset = presets[(currentIndex + 1) % 3];
     restTimeLeft = currentTimerPreset;
-    if (timerEl) timerEl.textContent = currentTimerPreset;
+
+    const timerEl = document.getElementById('rest-timer');
+    if (timerEl) {
+        timerEl.textContent = currentTimerPreset;
+    }
 }
 
-// Attach click handler for cycling presets (short tap = cycle, long press = toggle timer)
-document.addEventListener('click', function(e) {
-    const timer = document.getElementById('rest-timer');
-    if (e.target === timer || timer.contains(e.target)) {
-        // Simple toggle for now
+// Simple click: short tap = toggle timer, long press = cycle preset
+let timerPressTimer;
+const timerEl = document.getElementById('rest-timer'); // Will be re-attached after render
+
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'rest-timer') {
         toggleRestTimer();
     }
 });
