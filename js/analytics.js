@@ -36,8 +36,6 @@ function renderAnalytics() {
 // ... [All other functions remain unchanged: renderWeightAnalytics, renderExerciseProgressAnalytics, buildExerciseHistory, etc.] ...
 
 // ========== STATS ANALYTICS ==========
-
-// ========== STATS ANALYTICS ==========
 function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
     const totalWeighIns = weighIns.length;
     const totalWorkouts = gymLogs.length;
@@ -68,11 +66,11 @@ function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
     const consistency = totalWeighIns > 0 ? 
         Math.round((lossWeeks / Math.max(1, totalWeighIns - 1)) * 100) : 0;
 
-    // === IMPROVED Rolling 30-day Avg Workouts/Week ===
+    // === FIXED Rolling 30-day Avg Workouts/Week ===
     let workoutsPerWeek = '—';
     if (gymLogs.length > 0) {
         const now = new Date();
-        now.setHours(23, 59, 59, 999); // End of today
+        now.setHours(23, 59, 59, 999);
         
         const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
         thirtyDaysAgo.setHours(0, 0, 0, 0);
@@ -85,16 +83,16 @@ function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
         const recentCount = recentLogs.length;
 
         if (recentCount > 0) {
-            // Calculate exact weeks spanned in the last 30 days
-            const firstRecent = new Date(Math.min(...recentLogs.map(l => new Date(l.date))));
-            const spanDays = (now - firstRecent) / (24 * 60 * 60 * 1000);
-            const spanWeeks = Math.max(spanDays / 7, 1);
+            const dates = recentLogs.map(l => new Date(l.date));
+            const firstDate = new Date(Math.min(...dates));
+            const spanDays = (now - firstDate) / (24 * 60 * 60 * 1000) + 1;
+            const spanWeeks = Math.max(spanDays / 7, 0.5);
             
             workoutsPerWeek = (recentCount / spanWeeks).toFixed(1);
         }
     }
 
-    // Exercise progress summary (unchanged)
+    // Exercise progress summary
     const program = getTrainingProgram();
     let totalExercisesTracked = 0;
     let exercisesImproving = 0;
@@ -129,7 +127,7 @@ function renderStatsAnalytics(container, weighIns, gymLogs, settings) {
             </div>
             <div class="stat-box orange">
                 <div class="stat-value">${consistency}%</div>
-                <div class="stat-label">Win Rate</div>
+                <div class="stat-label">Consistency Rate</div>
             </div>
             <div class="stat-box blue">
                 <div class="stat-value">${maxStreak}</div>
