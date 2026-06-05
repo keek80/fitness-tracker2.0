@@ -212,7 +212,7 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-                <!-- Floating Rest Timer - INLINE STYLES -->
+                      <!-- Floating Rest Timer -->
         <div id="rest-timer" onclick="toggleRestTimer()" 
              style="position:fixed !important; bottom:90px !important; right:20px !important; 
                     background:#00d4ff !important; color:white !important; width:72px !important; 
@@ -220,7 +220,7 @@ function renderGym() {
                     align-items:center !important; justify-content:center !important; font-size:24px !important; 
                     font-weight:800 !important; box-shadow:0 8px 25px rgba(0,212,255,0.6) !important; 
                     z-index:99999 !important; cursor:pointer !important; border:4px solid white !important;">
-            90
+            60
         </div>
 
         <div id="gymHistorySection" class="hidden" style="margin-top:16px">
@@ -423,35 +423,36 @@ function isLightColor(hex) {
 }
 // ========== FLOATING REST TIMER ==========
 let restTimerInterval = null;
-let restTimeLeft = 60;   // Changed to 60 seconds
+let restTimeLeft = 60;
+let currentTimerPreset = 60; // 30, 60, or 90
 
-function playTimerCompleteSound() {
+function playRingingSound() {
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         const gain = audioContext.createGain();
         
         oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime); // First beep
-        gain.gain.setValueAtTime(0.6, audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(620, audioContext.currentTime);
+        gain.gain.setValueAtTime(0.7, audioContext.currentTime);
         
         oscillator.connect(gain);
         gain.connect(audioContext.destination);
         
         oscillator.start();
         
-        // Two beeps
-        setTimeout(() => {
-            oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
-        }, 150);
+        // Ringing effect
+        setTimeout(() => oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.1), 100);
+        setTimeout(() => oscillator.frequency.setValueAtTime(620, audioContext.currentTime + 0.3), 300);
+        setTimeout(() => oscillator.frequency.setValueAtTime(880, audioContext.currentTime + 0.5), 500);
         
         setTimeout(() => {
-            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.4);
-            oscillator.stop(audioContext.currentTime + 0.6);
-        }, 600);
+            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.8);
+            oscillator.stop(audioContext.currentTime + 1.2);
+        }, 800);
     } catch (e) {
-        // Fallback: vibration only
-        if (navigator.vibrate) navigator.vibrate([100, 80, 100, 80, 100]);
+        // Fallback
+        if (navigator.vibrate) navigator.vibrate([150, 100, 200, 100, 150]);
     }
 }
 
@@ -459,32 +460,18 @@ function startRestTimer(seconds = 60) {
     if (restTimerInterval) clearInterval(restTimerInterval);
     
     restTimeLeft = seconds;
+    currentTimerPreset = seconds;
+    
     const timerEl = document.getElementById('rest-timer');
     if (!timerEl) return;
 
     timerEl.classList.remove('paused');
     timerEl.textContent = restTimeLeft;
+}
 
-    restTimerInterval = setInterval(() => {
-        restTimeLeft--;
-        if (timerEl) timerEl.textContent = restTimeLeft;
-
-        if (restTimeLeft <= 0) {
-            clearInterval(restTimerInterval);
-            restTimerInterval = null;
-            
-            if (timerEl) {
-                timerEl.textContent = '✓';
-                timerEl.classList.add('paused');
-            }
-            
-            playTimerCompleteSound();
-            
-            setTimeout(() => {
-                if (timerEl) timerEl.textContent = '60';
-            }, 2500);
-        }
-    }, 1000);
+function updateTimerDisplay() {
+    const timerEl = document.getElementById('rest-timer');
+    if (timerEl) timerEl.textContent = restTimeLeft;
 }
 
 function toggleRestTimer() {
@@ -492,11 +479,63 @@ function toggleRestTimer() {
     if (!timerEl) return;
 
     if (restTimerInterval) {
+        // Pause
         clearInterval(restTimerInterval);
         restTimerInterval = null;
         timerEl.classList.add('paused');
         timerEl.textContent = '⏸';
     } else {
-        startRestTimer(60);   // Default is now 60 seconds
+        // Start / Resume
+        restTimerInterval = setInterval(() => {
+            restTimeLeft--;
+            updateTimerDisplay();
+
+            if (restTimeLeft <= 0) {
+                clearInterval(restTimerInterval);
+                restTimerInterval = null;
+                
+                if (timerEl) {
+                    timerEl.textContent = '✓';
+                    timerEl.classList.add('paused');
+                }
+                
+                playRingingSound();
+                
+                setTimeout(() => {
+                    if (timerEl) timerEl.textContent = currentTimerPreset;
+                }, 2800);
+            }
+        }, 1000);
+
+        if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
+        updateTimerDisplay();
     }
 }
+
+// Tap timer to cycle presets: 30 → 60 → 90
+function cycleTimerPreset() {
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    if (restTimerInterval) {
+        // If running, just pause first
+        toggleRestTimer();
+    }
+
+    // Cycle presets
+    if (currentTimerPreset === 30) currentTimerPreset = 60;
+    else if (currentTimerPreset === 60) currentTimerPreset = 90;
+    else currentTimerPreset = 30;
+
+    restTimeLeft = currentTimerPreset;
+    if (timerEl) timerEl.textContent = currentTimerPreset;
+}
+
+// Attach click handler for cycling presets (short tap = cycle, long press = toggle timer)
+document.addEventListener('click', function(e) {
+    const timer = document.getElementById('rest-timer');
+    if (e.target === timer || timer.contains(e.target)) {
+        // Simple toggle for now
+        toggleRestTimer();
+    }
+});
