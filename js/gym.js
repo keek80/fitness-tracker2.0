@@ -463,14 +463,16 @@ function startRestTimer() {
 
     restTimerInterval = setInterval(() => {
         restTimeLeft--;
-        timerEl.textContent = restTimeLeft;
+        if (timerEl) timerEl.textContent = restTimeLeft;
 
         if (restTimeLeft <= 0) {
             clearInterval(restTimerInterval);
             restTimerInterval = null;
             
-            timerEl.textContent = '✓';
-            timerEl.classList.add('paused');
+            if (timerEl) {
+                timerEl.textContent = '✓';
+                timerEl.classList.add('paused');
+            }
             
             playRingingSound();
             
@@ -492,12 +494,13 @@ function toggleRestTimer() {
         timerEl.classList.add('paused');
         timerEl.textContent = '⏸';
     } else {
-        // Start timer
+        // Start
         if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
         startRestTimer();
     }
 }
 
+// Cycle presets: 30 → 60 → 90 (long press on timer)
 function cycleTimerPreset() {
     const presets = [30, 60, 90];
     const currentIndex = presets.indexOf(currentTimerPreset);
@@ -505,17 +508,5 @@ function cycleTimerPreset() {
     restTimeLeft = currentTimerPreset;
 
     const timerEl = document.getElementById('rest-timer');
-    if (timerEl) {
-        timerEl.textContent = currentTimerPreset;
-    }
+    if (timerEl) timerEl.textContent = currentTimerPreset;
 }
-
-// Simple click: short tap = toggle timer, long press = cycle preset
-let timerPressTimer;
-const timerEl = document.getElementById('rest-timer'); // Will be re-attached after render
-
-document.addEventListener('click', (e) => {
-    if (e.target.id === 'rest-timer') {
-        toggleRestTimer();
-    }
-});
