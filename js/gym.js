@@ -500,7 +500,7 @@ function toggleRestTimer() {
     }
 }
 
-// Cycle presets: 30 → 60 → 90 (long press on timer)
+// Cycle presets: 30 → 60 → 90 (long press)
 function cycleTimerPreset() {
     const presets = [30, 60, 90];
     const currentIndex = presets.indexOf(currentTimerPreset);
@@ -508,5 +508,37 @@ function cycleTimerPreset() {
     restTimeLeft = currentTimerPreset;
 
     const timerEl = document.getElementById('rest-timer');
-    if (timerEl) timerEl.textContent = currentTimerPreset;
+    if (timerEl) {
+        timerEl.textContent = currentTimerPreset;
+        timerEl.style.transition = 'all 0.2s';
+    }
 }
+
+// Setup long-press detection
+function setupTimerLongPress() {
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    let pressTimer;
+
+    timerEl.addEventListener('mousedown', (e) => {
+        pressTimer = setTimeout(() => {
+            cycleTimerPreset();
+        }, 600); // Hold for 600ms to cycle
+    });
+
+    timerEl.addEventListener('mouseup', () => clearTimeout(pressTimer));
+    timerEl.addEventListener('mouseleave', () => clearTimeout(pressTimer));
+
+    // Mobile support
+    timerEl.addEventListener('touchstart', (e) => {
+        pressTimer = setTimeout(() => {
+            cycleTimerPreset();
+        }, 600);
+    });
+
+    timerEl.addEventListener('touchend', () => clearTimeout(pressTimer));
+}
+
+// Initialize long press after render
+setTimeout(setupTimerLongPress, 500);
