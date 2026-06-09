@@ -225,6 +225,11 @@ const EXERCISE_DATABASE = [
     { name: 'Push-Ups',                       category: 'Chest',       equipment: 'Bodyweight', notes: 'Keep core tight, full range of motion' },
     { name: 'Smith Machine Bench Press',      category: 'Chest',       equipment: 'Machine',    notes: 'Controlled movement, good for beginners' },
     { name: 'Machine Dips',                   category: 'Chest',       equipment: 'Machine',    notes: 'Lean forward for chest emphasis, upright for triceps' },
+    { name: 'Svend Press',                    category: 'Chest',       equipment: 'Bodyweight', notes: 'Press hands together at chest level, squeeze hard' },
+    { name: 'Floor Press',                    category: 'Chest',       equipment: 'Barbell',    notes: 'Limited range, great for tricep emphasis' },
+    { name: 'Guillotine Press',               category: 'Chest',       equipment: 'Barbell',    notes: 'Bar to neck — advanced, high stretch on upper chest' },
+    { name: 'Hex Press (Squeeze Press)',      category: 'Chest',       equipment: 'Dumbbell',   notes: 'Dumbbells pressed together, constant tension' },
+
     // ── BACK ──
     { name: 'Barbell Rows (Bent-Over)',       category: 'Back',        equipment: 'Barbell',    notes: 'Maintain flat back, pull to lower chest' },
     { name: 'Lat Pulldown (Wide Grip)',       category: 'Back',        equipment: 'Cable',      notes: 'Pull to upper chest, squeeze lats at bottom' },
@@ -239,6 +244,25 @@ const EXERCISE_DATABASE = [
     { name: 'Single Arm Dumbbell Row',        category: 'Back',        equipment: 'Dumbbell',   notes: 'Pull elbow to hip, full range of motion' },
     { name: 'Back Extension Machine',         category: 'Back',        equipment: 'Machine',    notes: 'Focus on lower back contraction at top' },
     { name: 'Hyperextensions (45°)',          category: 'Back',        equipment: 'Bodyweight', notes: 'Hinge at hips, squeeze glutes at top' },
+
+    // New Back Exercises
+    { name: 'Plate Loaded Row',               category: 'Back',        equipment: 'Machine',    notes: 'Chest-supported or T-bar style plate loaded row — pull to lower abs' },
+    { name: 'Plate Loaded Pulldown Machine',  category: 'Back',        equipment: 'Machine',    notes: 'Neutral or wide grip — full stretch at top, squeeze lats at bottom' },
+    { name: 'Single Arm Plate Loaded Row',    category: 'Back',        equipment: 'Machine',    notes: 'Unilateral version for imbalance correction' },
+    { name: 'Seated Plate Loaded Row',        category: 'Back',        equipment: 'Machine',    notes: 'Focus on squeezing shoulder blades together' },
+    { name: 'Lat Pulldown Machine (Plate)',   category: 'Back',        equipment: 'Machine',    notes: 'Alternative to cable lat pulldown — consistent resistance' },
+    { name: 'Chest Supported T-Bar Row',      category: 'Back',        equipment: 'Barbell',    notes: 'Chest on pad, pull bar to lower chest' },
+    { name: 'Pendlay Row',                    category: 'Back',        equipment: 'Barbell',    notes: 'Explosive row from floor each rep — full reset' },
+    { name: 'Yates Row',                      category: 'Back',        equipment: 'Barbell',    notes: 'Underhand grip, torso at ~45° angle' },
+    { name: 'Seal Row',                       category: 'Back',        equipment: 'Barbell',    notes: 'Lying face down on bench — strict form, no momentum' },
+    { name: 'Machine High Row',               category: 'Back',        equipment: 'Machine',    notes: 'Targets upper back and rhomboids' },
+    { name: 'Cable Rope Face Pulls',          category: 'Back',        equipment: 'Cable',      notes: 'High pulley, pull to face, external rotation' },
+    { name: 'Inverted Row (Smith Machine)',   category: 'Back',        equipment: 'Machine',    notes: 'Bodyweight row variation — adjust height for difficulty' },
+    { name: 'Meadows Row',                    category: 'Back',        equipment: 'Dumbbell',   notes: 'Single-arm row with landmine or T-bar setup' },
+    { name: 'Rack Pull',                      category: 'Back',        equipment: 'Barbell',    notes: 'Partial deadlift from knee height — heavy back focus' },
+    { name: 'Inverted Row',                   category: 'Back',        equipment: 'Bodyweight', notes: 'Bodyweight row under bar or rings' },
+    { name: 'Pull-Up (Wide Grip)',            category: 'Back',        equipment: 'Bodyweight', notes: 'Full range, pull chest to bar' },
+
     // ── SHOULDERS ──
     { name: 'Seated Machine Shoulder Press',  category: 'Shoulders',   equipment: 'Machine',    notes: 'Keep shoulder blades down and back' },
     { name: 'Seated Overhead Dumbbell Press', category: 'Shoulders',   equipment: 'Dumbbell',   notes: 'Control descent, avoid locking out elbows' },
@@ -253,6 +277,9 @@ const EXERCISE_DATABASE = [
     { name: 'Dumbbell Front Raises',          category: 'Shoulders',   equipment: 'Dumbbell',   notes: 'Raise to shoulder height, control the descent' },
     { name: 'Cable Front Raises',             category: 'Shoulders',   equipment: 'Cable',      notes: 'Constant tension, raise to shoulder height' },
     { name: 'Upright Rows (Barbell)',         category: 'Shoulders',   equipment: 'Barbell',    notes: 'Pull to chin, elbows lead the movement' },
+    { name: 'Landmine Press',                 category: 'Shoulders',   equipment: 'Barbell',    notes: 'Single-arm or two-arm shoulder press variation' },
+    { name: 'Egyptian Lateral Raises',        category: 'Shoulders',   equipment: 'Cable',      notes: 'Leaning away from cable for better side delt stretch' },
+
     // ── BICEPS ──
     { name: 'Barbell Bicep Curls',            category: 'Biceps',      equipment: 'Barbell',    notes: 'Keep elbows tucked, avoid swinging' },
     { name: 'Dumbbell Bicep Curls',           category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Alternate arms or together, full range' },
@@ -264,7 +291,10 @@ const EXERCISE_DATABASE = [
     { name: 'Incline Dumbbell Curls',         category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Full stretch at bottom, great for peak' },
     { name: 'EZ Bar Curls',                   category: 'Biceps',      equipment: 'Barbell',    notes: 'Easier on wrists than straight bar' },
     { name: 'Spider Curls',                   category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Face down on incline bench, full contraction' },
-    // ── TRICEPS ──
+    { name: 'Zottman Curls',                  category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Supinated on way up, pronated on way down' },
+    { name: '21s (Bicep Curls)',              category: 'Biceps',      equipment: 'Barbell',    notes: '7 bottom half + 7 top half + 7 full reps' },
+
+    // ── TRICEPS ── (and the rest of your original list)
     { name: 'Cable Tricep Pushdowns (Rope)',  category: 'Triceps',     equipment: 'Cable',      notes: 'Keep elbows pinned, squeeze at bottom' },
     { name: 'Cable Tricep Pushdowns (Bar)',   category: 'Triceps',     equipment: 'Cable',      notes: 'Straight bar, elbows pinned to sides' },
     { name: 'Overhead Cable Tricep Extension',category: 'Triceps',     equipment: 'Cable',      notes: 'Full stretch at top, extend fully' },
@@ -274,7 +304,9 @@ const EXERCISE_DATABASE = [
     { name: 'Close-Grip Bench Press',         category: 'Triceps',     equipment: 'Barbell',    notes: 'Hands shoulder-width, elbows close to body' },
     { name: 'Tricep Kickbacks (Cable)',       category: 'Triceps',     equipment: 'Cable',      notes: 'Hinge at hips, extend arm fully back, squeeze' },
     { name: 'Tricep Kickbacks (Dumbbell)',    category: 'Triceps',     equipment: 'Dumbbell',   notes: 'Hinge at hips, extend arm fully back, squeeze' },
-    // ── QUADS ──
+    { name: 'JM Press',                       category: 'Triceps',     equipment: 'Barbell',    notes: 'Hybrid skull crusher + close grip press' },
+
+    // ── QUADS ──, HAMSTRINGS, GLUTES, CALVES, CORE, CARDIO (unchanged from your original)
     { name: 'Leg Press Machine',              category: 'Quads',       equipment: 'Machine',    notes: "Feet shoulder-width, don't lock knees" },
     { name: 'Leg Extension Machine',          category: 'Quads',       equipment: 'Machine',    notes: 'Squeeze quads hard at the top' },
     { name: 'Barbell Back Squat',             category: 'Quads',       equipment: 'Barbell',    notes: 'Chest up, knees track over toes, squat to parallel' },
@@ -286,14 +318,14 @@ const EXERCISE_DATABASE = [
     { name: 'Walking Lunges',                 category: 'Quads',       equipment: 'Bodyweight', notes: 'Controlled steps, knee not past toes' },
     { name: 'Bulgarian Split Squat',          category: 'Quads',       equipment: 'Dumbbell',   notes: 'Rear foot elevated, front foot forward, drive through heel' },
     { name: 'Step-Ups (Dumbbell)',            category: 'Quads',       equipment: 'Dumbbell',   notes: 'Drive through heel of lead foot' },
-    // ── HAMSTRINGS ──
+
     { name: 'Leg Curl Machine (Seated/Lying)',category: 'Hamstrings',  equipment: 'Machine',    notes: 'Slow and controlled negative' },
     { name: 'Romanian Deadlift (DB/Barbell)', category: 'Hamstrings',  equipment: 'Barbell',    notes: 'Hinge at hips, slight knee bend, feel hamstring stretch' },
     { name: 'Stiff-Leg Deadlift',            category: 'Hamstrings',  equipment: 'Barbell',    notes: 'Minimal knee bend, full hip hinge' },
     { name: 'Good Mornings',                  category: 'Hamstrings',  equipment: 'Barbell',    notes: 'Hinge at hips with bar on back, slight knee bend' },
     { name: 'Nordic Hamstring Curl',          category: 'Hamstrings',  equipment: 'Bodyweight', notes: 'Slow eccentric is key, very challenging' },
     { name: 'Kettlebell Swings',              category: 'Hamstrings',  equipment: 'Dumbbell',   notes: 'Explosive hip hinge, power from glutes and hamstrings' },
-    // ── GLUTES ──
+
     { name: 'Hip Thrust (Barbell)',           category: 'Glutes',      equipment: 'Barbell',    notes: 'Upper back on bench, drive hips up, squeeze glutes at top' },
     { name: 'Hip Thrust Machine',             category: 'Glutes',      equipment: 'Machine',    notes: 'Drive through heels, squeeze glutes hard at top for 2 sec' },
     { name: 'Cable Pull-Through',             category: 'Glutes',      equipment: 'Cable',      notes: 'Stand facing away from low pulley, hinge at hips, drive hips forward' },
@@ -303,12 +335,12 @@ const EXERCISE_DATABASE = [
     { name: 'Sumo Deadlift',                  category: 'Glutes',      equipment: 'Barbell',    notes: 'Wide stance, toes out, targets inner thighs and glutes' },
     { name: 'Abductor Machine',              category: 'Glutes',      equipment: 'Machine',    notes: 'Push knees outward, targets glute medius' },
     { name: 'Adductor Machine',              category: 'Glutes',      equipment: 'Machine',    notes: 'Squeeze knees inward, targets inner thighs' },
-    // ── CALVES ──
+
     { name: 'Standing Calf Raises Machine',   category: 'Calves',      equipment: 'Machine',    notes: 'Full range of motion, pause 1 sec at top and bottom' },
     { name: 'Seated Calf Raises Machine',     category: 'Calves',      equipment: 'Machine',    notes: 'Targets soleus, hold at top 2 seconds' },
     { name: 'Leg Press Calf Raises',          category: 'Calves',      equipment: 'Machine',    notes: 'Press through balls of feet, full range' },
     { name: 'Standing Dumbbell Calf Raises',  category: 'Calves',      equipment: 'Dumbbell',   notes: 'Hold dumbbell in one hand, other holds for balance' },
-    // ── CORE ──
+
     { name: 'Seated Abdominal Crunch Machine',category: 'Core',        equipment: 'Machine',    notes: 'Focus on spinal flexion, control the eccentric' },
     { name: 'Machine Oblique Crunch',         category: 'Core',        equipment: 'Machine',    notes: 'Weak side first, complete all reps L then R before resting' },
     { name: 'Cable Wood Chop High-to-Low',    category: 'Core',        equipment: 'Cable',      notes: 'Weak side first, rotate torso, pivot hips, control the return' },
@@ -323,6 +355,7 @@ const EXERCISE_DATABASE = [
     { name: 'Cable Crunch',                   category: 'Core',        equipment: 'Cable',      notes: 'Kneel facing cable, crunch elbows to knees' },
     { name: 'Decline Sit-Ups',               category: 'Core',        equipment: 'Bodyweight', notes: 'Control descent, avoid pulling on neck' },
     { name: 'Russian Twists',                 category: 'Core',        equipment: 'Bodyweight', notes: 'Keep feet off floor for extra challenge' },
+
     // ── CARDIO ──
     { name: 'Treadmill Walk (Incline)',        category: 'Cardio',      equipment: 'Machine',    notes: '10-15% incline, 3.0-3.5 mph for steady state cardio' },
     { name: 'Stationary Bike (Steady State)', category: 'Cardio',      equipment: 'Machine',    notes: 'Moderate resistance, maintain 70-80 RPM' },
