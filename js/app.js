@@ -1,3 +1,17 @@
+// ========== GLOBAL CHART MANAGER (Prevents Memory Leaks) ==========
+window.currentCharts = [];
+
+// Destroy all existing charts
+function destroyAllCharts() {
+    if (window.currentCharts && window.currentCharts.length > 0) {
+        window.currentCharts.forEach(chart => {
+            if (chart && typeof chart.destroy === 'function') {
+                chart.destroy();
+            }
+        });
+        window.currentCharts = [];
+    }
+}
 // ========== MAIN APP CONTROLLER ==========
 
 // Called after successful sign-in — pulls cloud data then shows app
