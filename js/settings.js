@@ -49,19 +49,19 @@ function renderSettings() {
         <div class="card">
             <div class="form-group">
                 <label class="form-label">Start Date</label>
-                <input type="date" id="settStartDate" class="form-input" value="${settings.startDate}">
+                <input type="date" id="settStartDate" class="form-input" value="${settings.startDate || ''}">
             </div>
             <div class="form-group">
                 <label class="form-label">Start Weight (lbs)</label>
-                <input type="number" id="settStartWeight" class="form-input" value="${settings.startWeight}" step="0.1">
+                <input type="number" id="settStartWeight" class="form-input" value="${settings.startWeight || ''}" step="0.1">
             </div>
             <div class="form-group">
                 <label class="form-label">Goal Weight (lbs)</label>
-                <input type="number" id="settGoalWeight" class="form-input" value="${settings.goalWeight}" step="0.1">
+                <input type="number" id="settGoalWeight" class="form-input" value="${settings.goalWeight || ''}" step="0.1">
             </div>
             <div class="form-group">
                 <label class="form-label">Weekly Loss Target (lbs/week)</label>
-                <input type="number" id="settWeeklyTarget" class="form-input" value="${settings.weeklyTarget}" step="0.1">
+                <input type="number" id="settWeeklyTarget" class="form-input" value="${settings.weeklyTarget || ''}" step="0.1">
             </div>
             <button class="btn btn-primary" onclick="saveSettingsForm()">💾 Save Settings</button>
         </div>
@@ -77,9 +77,13 @@ function renderSettings() {
             </div>
         </div>
 
-        <!-- INSTALL + ABOUT (unchanged) -->
+        <!-- INSTALL + ABOUT -->
         <div class="section-title">📱 Install App</div>
-        <!-- ... keep your existing install and about sections ... -->
+        <div class="card">
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.5">
+                Open this app in Chrome/Safari → tap menu → "Add to Home Screen"
+            </p>
+        </div>
     `;
 }
 
@@ -90,7 +94,7 @@ function saveSettingsForm() {
         goalWeight:    parseFloat(document.getElementById('settGoalWeight').value),
         weeklyTarget:  parseFloat(document.getElementById('settWeeklyTarget').value),
         units:         'lbs',
-        setupComplete: true   // Always true when saving from settings page
+        setupComplete: true
     };
     Storage.saveSettings(settings);
     showToast('✅ Settings saved!');
@@ -136,10 +140,12 @@ function clearAllData() {
             renderDashboard();
         }
     }
-    function toggleDarkMode() {
+}
+
+// ========== DARK MODE TOGGLE ==========
+function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     const isDark = document.body.classList.contains('dark-mode');
     localStorage.setItem('darkMode', isDark);
     showToast(isDark ? '🌙 Dark mode enabled' : '☀️ Light mode enabled');
-}
 }
