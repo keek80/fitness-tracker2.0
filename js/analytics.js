@@ -2,6 +2,7 @@
 let analyticsTab = 'weight';
 
 function renderAnalytics() {
+    destroyAllCharts();
     const page = document.getElementById('page-analytics');
     const weighIns = Storage.getWeighIns();
     const gymLogs = Storage.getGymLogs();
