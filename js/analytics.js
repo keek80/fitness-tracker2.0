@@ -54,13 +54,14 @@ function renderWeightAnalytics(container, weighIns, settings) {
     `;
 
     setTimeout(() => {
-        new Chart(document.getElementById('weightChart'), {
-            type: 'line',
-            data: { labels, datasets: [{ label: 'Body Weight (lbs)', data: weights, borderColor: '#00d4ff', tension: 0.3, borderWidth: 3 }] },
-            options: chartOptions(Math.min(...weights)-10, Math.max(...weights)+5)
-        });
-    }, 100);
-}
+       setTimeout(() => {
+    const chart = new Chart(document.getElementById('weightChart'), {
+        type: 'line',
+        data: { labels, datasets: [{ label: 'Body Weight (lbs)', data: weights, borderColor: '#00d4ff', tension: 0.3, borderWidth: 3 }] },
+        options: chartOptions(Math.min(...weights)-10, Math.max(...weights)+5)
+    });
+    window.currentCharts.push(chart);
+}, 100);
 
 // ========== WEEKLY ==========
 function renderWeeklyProgress(container, weighIns, gymLogs) {
@@ -79,22 +80,22 @@ function renderWeeklyProgress(container, weighIns, gymLogs) {
 function renderWeeklyWorkoutChart(gymLogs) {
     if (gymLogs.length === 0) return;
     const data = getWeeklyWorkoutData(gymLogs);
-    new Chart(document.getElementById('weeklyWorkoutChart'), {
-        type: 'bar',
-        data: { labels: data.labels, datasets: [{ label: 'Workouts', data: data.counts, backgroundColor: '#00d4ff', borderRadius: 6 }] },
-        options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }}
-    });
-}
+   const workoutChart = new Chart(document.getElementById('weeklyWorkoutChart'), {
+    type: 'bar',
+    data: { labels: data.labels, datasets: [{ label: 'Workouts', data: data.counts, backgroundColor: '#00d4ff', borderRadius: 6 }] },
+    options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }}
+});
+window.currentCharts.push(workoutChart);
 
 function renderWeeklyWeightChart(weighIns) {
     if (weighIns.length < 2) return;
     const data = getWeeklyWeightChange(weighIns);
-    new Chart(document.getElementById('weeklyWeightChart'), {
-        type: 'line',
-        data: { labels: data.labels, datasets: [{ label: 'Weekly Change (lbs)', data: data.changes, borderColor: '#22c55e', tension: 0.3 }] },
-        options: chartOptions(-6, 6)
-    });
-}
+    const weightChart = new Chart(document.getElementById('weeklyWeightChart'), {
+    type: 'line',
+    data: { labels: data.labels, datasets: [{ label: 'Weekly Change (lbs)', data: data.changes, borderColor: '#22c55e', tension: 0.3 }] },
+    options: chartOptions(-6, 6)
+});
+window.currentCharts.push(weightChart);
 
 // ========== EXERCISES ==========
 function renderExerciseProgressAnalytics(container, gymLogs) {
