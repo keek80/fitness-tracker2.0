@@ -97,6 +97,9 @@ function renderWeighInChart(weighIns, settings) {
     const canvas = document.getElementById('weighInChart');
     if (!canvas || weighIns.length === 0) return;
 
+    // Destroy any existing chart on this canvas
+    destroyAllCharts();
+
     const labels = weighIns.map(e => formatDateShort(e.date));
     const actualData = weighIns.map(e => e.weight);
     const projOnActualDates = weighIns.map(e => {
@@ -104,7 +107,7 @@ function renderWeighInChart(weighIns, settings) {
         return Storage.getProjectedWeight(wk);
     });
 
-    new Chart(canvas, {
+    const chart = new Chart(canvas, {
         type: 'line',
         data: {
             labels: labels,
@@ -156,6 +159,8 @@ function renderWeighInChart(weighIns, settings) {
             }
         }
     });
+
+    window.currentCharts.push(chart);
 }
 
 function formatDate(dateStr) {
