@@ -205,11 +205,11 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-        <!-- Global Workout Timer -->
-        <div style="position:fixed; bottom:95px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:12px;">
+        <!-- Global Workout Timer (Top Right) -->
+        <div style="position:fixed; top:80px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
             
             <!-- Total Workout Time -->
-            <div style="background:rgba(0,0,0,0.8); color:#ddd; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:600;">
+            <div style="background:rgba(0,0,0,0.8); color:#ddd; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;">
                 ⏱ <span id="workout-elapsed">0:00</span>
             </div>
             
@@ -217,7 +217,7 @@ function renderGym() {
             <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
                 <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
                         style="background:#1e2937; color:white; border:2px solid #475569; border-radius:9999px; 
-                               padding:8px 16px; font-size:14px; min-width:140px;">
+                               padding:8px 14px; font-size:14px; min-width:130px;">
                     <option value="30">30 seconds</option>
                     <option value="60" selected>60 seconds</option>
                     <option value="90">90 seconds</option>
@@ -226,10 +226,10 @@ function renderGym() {
                 </select>
                 
                 <div id="rest-timer" onclick="toggleRestTimer()" 
-                     style="background:#00d4ff; color:#000; width:88px; height:88px; border-radius:50%; 
-                            display:flex; align-items:center; justify-content:center; font-size:34px; 
-                            font-weight:900; box-shadow:0 12px 40px rgba(0,212,255,0.85); 
-                            cursor:pointer; border:6px solid white; user-select:none;">
+                     style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; 
+                            display:flex; align-items:center; justify-content:center; font-size:32px; 
+                            font-weight:900; box-shadow:0 10px 35px rgba(0,212,255,0.8); 
+                            cursor:pointer; border:5px solid white; user-select:none;">
                     60
                 </div>
             </div>
