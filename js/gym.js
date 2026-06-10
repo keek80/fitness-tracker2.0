@@ -439,6 +439,14 @@ function playRingingSound() {
     }
 }
 
+// Called by navigate() in app.js when leaving the gym page
+function cleanupWorkoutTimer() {
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+    }
+    restTimeLeft = currentTimerPreset;
+}
 function startRestTimer() {
     if (restTimerInterval) clearInterval(restTimerInterval);
     
