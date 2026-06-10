@@ -205,40 +205,27 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-        <!-- Global Workout Timer (Top Right) -->
-        <div style="position:fixed; top:80px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:flex-end; gap:10px;">
+        <!-- Original Simple Rest Timer -->
+        <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:6px;">
+            <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
+                    style="background:#1e2937; color:white; border:1px solid #475569; border-radius:20px; 
+                           padding:5px 12px; font-size:13px;">
+                <option value="30">30s</option>
+                <option value="60" selected>60s</option>
+                <option value="90">90s</option>
+                <option value="120">2min</option>
+                <option value="180">3min</option>
+            </select>
             
-            <!-- Total Workout Time -->
-            <div style="background:rgba(0,0,0,0.8); color:#ddd; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600;">
-                ⏱ <span id="workout-elapsed">0:00</span>
-            </div>
-            
-            <!-- Rest Timer Controls -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-                <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
-                        style="background:#1e2937; color:white; border:2px solid #475569; border-radius:9999px; 
-                               padding:8px 14px; font-size:14px; min-width:130px;">
-                    <option value="30">30 seconds</option>
-                    <option value="60" selected>60 seconds</option>
-                    <option value="90">90 seconds</option>
-                    <option value="120">2 minutes</option>
-                    <option value="180">3 minutes</option>
-                </select>
-                
-                <div id="rest-timer" onclick="toggleRestTimer()" 
-                     style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; 
-                            display:flex; align-items:center; justify-content:center; font-size:32px; 
-                            font-weight:900; box-shadow:0 10px 35px rgba(0,212,255,0.8); 
-                            cursor:pointer; border:5px solid white; user-select:none;">
-                    60
-                </div>
+            <div id="rest-timer" onclick="toggleRestTimer()" 
+                 style="background:#00d4ff; color:#000; width:80px; height:80px; border-radius:50%; 
+                        display:flex; align-items:center; justify-content:center; font-size:30px; 
+                        font-weight:800; box-shadow:0 8px 30px rgba(0,212,255,0.7); 
+                        cursor:pointer; border:5px solid white; user-select:none;">
+                60
             </div>
         </div>
     `;
-
-    // Initialize Global Workout Timer
-    cleanupWorkoutTimer();
-    startWorkoutTimer();
 }
 
 // ========== WEIGHT HELPERS ==========
@@ -417,12 +404,10 @@ function isLightColor(hex) {
     return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
 
-// ========== GLOBAL WORKOUT TIMER ==========
+// ========== ORIGINAL REST TIMER ==========
 let restTimerInterval = null;
 let restTimeLeft = 60;
 let currentTimerPreset = 60;
-let workoutStartTime = null;
-let workoutTimerInterval = null;
 
 function playRingingSound() {
     try {
@@ -449,19 +434,6 @@ function playRingingSound() {
     } catch (e) {
         if (navigator.vibrate) navigator.vibrate([120, 80, 180, 80, 120]);
     }
-}
-
-function startWorkoutTimer() {
-    if (workoutTimerInterval) return;
-    workoutStartTime = Date.now();
-    
-    workoutTimerInterval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - workoutStartTime) / 1000);
-        const minutes = Math.floor(elapsed / 60);
-        const seconds = elapsed % 60;
-        const timerEl = document.getElementById('workout-elapsed');
-        if (timerEl) timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }, 1000);
 }
 
 function startRestTimer() {
@@ -526,12 +498,4 @@ function changeTimerDuration(seconds) {
         restTimerInterval = null;
         startRestTimer();
     }
-}
-
-function cleanupWorkoutTimer() {
-    if (restTimerInterval) clearInterval(restTimerInterval);
-    if (workoutTimerInterval) clearInterval(workoutTimerInterval);
-    restTimerInterval = null;
-    workoutTimerInterval = null;
-    workoutStartTime = null;
 }
