@@ -206,7 +206,7 @@ function renderGym() {
         </div>
 
         <!-- Global Workout Timer -->
-        <div style="position:fixed; bottom:90px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div style="position:fixed; bottom:95px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:12px;">
             
             <!-- Total Workout Time -->
             <div style="background:rgba(0,0,0,0.8); color:#ddd; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:600;">
