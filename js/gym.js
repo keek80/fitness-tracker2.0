@@ -438,6 +438,28 @@ function cleanupWorkoutTimer() {
     }
     restTimeLeft = currentTimerPreset;
 }
+    // Called by navigate() in app.js when leaving the gym page
+    function cleanupWorkoutTimer() {
+        if (restTimerInterval) {
+            clearInterval(restTimerInterval);
+            restTimerInterval = null;
+        }
+        // Reset the timer display to its default preset when leaving the page
+        restTimeLeft = currentTimerPreset; 
+        const timerEl = document.getElementById('rest-timer');
+        if (timerEl) {
+            timerEl.textContent = restTimeLeft;
+            timerEl.classList.remove('paused'); // Ensure it's not "paused" if we navigate back
+        }
+    }
+
+    function startRestTimer() {
+        if (restTimerInterval) clearInterval(restTimerInterval);
+        
+        const timerEl = document.getElementById('rest-timer');
+        if (!timerEl) return;
+        // ... (rest of the function)
+    }
 function startRestTimer() {
     if (restTimerInterval) clearInterval(restTimerInterval);
     
