@@ -114,17 +114,13 @@ function renderGym() {
                 const prev = previousLog?.exercises?.find(e => e.name === ex.name);
                 const pr = prs[ex.name];
 
-                // FIX: PR badge shows weight only (no reps)
                 const prBadge = pr ? `<span class="pr-badge">🏆 PR: ${pr.bestWeight} lbs</span>` : '';
 
-                // Get previous session weights for auto-loading
                 const prevWeights = prev
                     ? (prev.weights || (prev.weight ? Array((prev.sets || []).length || ex.sets).fill(prev.weight) : []))
                     : [];
                 const prevSets = prev ? (prev.sets || []) : [];
 
-                // FIX: Auto-load previous weights when there is no saved log for the current session.
-                // Reps are intentionally NOT auto-loaded so the user logs fresh reps each session.
                 const isAutoLoaded = !saved && prevWeights.some(w => w > 0);
 
                 const savedWeights = saved?.weights
@@ -136,7 +132,6 @@ function renderGym() {
 
                 const savedReps = saved?.sets || Array(ex.sets).fill('');
 
-                // Previous session display
                 let prevDisplay = '';
                 if (prev) {
                     const prevParts = prevSets.map((r, si) => {
@@ -145,7 +140,6 @@ function renderGym() {
                     }).filter(Boolean);
                     if (prevParts.length > 0) {
                         const prevMaxW = prevWeights.length > 0 ? Math.max(...prevWeights.filter(w => w > 0)) : 0;
-                        // Only show the Load button when there is already a saved log (so loading replaces edited data)
                         prevDisplay = `
                             <div class="prev-session-info">
                                 <span class="prev-label">Last session:</span>
@@ -168,7 +162,6 @@ function renderGym() {
                         ⬆️ Weights pre-loaded from last session — enter your reps below
                     </div>` : ''}
 
-                    <!-- Per-Set Grid -->
                     <div class="per-set-grid">
                         <div class="per-set-header">
                             <span>SET</span>
@@ -207,14 +200,13 @@ function renderGym() {
             }).join('')}
         </div>
 
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px">
             <button class="btn btn-primary" onclick="saveGymLog()">💾 Save Workout</button>
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
         <!-- Global Workout Timer -->
         <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
-            
             <!-- Total Workout Time -->
             <div style="background:rgba(0,0,0,0.75); color:#ddd; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.4);">
                 ⏱ <span id="workout-elapsed">0:00</span>
@@ -242,22 +234,19 @@ function renderGym() {
             </div>
         </div>
     `;
-}
-// Initialize Global Workout Timer
+
+    // Initialize Global Workout Timer
     cleanupWorkoutTimer();
     startWorkoutTimer();
 }
+
 // ========== WEIGHT HELPERS ==========
 
-/**
- * When Set 1 weight is entered, auto-fill empty sets below it.
- */
 function onWeightChange(exIdx, setIdx) {
-    if (setIdx !== 0) return; // Only auto-fill from Set 1
+    if (setIdx !== 0) return;
     const set1Input = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="0"]`);
     if (!set1Input || !set1Input.value) return;
 
-    // Only fill sets that are currently empty
     let s = 1;
     while (true) {
         const el = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="${s}"]`);
@@ -267,9 +256,6 @@ function onWeightChange(exIdx, setIdx) {
     }
 }
 
-/**
- * Explicitly copies Set 1 weight to ALL sets (even non-empty ones).
- */
 function fillWeightsDown(exIdx, numSets) {
     const set1 = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="0"]`);
     if (!set1 || !set1.value) {
@@ -282,9 +268,6 @@ function fillWeightsDown(exIdx, numSets) {
     }
 }
 
-/**
- * Loads all weights and reps from the previous session into the inputs.
- */
 function fillFromPrevious(exIdx, prevWeights, prevReps) {
     prevWeights.forEach((w, s) => {
         const wEl = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="${s}"]`);
@@ -315,8 +298,6 @@ function selectGymDay(dayId) {
     currentGymDay = dayId;
     autoSelectedDay = false;
     renderGym();
-// Cleanup any previous timer
-    cleanupRestTimer();
 }
 
 // ========== SAVE ==========
@@ -326,7 +307,6 @@ function saveGymLog() {
     const day = program.days.find(d => d.id === currentGymDay);
     if (!day) return;
 
-    // FIX: Snapshot best weights BEFORE saving so we can detect genuinely new PRs.
     const allPRsBefore = Storage.getPRs();
     const prevBestWeights = {};
     day.exercises.forEach(ex => {
@@ -337,7 +317,6 @@ function saveGymLog() {
         const notesEl = document.querySelector(`.gym-notes[data-idx="${i}"]`);
         const notes = notesEl?.value || '';
 
-        // Collect per-set weights and reps
         const weights = [];
         const sets = [];
         for (let s = 0; s < ex.sets; s++) {
@@ -358,11 +337,8 @@ function saveGymLog() {
         bodyWeight: Storage.getWeighIns().slice(-1)[0]?.weight || null
     };
 
-    // FIX: Storage.saveGymLog now internally recalculates PRs from scratch
-    // (weight-based only), correcting any values that were accidentally entered.
     Storage.saveGymLog(log);
 
-    // Detect new PRs after recalculation
     const allPRsAfter = Storage.getPRs();
     const newPRExercises = day.exercises.filter(ex => {
         const newBest = allPRsAfter[ex.name]?.bestWeight || 0;
@@ -404,7 +380,6 @@ function viewGymHistory() {
                 <button class="delete-btn" onclick="deleteGymLog('${log.date}','${log.dayId}')" title="Delete">🗑️</button>
             </div>
             ${log.exercises.map(ex => {
-                // Handle both old (single weight) and new (per-set weights) formats
                 const weightsArr = ex.weights || (ex.weight ? Array((ex.sets||[]).length).fill(ex.weight) : []);
                 const hasData = weightsArr.some(w => w > 0) || (ex.sets||[]).some(s => s > 0);
                 if (!hasData) return '';
@@ -430,6 +405,7 @@ function deleteGymLog(date, dayId) {
         showToast('Workout deleted');
         renderGym();
     }
+}
 
 // ========== HELPERS ==========
 
