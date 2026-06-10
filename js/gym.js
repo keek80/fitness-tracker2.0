@@ -212,24 +212,29 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-    <!-- Global Workout Timer -->
-        <div style="position:fixed; bottom:75px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
+           <!-- Global Workout Timer -->
+        <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            
             <!-- Total Workout Time -->
             <div style="background:rgba(0,0,0,0.75); color:#ddd; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.4);">
                 ⏱ <span id="workout-elapsed">0:00</span>
             </div>
             
-            <!-- Rest Timer -->
+            <!-- Rest Timer Controls -->
             <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                
+                <!-- Preset Selector - Moved ABOVE the circle for better accessibility -->
                 <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
-                        style="background:#1e2937; color:white; border:none; border-radius:20px; padding:5px 12px; font-size:13px;">
-                    <option value="30">30s</option>
-                    <option value="60" selected>60s</option>
-                    <option value="90">90s</option>
-                    <option value="120">2 min</option>
-                    <option value="180">3 min</option>
+                        style="background:#1e2937; color:white; border:1px solid #475569; border-radius:20px; 
+                               padding:6px 14px; font-size:13px; width:110px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                    <option value="30">30 seconds</option>
+                    <option value="60" selected>60 seconds</option>
+                    <option value="90">90 seconds</option>
+                    <option value="120">2 minutes</option>
+                    <option value="180">3 minutes</option>
                 </select>
                 
+                <!-- Main Rest Timer Button -->
                 <div id="rest-timer" onclick="toggleRestTimer()" 
                      style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; 
                             display:flex; align-items:center; justify-content:center; font-size:32px; 
