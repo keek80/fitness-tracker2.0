@@ -212,27 +212,32 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-         <!-- Floating Rest Timer -->
-        <div style="position:fixed; bottom:85px; right:20px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:6px;">
-            <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
-                    style="background:#1e2937; color:white; border:none; border-radius:20px; padding:4px 10px; font-size:12px; z-index:100000;">
-                <option value="30">30s</option>
-                <option value="60" selected>60s</option>
-                <option value="90">90s</option>
-            </select>
-            
-            <div id="rest-timer" onclick="toggleRestTimer()" 
-                 style="background:#00d4ff; color:white; width:72px; height:72px; border-radius:50%; 
-                        display:flex; align-items:center; justify-content:center; font-size:24px; 
-                        font-weight:800; box-shadow:0 8px 25px rgba(0,212,255,0.6); 
-                        cursor:pointer; border:4px solid white;">
-                60
+    <!-- Global Workout Timer -->
+        <div style="position:fixed; bottom:75px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <!-- Total Workout Time -->
+            <div style="background:rgba(0,0,0,0.75); color:#ddd; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.4);">
+                ⏱ <span id="workout-elapsed">0:00</span>
             </div>
-        </div>
-
-        <div id="gymHistorySection" class="hidden" style="margin-top:16px">
-            <div class="section-title">📋 Recent ${day.name} Sessions</div>
-            <div id="gymHistoryList"></div>
+            
+            <!-- Rest Timer -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
+                        style="background:#1e2937; color:white; border:none; border-radius:20px; padding:5px 12px; font-size:13px;">
+                    <option value="30">30s</option>
+                    <option value="60" selected>60s</option>
+                    <option value="90">90s</option>
+                    <option value="120">2 min</option>
+                    <option value="180">3 min</option>
+                </select>
+                
+                <div id="rest-timer" onclick="toggleRestTimer()" 
+                     style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; 
+                            display:flex; align-items:center; justify-content:center; font-size:32px; 
+                            font-weight:800; box-shadow:0 10px 35px rgba(0,212,255,0.75); 
+                            cursor:pointer; border:5px solid white; user-select:none;">
+                    60
+                </div>
+            </div>
         </div>
     `;
 }
@@ -420,6 +425,9 @@ function deleteGymLog(date, dayId) {
         showToast('Workout deleted');
         renderGym();
     }
+// Initialize Global Workout Timer
+    cleanupWorkoutTimer();
+    startWorkoutTimer();
 }
 
 // ========== HELPERS ==========
@@ -430,10 +438,12 @@ function isLightColor(hex) {
     const b = parseInt(hex.slice(5,7), 16);
     return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
-// ========== FLOATING REST TIMER ==========
+// ========== GLOBAL WORKOUT TIMER ==========
 let restTimerInterval = null;
 let restTimeLeft = 60;
 let currentTimerPreset = 60;
+let workoutStartTime = null;
+let workoutTimerInterval = null;
 
 function playRingingSound() {
     try {
@@ -462,6 +472,19 @@ function playRingingSound() {
     }
 }
 
+function startWorkoutTimer() {
+    if (workoutTimerInterval) return;
+    workoutStartTime = Date.now();
+    
+    workoutTimerInterval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - workoutStartTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        const timerEl = document.getElementById('workout-elapsed');
+        if (timerEl) timerEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+}
+
 function startRestTimer() {
     if (restTimerInterval) clearInterval(restTimerInterval);
     
@@ -486,14 +509,13 @@ function startRestTimer() {
             
             playRingingSound();
             
-            // Auto reset after showing checkmark
             setTimeout(() => {
                 if (timerEl) {
                     restTimeLeft = currentTimerPreset;
-                    timerEl.textContent = currentTimerPreset;
+                    timerEl.textContent = restTimeLeft;
                     timerEl.classList.remove('paused');
                 }
-            }, 2500);
+            }, 2200);
         }
     }, 1000);
 }
@@ -503,13 +525,11 @@ function toggleRestTimer() {
     if (!timerEl) return;
 
     if (restTimerInterval) {
-        // Pause
         clearInterval(restTimerInterval);
         restTimerInterval = null;
         timerEl.classList.add('paused');
         timerEl.textContent = '⏸';
     } else {
-        // Start / Resume
         if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
         startRestTimer();
     }
@@ -520,11 +540,8 @@ function changeTimerDuration(seconds) {
     restTimeLeft = seconds;
     
     const timerEl = document.getElementById('rest-timer');
-    if (!timerEl) return;
+    if (timerEl) timerEl.textContent = seconds;
 
-    timerEl.textContent = seconds;
-
-    // If timer was running, restart with new duration
     if (restTimerInterval) {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
@@ -532,10 +549,14 @@ function changeTimerDuration(seconds) {
     }
 }
 
-// Cleanup when leaving gym page
-function cleanupRestTimer() {
+function cleanupWorkoutTimer() {
     if (restTimerInterval) {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
     }
+    if (workoutTimerInterval) {
+        clearInterval(workoutTimerInterval);
+        workoutTimerInterval = null;
+    }
+    workoutStartTime = null;
 }
