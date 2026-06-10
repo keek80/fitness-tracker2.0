@@ -42,11 +42,10 @@ function navigate(page) {
     destroyAllCharts();
     
     if (page !== 'gym') {
-        cleanupWorkoutTimer();
+        cleanupWorkoutTimer();   // ← Fixed name
     }
 
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    // ... (rest of your navigate function remains unchanged)
     const target = document.getElementById('page-' + page);
     if (target) target.classList.add('active');
 
