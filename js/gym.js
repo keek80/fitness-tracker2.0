@@ -484,8 +484,13 @@ function startRestTimer() {
             
             playRingingSound();
             
+            // Auto reset after showing checkmark
             setTimeout(() => {
-                if (timerEl) timerEl.textContent = currentTimerPreset;
+                if (timerEl) {
+                    restTimeLeft = currentTimerPreset;
+                    timerEl.textContent = currentTimerPreset;
+                    timerEl.classList.remove('paused');
+                }
             }, 2500);
         }
     }, 1000);
@@ -496,11 +501,13 @@ function toggleRestTimer() {
     if (!timerEl) return;
 
     if (restTimerInterval) {
+        // Pause
         clearInterval(restTimerInterval);
         restTimerInterval = null;
         timerEl.classList.add('paused');
         timerEl.textContent = '⏸';
     } else {
+        // Start / Resume
         if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
         startRestTimer();
     }
@@ -511,12 +518,22 @@ function changeTimerDuration(seconds) {
     restTimeLeft = seconds;
     
     const timerEl = document.getElementById('rest-timer');
-    if (timerEl) {
-        timerEl.textContent = seconds;
-        if (restTimerInterval) {
-            // If timer is running, restart with new duration
-            toggleRestTimer(); // pause
-            setTimeout(() => toggleRestTimer(), 100); // start again
-        }
+    if (!timerEl) return;
+
+    timerEl.textContent = seconds;
+
+    // If timer was running, restart with new duration
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        startRestTimer();
+    }
+}
+
+// Cleanup when leaving gym page
+function cleanupRestTimer() {
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
     }
 }
