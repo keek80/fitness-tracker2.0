@@ -2,7 +2,8 @@
 let analyticsTab = 'weight';
 
 function renderAnalytics() {
-    destroyAllCharts();
+    destroyAllCharts();   // ← Important: prevents memory leaks
+
     const page = document.getElementById('page-analytics');
     const weighIns = Storage.getWeighIns();
     const gymLogs = Storage.getGymLogs();
@@ -54,14 +55,23 @@ function renderWeightAnalytics(container, weighIns, settings) {
     `;
 
     setTimeout(() => {
-       setTimeout(() => {
-    const chart = new Chart(document.getElementById('weightChart'), {
-        type: 'line',
-        data: { labels, datasets: [{ label: 'Body Weight (lbs)', data: weights, borderColor: '#00d4ff', tension: 0.3, borderWidth: 3 }] },
-        options: chartOptions(Math.min(...weights)-10, Math.max(...weights)+5)
-    });
-    window.currentCharts.push(chart);
-}, 100);
+        const chart = new Chart(document.getElementById('weightChart'), {
+            type: 'line',
+            data: { 
+                labels, 
+                datasets: [{ 
+                    label: 'Body Weight (lbs)', 
+                    data: weights, 
+                    borderColor: '#00d4ff', 
+                    tension: 0.3, 
+                    borderWidth: 3 
+                }] 
+            },
+            options: chartOptions(Math.min(...weights)-10, Math.max(...weights)+5)
+        });
+        window.currentCharts.push(chart);
+    }, 100);
+}
 
 // ========== WEEKLY ==========
 function renderWeeklyProgress(container, weighIns, gymLogs) {
@@ -80,22 +90,40 @@ function renderWeeklyProgress(container, weighIns, gymLogs) {
 function renderWeeklyWorkoutChart(gymLogs) {
     if (gymLogs.length === 0) return;
     const data = getWeeklyWorkoutData(gymLogs);
-   const workoutChart = new Chart(document.getElementById('weeklyWorkoutChart'), {
-    type: 'bar',
-    data: { labels: data.labels, datasets: [{ label: 'Workouts', data: data.counts, backgroundColor: '#00d4ff', borderRadius: 6 }] },
-    options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }}
-});
-window.currentCharts.push(workoutChart);
+    const workoutChart = new Chart(document.getElementById('weeklyWorkoutChart'), {
+        type: 'bar',
+        data: { 
+            labels: data.labels, 
+            datasets: [{ 
+                label: 'Workouts', 
+                data: data.counts, 
+                backgroundColor: '#00d4ff', 
+                borderRadius: 6 
+            }] 
+        },
+        options: { scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }}
+    });
+    window.currentCharts.push(workoutChart);
+}
 
 function renderWeeklyWeightChart(weighIns) {
     if (weighIns.length < 2) return;
     const data = getWeeklyWeightChange(weighIns);
     const weightChart = new Chart(document.getElementById('weeklyWeightChart'), {
-    type: 'line',
-    data: { labels: data.labels, datasets: [{ label: 'Weekly Change (lbs)', data: data.changes, borderColor: '#22c55e', tension: 0.3 }] },
-    options: chartOptions(-6, 6)
-});
-window.currentCharts.push(weightChart);
+        type: 'line',
+        data: { 
+            labels: data.labels, 
+            datasets: [{ 
+                label: 'Weekly Change (lbs)', 
+                data: data.changes, 
+                borderColor: '#22c55e', 
+                tension: 0.3 
+            }] 
+        },
+        options: chartOptions(-6, 6)
+    });
+    window.currentCharts.push(weightChart);
+}
 
 // ========== EXERCISES ==========
 function renderExerciseProgressAnalytics(container, gymLogs) {
@@ -240,7 +268,10 @@ function getWeeklyWorkoutData(gymLogs) {
         weeks[key] = (weeks[key] || 0) + 1;
     });
     const sorted = Object.keys(weeks).sort();
-    return { labels: sorted.map(k => formatDateShort(k)), counts: sorted.map(k => weeks[k]) };
+    return { 
+        labels: sorted.map(k => formatDateShort(k)), 
+        counts: sorted.map(k => weeks[k]) 
+    };
 }
 
 function getWeeklyWeightChange(weighIns) {
@@ -260,9 +291,11 @@ function getWeeklyWeightChange(weighIns) {
         const currAvg = weekly[sortedKeys[i]].reduce((a,b)=>a+b,0) / weekly[sortedKeys[i]].length;
         changes.push(currAvg - prevAvg);
     }
-    return { labels: sortedKeys.slice(1).map(k => formatDateShort(k)), changes };
+    return { 
+        labels: sortedKeys.slice(1).map(k => formatDateShort(k)), 
+        changes 
+    };
 }
-
 
 function buildExerciseHistory(dayLogs, day) {
     const history = {};
