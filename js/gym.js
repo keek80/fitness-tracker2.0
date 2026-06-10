@@ -219,7 +219,6 @@ function renderGym() {
 
     <!-- Rest timer button — positioned by #rest-timer in styles.css (bottom:90px) -->
     <div id="rest-timer" onclick="toggleRestTimer()">60</div>
-```
     `;
 }
 
