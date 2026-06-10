@@ -305,6 +305,8 @@ function selectGymDay(dayId) {
     currentGymDay = dayId;
     autoSelectedDay = false;
     renderGym();
+// Cleanup any previous timer
+    cleanupRestTimer();
 }
 
 // ========== SAVE ==========
