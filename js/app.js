@@ -39,12 +39,11 @@ async function onSignedIn() {
 
 // Navigation
 function navigate(page) {
-    destroyAllCharts();
+    destroyAllCharts();           // Clean up charts
     if (page !== 'gym') {
-        cleanupRestTimer();
+        cleanupRestTimer();       // Clean up rest timer
     }
-    // ... rest of navigate function
-}
+
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('page-' + page);
     if (target) target.classList.add('active');
