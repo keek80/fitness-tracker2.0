@@ -205,29 +205,21 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-             <!-- Original Simple Rest Timer -->
-        <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:12px;">
-            
-            <!-- Dropdown on top with higher z-index -->
-            <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
-                    style="background:#1e2937; color:white; border:1px solid #475569; border-radius:20px; 
-                           padding:6px 14px; font-size:13px; z-index:100000; position:relative;">
-                <option value="30">30s</option>
-                <option value="60" selected>60s</option>
-                <option value="90">90s</option>
-                <option value="120">2min</option>
-                <option value="180">3min</option>
-            </select>
-            
-            <!-- Big Rest Timer Button -->
-            <div id="rest-timer" onclick="toggleRestTimer()" 
-                 style="background:#00d4ff; color:#000; width:80px; height:80px; border-radius:50%; 
-                        display:flex; align-items:center; justify-content:center; font-size:30px; 
-                        font-weight:800; box-shadow:0 8px 30px rgba(0,212,255,0.7); 
-                        cursor:pointer; border:5px solid white; user-select:none; z-index:10;">
-                60
-            </div>
-        </div>
+               <!-- Timer preset dropdown — fixed independently above the timer button -->
+    <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))"
+            style="position:fixed; bottom:165px; right:14px; z-index:99999;
+                   background:#1e2937; color:white; border:1px solid #475569;
+                   border-radius:20px; padding:6px 14px; font-size:13px;">
+        <option value="30">30s</option>
+        <option value="60" selected>60s</option>
+        <option value="90\">90s</option>
+        <option value="120">2min</option>
+        <option value="180">3min</option>
+    </select>
+
+    <!-- Rest timer button — positioned by #rest-timer in styles.css (bottom:90px) -->
+    <div id="rest-timer" onclick="toggleRestTimer()">60</div>
+```
     `;
 }
 
