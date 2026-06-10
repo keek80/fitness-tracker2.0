@@ -205,33 +205,10 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-                <!-- Global Workout Timer -->
-        <div style="position:fixed; bottom:90px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
-            
-            <!-- Total Workout Time -->
-            <div style="background:rgba(0,0,0,0.8); color:#ddd; padding:6px 16px; border-radius:20px; font-size:13px; font-weight:600;">
+        <!-- Global Workout Timer (elapsed only) -->
+        <div style="position:fixed; bottom:85px; right:16px; z-index:99999;">
+            <div style="background:rgba(0,0,0,0.75); color:#ddd; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.4);">
                 ⏱ <span id="workout-elapsed">0:00</span>
-            </div>
-            
-            <!-- Rest Timer -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-                <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
-                        style="background:#1e2937; color:white; border:2px solid #475569; border-radius:9999px; 
-                               padding:8px 16px; font-size:14px; min-width:140px;">
-                    <option value="30">30s</option>
-                    <option value="60" selected>60s</option>
-                    <option value="90">90s</option>
-                    <option value="120">2min</option>
-                    <option value="180">3min</option>
-                </select>
-                
-                <div id="rest-timer" onclick="toggleRestTimer()" 
-                     style="background:#00d4ff; color:#000; width:85px; height:85px; border-radius:50%; 
-                            display:flex; align-items:center; justify-content:center; font-size:34px; 
-                            font-weight:900; box-shadow:0 8px 30px rgba(0,212,255,0.8); 
-                            cursor:pointer; border:6px solid white; user-select:none;">
-                    60
-                </div>
             </div>
         </div>
     `;
@@ -299,6 +276,7 @@ function selectGymDay(dayId) {
     currentGymDay = dayId;
     autoSelectedDay = false;
     renderGym();
+    cleanupWorkoutTimer(); // ensure clean state on day switch
 }
 
 // ========== SAVE ==========
@@ -417,39 +395,9 @@ function isLightColor(hex) {
     return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
 
-// ========== GLOBAL WORKOUT TIMER ==========
-let restTimerInterval = null;
-let restTimeLeft = 60;
-let currentTimerPreset = 60;
+// ========== GLOBAL WORKOUT TIMER (elapsed only) ==========
 let workoutStartTime = null;
 let workoutTimerInterval = null;
-
-function playRingingSound() {
-    try {
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        const startTime = audioContext.currentTime;
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(620, startTime);
-        gain.gain.setValueAtTime(0.7, startTime);
-        
-        oscillator.connect(gain);
-        gain.connect(audioContext.destination);
-        oscillator.start();
-        
-        oscillator.frequency.setValueAtTime(880, startTime + 0.1);
-        oscillator.frequency.setValueAtTime(620, startTime + 0.4);
-        
-        setTimeout(() => {
-            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.9);
-            oscillator.stop(audioContext.currentTime + 1.3);
-        }, 900);
-    } catch (e) {
-        if (navigator.vibrate) navigator.vibrate([120, 80, 180, 80, 120]);
-    }
-}
 
 function startWorkoutTimer() {
     if (workoutTimerInterval) return;
@@ -464,74 +412,8 @@ function startWorkoutTimer() {
     }, 1000);
 }
 
-function startRestTimer() {
-    if (restTimerInterval) clearInterval(restTimerInterval);
-    
-    const timerEl = document.getElementById('rest-timer');
-    if (!timerEl) return;
-
-    timerEl.classList.remove('paused');
-    timerEl.textContent = restTimeLeft;
-
-    restTimerInterval = setInterval(() => {
-        restTimeLeft--;
-        if (timerEl) timerEl.textContent = restTimeLeft;
-
-        if (restTimeLeft <= 0) {
-            clearInterval(restTimerInterval);
-            restTimerInterval = null;
-            
-            if (timerEl) {
-                timerEl.textContent = '✓';
-                timerEl.classList.add('paused');
-            }
-            
-            playRingingSound();
-            
-            setTimeout(() => {
-                if (timerEl) {
-                    restTimeLeft = currentTimerPreset;
-                    timerEl.textContent = restTimeLeft;
-                    timerEl.classList.remove('paused');
-                }
-            }, 2200);
-        }
-    }, 1000);
-}
-
-function toggleRestTimer() {
-    const timerEl = document.getElementById('rest-timer');
-    if (!timerEl) return;
-
-    if (restTimerInterval) {
-        clearInterval(restTimerInterval);
-        restTimerInterval = null;
-        timerEl.classList.add('paused');
-        timerEl.textContent = '⏸';
-    } else {
-        if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
-        startRestTimer();
-    }
-}
-
-function changeTimerDuration(seconds) {
-    currentTimerPreset = seconds;
-    restTimeLeft = seconds;
-    
-    const timerEl = document.getElementById('rest-timer');
-    if (timerEl) timerEl.textContent = seconds;
-
-    if (restTimerInterval) {
-        clearInterval(restTimerInterval);
-        restTimerInterval = null;
-        startRestTimer();
-    }
-}
-
 function cleanupWorkoutTimer() {
-    if (restTimerInterval) clearInterval(restTimerInterval);
     if (workoutTimerInterval) clearInterval(workoutTimerInterval);
-    restTimerInterval = null;
     workoutTimerInterval = null;
     workoutStartTime = null;
 }
