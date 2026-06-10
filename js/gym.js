@@ -212,7 +212,7 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-           <!-- Global Workout Timer -->
+        <!-- Global Workout Timer -->
         <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
             
             <!-- Total Workout Time -->
@@ -222,11 +222,9 @@ function renderGym() {
             
             <!-- Rest Timer Controls -->
             <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                
-                <!-- Preset Selector - Moved ABOVE the circle for better accessibility -->
                 <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
                         style="background:#1e2937; color:white; border:1px solid #475569; border-radius:20px; 
-                               padding:6px 14px; font-size:13px; width:110px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                               padding:6px 14px; font-size:13px; width:130px; box-shadow:0 2px 8px rgba(0,0,0,0.3);">
                     <option value="30">30 seconds</option>
                     <option value="60" selected>60 seconds</option>
                     <option value="90">90 seconds</option>
@@ -234,7 +232,6 @@ function renderGym() {
                     <option value="180">3 minutes</option>
                 </select>
                 
-                <!-- Main Rest Timer Button -->
                 <div id="rest-timer" onclick="toggleRestTimer()" 
                      style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; 
                             display:flex; align-items:center; justify-content:center; font-size:32px; 
@@ -246,7 +243,10 @@ function renderGym() {
         </div>
     `;
 }
-
+// Initialize Global Workout Timer
+    cleanupWorkoutTimer();
+    startWorkoutTimer();
+}
 // ========== WEIGHT HELPERS ==========
 
 /**
@@ -430,10 +430,6 @@ function deleteGymLog(date, dayId) {
         showToast('Workout deleted');
         renderGym();
     }
-// Initialize Global Workout Timer
-    cleanupWorkoutTimer();
-    startWorkoutTimer();
-}
 
 // ========== HELPERS ==========
 
@@ -443,6 +439,7 @@ function isLightColor(hex) {
     const b = parseInt(hex.slice(5,7), 16);
     return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
+
 // ========== GLOBAL WORKOUT TIMER ==========
 let restTimerInterval = null;
 let restTimeLeft = 60;
@@ -555,13 +552,9 @@ function changeTimerDuration(seconds) {
 }
 
 function cleanupWorkoutTimer() {
-    if (restTimerInterval) {
-        clearInterval(restTimerInterval);
-        restTimerInterval = null;
-    }
-    if (workoutTimerInterval) {
-        clearInterval(workoutTimerInterval);
-        workoutTimerInterval = null;
-    }
+    if (restTimerInterval) clearInterval(restTimerInterval);
+    if (workoutTimerInterval) clearInterval(workoutTimerInterval);
+    restTimerInterval = null;
+    workoutTimerInterval = null;
     workoutStartTime = null;
 }
