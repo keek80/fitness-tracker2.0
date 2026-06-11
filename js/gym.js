@@ -111,32 +111,15 @@ function renderGym() {
         <div id="exerciseList">
             ${day.exercises.map((ex, i) => {
                 const saved = existingLog?.exercises?.[i];
+                const prev = previousLog?.exercises?.find(e => e.name === ex.name);
                 const pr = prs[ex.name];
+
                 const prBadge = pr ? `<span class="pr-badge">🏆 PR: ${pr.bestWeight} lbs</span>` : '';
 
-                const prev = previousLog?.exercises?.find(e => e.name === ex.name);
-
-                let prevDisplay = '';
-                let prevWeights = [];
-                let prevSets = [];
-
-                if (prev) {
-                    prevWeights = prev.weights || (prev.weight ? Array((prev.sets || []).length || ex.sets).fill(prev.weight) : []);
-                    prevSets = prev.sets || [];
-
-                    const prevParts = prevSets.map((r, si) => {
-                        const w = prevWeights[si] || 0;
-                        return r > 0 ? `${w > 0 ? w + 'lb×' : ''}${r}` : null;
-                    }).filter(Boolean);
-
-                    if (prevParts.length > 0) {
-                        prevDisplay = `
-                            <div class="prev-session-info">
-                                <span class="prev-label">Last session:</span>
-                                <span class="prev-sets">${prevParts.join(' · ')}</span>
-                            </div>`;
-                    }
-                }
+                const prevWeights = prev
+                    ? (prev.weights || (prev.weight ? Array((prev.sets || []).length || ex.sets).fill(prev.weight) : []))
+                    : [];
+                const prevSets = prev ? (prev.sets || []) : [];
 
                 const isAutoLoaded = !saved && prevWeights.some(w => w > 0);
 
@@ -148,6 +131,21 @@ function renderGym() {
                             prevWeights[si] !== undefined && prevWeights[si] > 0 ? prevWeights[si] : '');
 
                 const savedReps = saved?.sets || Array(ex.sets).fill('');
+
+                let prevDisplay = '';
+                if (prev) {
+                    const prevParts = prevSets.map((r, si) => {
+                        const w = prevWeights[si] || 0;
+                        return r > 0 ? `${w > 0 ? w + 'lb×' : ''}${r}` : null;
+                    }).filter(Boolean);
+                    if (prevParts.length > 0) {
+                        prevDisplay = `
+                            <div class="prev-session-info">
+                                <span class="prev-label">Last session:</span>
+                                <span class="prev-sets">${prevParts.join(' · ')}</span>
+                            </div>`;
+                    }
+                }
 
                 return `
                 <div class="exercise-card">
@@ -205,10 +203,8 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-        <!-- Simple Rest Timer - Side by Side Layout (No Overlap) -->
+        <!-- Simple Rest Timer - Side-by-Side Layout (No Overlap) -->
         <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; align-items:center; gap:12px;">
-            
-            <!-- Dropdown -->
             <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
                     style="background:#1e2937; color:white; border:2px solid #475569; border-radius:9999px; 
                            padding:8px 16px; font-size:14px; min-width:130px; z-index:100001;">
@@ -219,7 +215,6 @@ function renderGym() {
                 <option value="180">3min</option>
             </select>
             
-            <!-- Big Rest Timer Circle -->
             <div id="rest-timer" onclick="toggleRestTimer()" 
                  style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; 
                         display:flex; align-items:center; justify-content:center; font-size:32px; 
@@ -229,32 +224,279 @@ function renderGym() {
             </div>
         </div>
     `;
-
-    // Initialize Rest Timer
-    cleanupWorkoutTimer();
 }
 
-// (Rest of the file remains the same - weight helpers, save, history, etc.)
+// ========== WEIGHT HELPERS ==========
 
-// ========== WEIGHT HELPERS, DATE/DAY, SAVE, HISTORY, HELPERS (same as before) ==========
-function onWeightChange(exIdx, setIdx) { /* ... */ }
-function fillWeightsDown(exIdx, numSets) { /* ... */ }
-function onGymDateChange(newDate) { /* ... */ }
-function selectGymDay(dayId) { /* ... */ }
-function saveGymLog() { /* ... */ }
-function viewGymHistory() { /* ... */ }
-function deleteGymLog(date, dayId) { /* ... */ }
-function isLightColor(hex) { /* ... */ }
+function onWeightChange(exIdx, setIdx) {
+    if (setIdx !== 0) return;
+    const set1Input = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="0"]`);
+    if (!set1Input || !set1Input.value) return;
+
+    let s = 1;
+    while (true) {
+        const el = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="${s}"]`);
+        if (!el) break;
+        if (!el.value) el.value = set1Input.value;
+        s++;
+    }
+}
+
+function fillWeightsDown(exIdx, numSets) {
+    const set1 = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="0"]`);
+    if (!set1 || !set1.value) {
+        showToast('Enter Set 1 weight first', 'error');
+        return;
+    }
+    for (let s = 1; s < numSets; s++) {
+        const el = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="${s}"]`);
+        if (el) el.value = set1.value;
+    }
+}
+
+function fillFromPrevious(exIdx, prevWeights, prevReps) {
+    prevWeights.forEach((w, s) => {
+        const wEl = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="${s}"]`);
+        if (wEl && w > 0) wEl.value = w;
+    });
+    prevReps.forEach((r, s) => {
+        const rEl = document.querySelector(`.gym-reps[data-idx="${exIdx}"][data-set="${s}"]`);
+        if (rEl && r > 0) rEl.value = r;
+    });
+    showToast('⬆️ Previous session loaded');
+}
+
+// ========== DATE / DAY CHANGE ==========
+
+function onGymDateChange(newDate) {
+    currentGymDate = newDate;
+    const todaysWorkout = getTodaysWorkout(newDate);
+    if (todaysWorkout) {
+        currentGymDay = todaysWorkout;
+        autoSelectedDay = true;
+    } else {
+        autoSelectedDay = false;
+    }
+    renderGym();
+}
+
+function selectGymDay(dayId) {
+    currentGymDay = dayId;
+    autoSelectedDay = false;
+    renderGym();
+}
+
+// ========== SAVE ==========
+
+function saveGymLog() {
+    const program = getTrainingProgram();
+    const day = program.days.find(d => d.id === currentGymDay);
+    if (!day) return;
+
+    const allPRsBefore = Storage.getPRs();
+    const prevBestWeights = {};
+    day.exercises.forEach(ex => {
+        prevBestWeights[ex.name] = allPRsBefore[ex.name]?.bestWeight || 0;
+    });
+
+    const exercises = day.exercises.map((ex, i) => {
+        const notesEl = document.querySelector(`.gym-notes[data-idx="${i}"]`);
+        const notes = notesEl?.value || '';
+
+        const weights = [];
+        const sets = [];
+        for (let s = 0; s < ex.sets; s++) {
+            const wEl = document.querySelector(`.gym-weight[data-idx="${i}"][data-set="${s}"]`);
+            const rEl = document.querySelector(`.gym-reps[data-idx="${i}"][data-set="${s}"]`);
+            weights.push(parseFloat(wEl?.value) || 0);
+            sets.push(parseInt(rEl?.value) || 0);
+        }
+
+        return { name: ex.name, weights, sets, notes };
+    });
+
+    const log = {
+        date: currentGymDate,
+        dayId: currentGymDay,
+        dayName: day.name,
+        exercises,
+        bodyWeight: Storage.getWeighIns().slice(-1)[0]?.weight || null
+    };
+
+    Storage.saveGymLog(log);
+
+    const allPRsAfter = Storage.getPRs();
+    const newPRExercises = day.exercises.filter(ex => {
+        const newBest = allPRsAfter[ex.name]?.bestWeight || 0;
+        return newBest > prevBestWeights[ex.name];
+    });
+
+    if (newPRExercises.length === 1) {
+        const ex = newPRExercises[0];
+        showToast(`🏆 New PR! ${ex.name}: ${allPRsAfter[ex.name].bestWeight} lbs`);
+    } else if (newPRExercises.length > 1) {
+        showToast(`🏆 ${newPRExercises.length} New PRs this session! 💪`);
+    } else {
+        showToast('✅ Workout saved!');
+    }
+
+    renderGym();
+    if (document.getElementById('page-dashboard')) {
+        try { renderDashboard(); } catch(e) {}
+    }
+}
+
+// ========== HISTORY ==========
+
+function viewGymHistory() {
+    const section = document.getElementById('gymHistorySection');
+    const list = document.getElementById('gymHistoryList');
+    section.classList.toggle('hidden');
+
+    const logs = Storage.getGymLogsForDay(currentGymDay);
+    if (logs.length === 0) {
+        list.innerHTML = '<div class="empty-state"><p>No sessions logged yet for this day.</p></div>';
+        return;
+    }
+
+    list.innerHTML = logs.slice(0, 8).map(log => `
+        <div class="card" style="padding:12px">
+            <div class="flex-between mb-8">
+                <span style="font-size:13px; font-weight:600">${formatDate(log.date)}</span>
+                <button class="delete-btn" onclick="deleteGymLog('${log.date}','${log.dayId}')" title="Delete">🗑️</button>
+            </div>
+            ${log.exercises.map(ex => {
+                const weightsArr = ex.weights || (ex.weight ? Array((ex.sets||[]).length).fill(ex.weight) : []);
+                const hasData = weightsArr.some(w => w > 0) || (ex.sets||[]).some(s => s > 0);
+                if (!hasData) return '';
+
+                const setParts = (ex.sets || []).map((r, s) => {
+                    const w = weightsArr[s] || 0;
+                    return r > 0 ? `${w > 0 ? w + '×' : ''}${r}` : null;
+                }).filter(Boolean);
+
+                return `<div style="font-size:12px; color:var(--text-secondary); padding:3px 0">
+                    <strong>${ex.name}</strong>:
+                    <span style="color:var(--text-primary)">${setParts.join(' · ')}</span>
+                    ${ex.notes ? `<span style="color:var(--text-muted)"> — ${ex.notes}</span>` : ''}
+                </div>`;
+            }).join('')}
+        </div>
+    `).join('');
+}
+
+function deleteGymLog(date, dayId) {
+    if (confirm('Delete this workout log?')) {
+        Storage.deleteGymLog(date, dayId);
+        showToast('Workout deleted');
+        renderGym();
+    }
+}
+
+// ========== HELPERS ==========
+
+function isLightColor(hex) {
+    const r = parseInt(hex.slice(1,3), 16);
+    const g = parseInt(hex.slice(3,5), 16);
+    const b = parseInt(hex.slice(5,7), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
 
 // ========== SIMPLE REST TIMER ==========
 let restTimerInterval = null;
 let restTimeLeft = 60;
 let currentTimerPreset = 60;
 
-function playRingingSound() { /* ... */ }
-function startRestTimer() { /* ... */ }
-function toggleRestTimer() { /* ... */ }
-function changeTimerDuration(seconds) { /* ... */ }
+function playRingingSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const startTime = audioContext.currentTime;
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(620, startTime);
+        gain.gain.setValueAtTime(0.7, startTime);
+        
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start();
+        
+        oscillator.frequency.setValueAtTime(880, startTime + 0.1);
+        oscillator.frequency.setValueAtTime(620, startTime + 0.4);
+        
+        setTimeout(() => {
+            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.9);
+            oscillator.stop(audioContext.currentTime + 1.3);
+        }, 900);
+    } catch (e) {
+        if (navigator.vibrate) navigator.vibrate([120, 80, 180, 80, 120]);
+    }
+}
+
+function startRestTimer() {
+    if (restTimerInterval) clearInterval(restTimerInterval);
+    
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    timerEl.classList.remove('paused');
+    timerEl.textContent = restTimeLeft;
+
+    restTimerInterval = setInterval(() => {
+        restTimeLeft--;
+        if (timerEl) timerEl.textContent = restTimeLeft;
+
+        if (restTimeLeft <= 0) {
+            clearInterval(restTimerInterval);
+            restTimerInterval = null;
+            
+            if (timerEl) {
+                timerEl.textContent = '✓';
+                timerEl.classList.add('paused');
+            }
+            
+            playRingingSound();
+            
+            setTimeout(() => {
+                if (timerEl) {
+                    restTimeLeft = currentTimerPreset;
+                    timerEl.textContent = restTimeLeft;
+                    timerEl.classList.remove('paused');
+                }
+            }, 2200);
+        }
+    }, 1000);
+}
+
+function toggleRestTimer() {
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        timerEl.classList.add('paused');
+        timerEl.textContent = '⏸';
+    } else {
+        if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
+        startRestTimer();
+    }
+}
+
+function changeTimerDuration(seconds) {
+    currentTimerPreset = seconds;
+    restTimeLeft = seconds;
+    
+    const timerEl = document.getElementById('rest-timer');
+    if (timerEl) timerEl.textContent = seconds;
+
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        startRestTimer();
+    }
+}
 
 function cleanupWorkoutTimer() {
     if (restTimerInterval) {
