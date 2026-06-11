@@ -227,6 +227,23 @@ const EXERCISE_DATABASE = [
     { name: 'Machine Dips',                   category: 'Chest',       equipment: 'Machine',    notes: 'Lean forward for chest emphasis, upright for triceps' },
     { name: 'Svend Press',                    category: 'Chest',       equipment: 'Bodyweight', notes: 'Press hands together at chest level, squeeze hard' },
 
+    // === NEW / EXPANDED CHEST EXERCISES ===
+    { name: 'Decline Dumbbell Press',         category: 'Chest',       equipment: 'Dumbbell',   notes: 'Targets lower chest, full stretch at bottom' },
+    { name: 'Incline Smith Machine Press',    category: 'Chest',       equipment: 'Machine',    notes: 'Upper chest focus with guided path' },
+    { name: 'Cable Crossover (High to Low)',  category: 'Chest',       equipment: 'Cable',      notes: 'Constant tension, cross hands at bottom' },
+    { name: 'Cable Crossover (Low to High)',  category: 'Chest',       equipment: 'Cable',      notes: 'Upper chest emphasis' },
+    { name: 'Dumbbell Pullover',              category: 'Chest',       equipment: 'Dumbbell',   notes: 'Lying on bench, stretch lats/chest at bottom' },
+    { name: 'Floor Press (Barbell or DB)',    category: 'Chest',       equipment: 'Dumbbell',   notes: 'Limited range, heavy tricep + chest work' },
+    { name: 'Guillotine Press',               category: 'Chest',       equipment: 'Barbell',    notes: 'Wide grip to neck level — advanced upper chest' },
+    { name: 'Hex Press (Svend Variation)',    category: 'Chest',       equipment: 'Dumbbell',   notes: 'Dumbbells pressed together, constant inner chest squeeze' },
+    { name: 'Incline Push-Ups',               category: 'Chest',       equipment: 'Bodyweight', notes: 'Hands elevated — easier variation' },
+    { name: 'Decline Push-Ups',               category: 'Chest',       equipment: 'Bodyweight', notes: 'Feet elevated — harder variation' },
+    { name: 'Chest Dips (Weighted)',          category: 'Chest',       equipment: 'Bodyweight', notes: 'Lean forward, full range' },
+    { name: 'Pec Deck Fly (Single Arm)',      category: 'Chest',       equipment: 'Machine',    notes: 'Unilateral for imbalances' },
+    { name: 'Resistance Band Chest Fly',      category: 'Chest',       equipment: 'Band',       notes: 'Home-friendly constant tension' },
+    { name: 'Landmine Chest Press',           category: 'Chest',       equipment: 'Barbell',    notes: 'Unilateral or bilateral pressing' },
+    { name: 'Deficit Push-Ups',               category: 'Chest',       equipment: 'Bodyweight', notes: 'Hands on elevated surfaces for deeper stretch' }
+
     // ── BACK ──
     { name: 'Barbell Rows (Bent-Over)',       category: 'Back',        equipment: 'Barbell',    notes: 'Maintain flat back, pull to lower chest' },
     { name: 'Lat Pulldown (Wide Grip)',       category: 'Back',        equipment: 'Cable',      notes: 'Pull to upper chest, squeeze lats at bottom' },
@@ -311,12 +328,39 @@ const EXERCISE_DATABASE = [
     { name: 'Concentration Curls',            category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Elbow on thigh, full squeeze at top' },
     { name: 'Incline Dumbbell Curls',         category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Full stretch at bottom, great for peak' },
 
+    // === NEW / EXPANDED BICEPS EXERCISES ===
+    { name: 'EZ-Bar Bicep Curls',             category: 'Biceps',      equipment: 'Barbell',    notes: 'EZ grip reduces wrist strain' },
+    { name: 'Preacher Barbell Curls',         category: 'Biceps',      equipment: 'Barbell',    notes: 'Strict form on preacher bench' },
+    { name: 'Cable Hammer Curls (Rope)',      category: 'Biceps',      equipment: 'Cable',      notes: 'Neutral grip for brachialis' },
+    { name: 'Spider Curls',                   category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Lying face down on incline bench' },
+    { name: '21s (Barbell or DB)',            category: 'Biceps',      equipment: 'Dumbbell',   notes: '7 bottom half, 7 top half, 7 full reps' },
+    { name: 'Reverse Barbell Curls',          category: 'Biceps',      equipment: 'Barbell',    notes: 'Targets brachialis and forearms' },
+    { name: 'Cable Concentration Curls',      category: 'Biceps',      equipment: 'Cable',      notes: 'Single arm, peak contraction' },
+    { name: 'Zottman Curls',                  category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Supinated up, pronated down' },
+    { name: 'Chin-Ups (Supinated)',           category: 'Biceps',      equipment: 'Bodyweight', notes: 'Underhand grip, full range' },
+    { name: 'Band Bicep Curls',               category: 'Biceps',      equipment: 'Band',       notes: 'Constant tension, great finisher' },
+    { name: 'Drag Curls',                     category: 'Biceps',      equipment: 'Barbell',    notes: 'Bar drags up body, elbows back' }
+
     // ── TRICEPS ──
     { name: 'Cable Tricep Pushdowns (Rope)',  category: 'Triceps',     equipment: 'Cable',      notes: 'Keep elbows pinned, squeeze at bottom' },
     { name: 'Overhead Cable Tricep Extension',category: 'Triceps',     equipment: 'Cable',      notes: 'Full stretch at top, extend fully' },
     { name: 'Skull Crushers (EZ Bar)',        category: 'Triceps',     equipment: 'Barbell',    notes: 'Lower to forehead, extend fully at top' },
     { name: 'Overhead Dumbbell Tricep Ext.', category: 'Triceps',     equipment: 'Dumbbell',   notes: 'Full stretch overhead, keep elbows in' },
     { name: 'Tricep Kickbacks (Dumbbell)',    category: 'Triceps',     equipment: 'Dumbbell',   notes: 'Hinge at hips, extend arm fully back, squeeze' },
+
+    // === NEW / EXPANDED TRICEPS EXERCISES ===
+    { name: 'Close-Grip Bench Press',         category: 'Triceps',     equipment: 'Barbell',    notes: 'Elbows close to body, tricep emphasis' },
+    { name: 'Tricep Dips (Machine or Bench)', category: 'Triceps',     equipment: 'Machine',    notes: 'Upright torso for tricep focus' },
+    { name: 'Cable Overhead Tricep Extension (Single Arm)', category: 'Triceps', equipment: 'Cable', notes: 'Unilateral, full stretch' },
+    { name: 'JM Press',                       category: 'Triceps',     equipment: 'Barbell',    notes: 'Hybrid skull crusher + close grip' },
+    { name: 'Tricep Pushdowns (Straight Bar)',category: 'Triceps',     equipment: 'Cable',      notes: 'Pronated grip variation' },
+    { name: 'Diamond Push-Ups',               category: 'Triceps',     equipment: 'Bodyweight', notes: 'Hands in diamond shape' },
+    { name: 'French Press (EZ or DB)',        category: 'Triceps',     equipment: 'Dumbbell',   notes: 'Seated or lying overhead extension' },
+    { name: 'Bench Dips',                     category: 'Triceps',     equipment: 'Bodyweight', notes: 'Feet elevated for progression' },
+    { name: 'Cable Tricep Kickbacks',         category: 'Triceps',     equipment: 'Cable',      notes: 'Constant tension version' },
+    { name: 'Single-Arm Overhead DB Extension', category: 'Triceps',   equipment: 'Dumbbell',   notes: 'One arm at a time, focus on stretch' },
+    { name: 'Resistance Band Pushdowns',      category: 'Triceps',     equipment: 'Band',       notes: 'Home or travel friendly' },
+    { name: 'Lying Tricep Extension (DB)',    category: 'Triceps',     equipment: 'Dumbbell',   notes: 'Skull crusher variation with dumbbells' }
 
     // ── QUADS / LEGS ──
     { name: 'Leg Press Machine',              category: 'Quads',       equipment: 'Machine',    notes: "Feet shoulder-width, don't lock knees" },
