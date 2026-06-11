@@ -199,8 +199,8 @@ function renderGym() {
         </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px">
-            <button class="btn btn-primary" onclick="saveGymLog()Save Workout</button>
-            <button class="btn btn-secondary" onclick="viewGymHistory()History</button>
+            <button class="btn btn-primary" onclick="saveGymLog()">💾 Save Workout</button>
+            <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
         <!-- Simple Rest Timer - Side-by-Side Layout (No Overlap) -->
