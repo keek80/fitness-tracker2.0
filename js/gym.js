@@ -500,3 +500,10 @@ function changeTimerDuration(seconds) {
         startRestTimer();
     }
 }
+// Fix for navigation error
+function cleanupWorkoutTimer() {
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+    }
+}
