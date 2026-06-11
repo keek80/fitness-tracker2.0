@@ -206,13 +206,13 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-        <!-- Simple Rest Timer - Fixed Spacing -->
-        <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:16px;">
+               <!-- Simple Rest Timer - Fixed Overlap -->
+        <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:18px;">
             
-            <!-- Dropdown -->
+            <!-- Dropdown - Higher z-index and better spacing -->
             <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
                     style="background:#1e2937; color:white; border:2px solid #475569; border-radius:9999px; 
-                           padding:8px 16px; font-size:14px; min-width:140px; z-index:100001; position:relative;">
+                           padding:9px 18px; font-size:14px; min-width:150px; z-index:100001; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.4);">
                 <option value="30">30 seconds</option>
                 <option value="60" selected>60 seconds</option>
                 <option value="90">90 seconds</option>
@@ -224,8 +224,8 @@ function renderGym() {
             <div id="rest-timer" onclick="toggleRestTimer()" 
                  style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; 
                         display:flex; align-items:center; justify-content:center; font-size:32px; 
-                        font-weight:900; box-shadow:0 10px 35px rgba(0,212,255,0.8); 
-                        cursor:pointer; border:6px solid white; user-select:none;">
+                        font-weight:900; box-shadow:0 10px 35px rgba(0,212,255,0.85); 
+                        cursor:pointer; border:6px solid white; user-select:none; z-index:10;">
                 60
             </div>
         </div>
