@@ -1379,7 +1379,8 @@ body.dark-mode .stat-box, body.dark-mode .card {
  * live here so that #rest-timer stays inside its flex wrapper and
  * renders side-by-side with the timer-preset <select>.
  */
-#rest-timer:active {
+#rest-timer:active,
+#save-workout-btn:active {
     transform: scale(0.85);
 }
 
