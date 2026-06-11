@@ -39,11 +39,11 @@ function renderGym() {
 
     if (!currentGymDay || program.days.length === 0) {
         page.innerHTML = `
-            <div class="section-title">ðŸ’ª Gym Log</div>
+            <div class="section-title">💪 Gym Log</div>
             <div class="empty-state">
-                <div class="empty-icon">ðŸ‹ï¸</div>
+                <div class="empty-icon">🏋️</div>
                 <p>No training days set up yet.</p>
-                <button class="btn btn-primary btn-sm" style="margin-top:12px; width:auto" onclick="navigate('exercises')">ðŸ› ï¸ Set Up Exercises</button>
+                <button class="btn btn-primary btn-sm" style="margin-top:12px; width:auto" onclick="navigate('exercises')">🛠️ Set Up Exercises</button>
             </div>
         `;
         return;
@@ -63,24 +63,24 @@ function renderGym() {
     if (isTodayDate && isScheduledDay && todaysWorkout) {
         scheduleIndicator = `
             <div class="today-workout-banner">
-                <span class="today-badge">ðŸ“… TODAY</span>
-                <span>It's ${selectedDayName} â€” <strong>${day.name}</strong> is scheduled!</span>
+                <span class="today-badge">📅 TODAY</span>
+                <span>It's ${selectedDayName} — <strong>${day.name}</strong> is scheduled!</span>
             </div>`;
     } else if (isTodayDate && !todaysWorkout) {
         scheduleIndicator = `
             <div class="rest-day-banner">
-                <span class="rest-badge">ðŸ˜´ REST DAY</span>
-                <span>It's ${selectedDayName} â€” no workout scheduled. But you can still log one!</span>
+                <span class="rest-badge">😴 REST DAY</span>
+                <span>It's ${selectedDayName} — no workout scheduled. But you can still log one!</span>
             </div>`;
     } else if (!isTodayDate) {
         scheduleIndicator = `
             <div class="past-date-banner">
-                <span>ðŸ“† Logging for <strong>${formatDate(currentGymDate)}</strong> (${selectedDayName})</span>
+                <span>📆 Logging for <strong>${formatDate(currentGymDate)}</strong> (${selectedDayName})</span>
             </div>`;
     }
 
     page.innerHTML = `
-        <div class="section-title">ðŸ’ª Log Workout</div>
+        <div class="section-title">💪 Log Workout</div>
         
         <div class="form-group">
             <label class="form-label">Date</label>
@@ -105,7 +105,7 @@ function renderGym() {
 
         <div class="card" style="border-left: 3px solid ${day.color}; padding: 12px 14px;">
             <div style="font-size:14px; font-weight:600; color:${day.color}">${day.name}</div>
-            <div style="font-size:12px; color:var(--text-muted)">${day.dayOfWeek} â€” ${day.exercises.length} exercises</div>
+            <div style="font-size:12px; color:var(--text-muted)">${day.dayOfWeek} — ${day.exercises.length} exercises</div>
         </div>
 
         <div id="exerciseList">
@@ -114,7 +114,7 @@ function renderGym() {
                 const prev = previousLog?.exercises?.find(e => e.name === ex.name);
                 const pr = prs[ex.name];
 
-                const prBadge = pr ? `<span class="pr-badge">ðŸ† PR: ${pr.bestWeight} lbs</span>` : '';
+                const prBadge = pr ? `<span class="pr-badge">🏆 PR: ${pr.bestWeight} lbs</span>` : '';
 
                 const prevWeights = prev
                     ? (prev.weights || (prev.weight ? Array((prev.sets || []).length || ex.sets).fill(prev.weight) : []))
@@ -136,13 +136,15 @@ function renderGym() {
                 if (prev) {
                     const prevParts = prevSets.map((r, si) => {
                         const w = prevWeights[si] || 0;
-                        return r > 0 ? `${w > 0 ? w + 'lbÃ—' : ''}${r}` : null;
+                        return r > 0 ? `${w > 0 ? w + 'lb×' : ''}${r}` : null;
                     }).filter(Boolean);
                     if (prevParts.length > 0) {
+                        const prevMaxW = prevWeights.length > 0 ? Math.max(...prevWeights.filter(w => w > 0)) : 0;
                         prevDisplay = `
                             <div class="prev-session-info">
                                 <span class="prev-label">Last session:</span>
-                                <span class="prev-sets">${prevParts.join(' Â· ')}</span>
+                                <span class="prev-sets">${prevParts.join(' · ')}</span>
+                                ${prevMaxW > 0 && saved ? `<button class="fill-btn" onclick="fillFromPrevious(${i}, [${prevWeights.join(',')}], [${prevSets.join(',')}])" title="Load previous session">⬆️ Load</button>` : ''}
                             </div>`;
                     }
                 }
@@ -150,14 +152,14 @@ function renderGym() {
                 return `
                 <div class="exercise-card">
                     <div class="exercise-name">${ex.name} ${prBadge}</div>
-                    <div class="exercise-target">${ex.sets} Ã— ${ex.repsTarget} Â· Rest ${ex.rest}${ex.notes ? ' Â· ' + ex.notes : ''}</div>
+                    <div class="exercise-target">${ex.sets} × ${ex.repsTarget} · Rest ${ex.rest}${ex.notes ? ' · ' + ex.notes : ''}</div>
                     ${prevDisplay}
 
                     ${isAutoLoaded ? `
                     <div style="font-size:11px; color:var(--accent-orange); margin-bottom:8px; padding:5px 10px;
                                 background:rgba(255,170,0,0.08); border-radius:6px;
                                 border:1px solid rgba(255,170,0,0.25);">
-                        â¬†ï¸ Weights pre-loaded from last session â€” enter your reps below
+                        ⬆️ Weights pre-loaded from last session — enter your reps below
                     </div>` : ''}
 
                     <div class="per-set-grid">
@@ -180,14 +182,14 @@ function renderGym() {
                                        class="set-input gym-reps"
                                        data-idx="${i}" data-set="${s}"
                                        value="${savedReps[s] || ''}"
-                                       placeholder="${ex.repsTarget.split('-')[0] || 'â€”'}"
+                                       placeholder="${ex.repsTarget.split('-')[0] || '—'}"
                                        inputmode="numeric">
                             </div>
                         `).join('')}
                     </div>
 
                     <button class="fill-down-btn" onclick="fillWeightsDown(${i}, ${ex.sets})" title="Copy Set 1 weight to all sets">
-                        â†“ Apply Set 1 weight to all sets
+                        ↓ Apply Set 1 weight to all sets
                     </button>
 
                     <div class="notes-row">
@@ -199,7 +201,7 @@ function renderGym() {
         </div>
 
         <div style="margin-top:12px">
-            <button class="btn btn-secondary" onclick="viewGymHistory()">ðŸ“‹ History</button>
+            <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
         <!-- Floating Save Workout Button (bottom-left) -->
@@ -207,11 +209,11 @@ function renderGym() {
             <div id="save-workout-btn" onclick="saveGymLog()"
                  style="background:#00d68f; color:#000; width:82px; height:82px; border-radius:50%;
                         display:flex; align-items:center; justify-content:center; flex-direction:column;
-                        font-size:13px; font-weight:900; line-height:1.2; text-align:center;
                         box-shadow:0 10px 35px rgba(0,214,143,0.85);
                         cursor:pointer; border:6px solid white; user-select:none;
                         transition: transform 0.2s;">
-                ðŸ’¾<br>Save
+                <span style="font-size:28px; line-height:1;">💾</span>
+                <span style="font-size:11px; font-weight:900; line-height:1.5;">Save</span>
             </div>
         </div>
 
@@ -275,7 +277,7 @@ function fillFromPrevious(exIdx, prevWeights, prevReps) {
         const rEl = document.querySelector(`.gym-reps[data-idx="${exIdx}"][data-set="${s}"]`);
         if (rEl && r > 0) rEl.value = r;
     });
-    showToast('â¬†ï¸ Previous session loaded');
+    showToast('⬆️ Previous session loaded');
 }
 
 // ========== DATE / DAY CHANGE ==========
@@ -345,11 +347,11 @@ function saveGymLog() {
 
     if (newPRExercises.length === 1) {
         const ex = newPRExercises[0];
-        showToast(`ðŸ† New PR! ${ex.name}: ${allPRsAfter[ex.name].bestWeight} lbs`);
+        showToast(`🏆 New PR! ${ex.name}: ${allPRsAfter[ex.name].bestWeight} lbs`);
     } else if (newPRExercises.length > 1) {
-        showToast(`ðŸ† ${newPRExercises.length} New PRs this session! ðŸ’ª`);
+        showToast(`🏆 ${newPRExercises.length} New PRs this session! 💪`);
     } else {
-        showToast('âœ… Workout saved!');
+        showToast('✅ Workout saved!');
     }
 
     renderGym();
@@ -375,7 +377,7 @@ function viewGymHistory() {
         <div class="card" style="padding:12px">
             <div class="flex-between mb-8">
                 <span style="font-size:13px; font-weight:600">${formatDate(log.date)}</span>
-                <button class="delete-btn" onclick="deleteGymLog('${log.date}','${log.dayId}')" title="Delete">ðŸ—‘ï¸</button>
+                <button class="delete-btn" onclick="deleteGymLog('${log.date}','${log.dayId}')" title="Delete">🗑️</button>
             </div>
             ${log.exercises.map(ex => {
                 const weightsArr = ex.weights || (ex.weight ? Array((ex.sets||[]).length).fill(ex.weight) : []);
@@ -384,13 +386,13 @@ function viewGymHistory() {
 
                 const setParts = (ex.sets || []).map((r, s) => {
                     const w = weightsArr[s] || 0;
-                    return r > 0 ? `${w > 0 ? w + 'Ã—' : ''}${r}` : null;
+                    return r > 0 ? `${w > 0 ? w + '×' : ''}${r}` : null;
                 }).filter(Boolean);
 
                 return `<div style="font-size:12px; color:var(--text-secondary); padding:3px 0">
                     <strong>${ex.name}</strong>:
-                    <span style="color:var(--text-primary)">${setParts.join(' Â· ')}</span>
-                    ${ex.notes ? `<span style="color:var(--text-muted)"> â€” ${ex.notes}</span>` : ''}
+                    <span style="color:var(--text-primary)">${setParts.join(' · ')}</span>
+                    ${ex.notes ? `<span style="color:var(--text-muted)"> — ${ex.notes}</span>` : ''}
                 </div>`;
             }).join('')}
         </div>
@@ -464,7 +466,7 @@ function startRestTimer() {
             restTimerInterval = null;
             
             if (timerEl) {
-                timerEl.textContent = 'âœ“';
+                timerEl.textContent = '✓';
                 timerEl.classList.add('paused');
             }
             
@@ -489,7 +491,7 @@ function toggleRestTimer() {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
         timerEl.classList.add('paused');
-        timerEl.textContent = 'â¸';
+        timerEl.textContent = '⏸';
     } else {
         if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
         startRestTimer();
