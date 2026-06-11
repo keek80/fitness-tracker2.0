@@ -198,9 +198,21 @@ function renderGym() {
             }).join('')}
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px">
-            <button class="btn btn-primary" onclick="saveGymLog()">💾 Save Workout</button>
-            <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
+        <div style="margin-top:12px">
+            <button class="btn btn-secondary" onclick="viewGymHistory()">ðŸ“‹ History</button>
+        </div>
+
+        <!-- Floating Save Workout Button (bottom-left) -->
+        <div style="position:fixed; bottom:85px; left:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div id="save-workout-btn" onclick="saveGymLog()"
+                 style="background:#00d68f; color:#000; width:82px; height:82px; border-radius:50%;
+                        display:flex; align-items:center; justify-content:center; flex-direction:column;
+                        font-size:13px; font-weight:900; line-height:1.2; text-align:center;
+                        box-shadow:0 10px 35px rgba(0,214,143,0.85);
+                        cursor:pointer; border:6px solid white; user-select:none;
+                        transition: transform 0.2s;">
+                ðŸ’¾<br>Save
+            </div>
         </div>
 
         <!-- Simple Rest Timer - Side-by-Side Layout (No Overlap) -->
