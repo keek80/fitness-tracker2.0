@@ -41,9 +41,11 @@ async function onSignedIn() {
 function navigate(page) {
     destroyAllCharts();
     
-    if (page !== 'gym') {
-        cleanupWorkoutTimer();   // ← Fixed name
+   if (page !== 'gym') {
+    if (typeof cleanupWorkoutTimer === 'function') {
+        cleanupWorkoutTimer();
     }
+}
 
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('page-' + page);
