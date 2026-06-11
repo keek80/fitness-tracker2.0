@@ -1373,31 +1373,14 @@ body.dark-mode .stat-box, body.dark-mode .card {
     border-color: var(--border);
 }
 /* ====================== FLOATING REST TIMER ====================== */
-#rest-timer {
-    position: fixed !important;
-    bottom: 90px !important;
-    right: 20px !important;
-    background: #00d4ff !important;
-    color: white !important;
-    border: 3px solid white !important;
-    border-radius: 50% !important;
-    width: 68px !important;
-    height: 68px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 22px !important;
-    font-weight: 800 !important;
-    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.6) !important;
-    z-index: 99999 !important;
-    cursor: pointer !important;
-    user-select: none !important;
-    transition: all 0.2s ease !important;
-    box-sizing: border-box !important;
-}
-
+/*
+ * Layout & appearance are controlled by inline styles on the wrapper
+ * div and #rest-timer in gym.js.  Only interactive-state overrides
+ * live here so that #rest-timer stays inside its flex wrapper and
+ * renders side-by-side with the timer-preset <select>.
+ */
 #rest-timer:active {
-    transform: scale(0.85) !important;
+    transform: scale(0.85);
 }
 
 #rest-timer.paused {
