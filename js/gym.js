@@ -111,15 +111,33 @@ function renderGym() {
         <div id="exerciseList">
             ${day.exercises.map((ex, i) => {
                 const saved = existingLog?.exercises?.[i];
-                const prev = previousLog?.exercises?.find(e => e.name === ex.name);
                 const pr = prs[ex.name];
-
                 const prBadge = pr ? `<span class="pr-badge">🏆 PR: ${pr.bestWeight} lbs</span>` : '';
 
-                const prevWeights = prev
-                    ? (prev.weights || (prev.weight ? Array((prev.sets || []).length || ex.sets).fill(prev.weight) : []))
-                    : [];
-                const prevSets = prev ? (prev.sets || []) : [];
+                // === FIXED: Match previous session strictly by name ===
+                const prev = previousLog?.exercises?.find(e => e.name === ex.name);
+
+                let prevDisplay = '';
+                let prevWeights = [];
+                let prevSets = [];
+
+                if (prev) {
+                    prevWeights = prev.weights || (prev.weight ? Array((prev.sets || []).length || ex.sets).fill(prev.weight) : []);
+                    prevSets = prev.sets || [];
+
+                    const prevParts = prevSets.map((r, si) => {
+                        const w = prevWeights[si] || 0;
+                        return r > 0 ? `${w > 0 ? w + 'lb×' : ''}${r}` : null;
+                    }).filter(Boolean);
+
+                    if (prevParts.length > 0) {
+                        prevDisplay = `
+                            <div class="prev-session-info">
+                                <span class="prev-label">Last session:</span>
+                                <span class="prev-sets">${prevParts.join(' · ')}</span>
+                            </div>`;
+                    }
+                }
 
                 const isAutoLoaded = !saved && prevWeights.some(w => w > 0);
 
@@ -131,23 +149,6 @@ function renderGym() {
                             prevWeights[si] !== undefined && prevWeights[si] > 0 ? prevWeights[si] : '');
 
                 const savedReps = saved?.sets || Array(ex.sets).fill('');
-
-                let prevDisplay = '';
-                if (prev) {
-                    const prevParts = prevSets.map((r, si) => {
-                        const w = prevWeights[si] || 0;
-                        return r > 0 ? `${w > 0 ? w + 'lb×' : ''}${r}` : null;
-                    }).filter(Boolean);
-                    if (prevParts.length > 0) {
-                        const prevMaxW = prevWeights.length > 0 ? Math.max(...prevWeights.filter(w => w > 0)) : 0;
-                        prevDisplay = `
-                            <div class="prev-session-info">
-                                <span class="prev-label">Last session:</span>
-                                <span class="prev-sets">${prevParts.join(' · ')}</span>
-                                ${prevMaxW > 0 && saved ? `<button class="fill-btn" onclick="fillFromPrevious(${i}, [${prevWeights.join(',')}], [${prevSets.join(',')}])" title="Load previous session">⬆️ Load</button>` : ''}
-                            </div>`;
-                    }
-                }
 
                 return `
                 <div class="exercise-card">
@@ -205,20 +206,26 @@ function renderGym() {
             <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
         </div>
 
-               <!-- Timer preset dropdown — fixed independently above the timer button -->
-    <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))"
-            style="position:fixed; bottom:165px; right:14px; z-index:99999;
-                   background:#1e2937; color:white; border:1px solid #475569;
-                   border-radius:20px; padding:6px 14px; font-size:13px;">
-        <option value="30">30s</option>
-        <option value="60" selected>60s</option>
-        <option value="90\">90s</option>
-        <option value="120">2min</option>
-        <option value="180">3min</option>
-    </select>
-
-    <!-- Rest timer button — positioned by #rest-timer in styles.css (bottom:90px) -->
-    <div id="rest-timer" onclick="toggleRestTimer()">60</div>
+        <!-- Simple Rest Timer -->
+        <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:12px;">
+            <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" 
+                    style="background:#1e2937; color:white; border:1px solid #475569; border-radius:20px; 
+                           padding:6px 14px; font-size:13px; z-index:100000; position:relative;">
+                <option value="30">30s</option>
+                <option value="60" selected>60s</option>
+                <option value="90">90s</option>
+                <option value="120">2min</option>
+                <option value="180">3min</option>
+            </select>
+            
+            <div id="rest-timer" onclick="toggleRestTimer()" 
+                 style="background:#00d4ff; color:#000; width:80px; height:80px; border-radius:50%; 
+                        display:flex; align-items:center; justify-content:center; font-size:30px; 
+                        font-weight:800; box-shadow:0 8px 30px rgba(0,212,255,0.7); 
+                        cursor:pointer; border:5px solid white; user-select:none;">
+                60
+            </div>
+        </div>
     `;
 }
 
@@ -398,7 +405,7 @@ function isLightColor(hex) {
     return (r * 299 + g * 587 + b * 114) / 1000 > 150;
 }
 
-// ========== ORIGINAL REST TIMER ==========
+// ========== SIMPLE REST TIMER ==========
 let restTimerInterval = null;
 let restTimeLeft = 60;
 let currentTimerPreset = 60;
@@ -430,36 +437,6 @@ function playRingingSound() {
     }
 }
 
-// Called by navigate() in app.js when leaving the gym page
-function cleanupWorkoutTimer() {
-    if (restTimerInterval) {
-        clearInterval(restTimerInterval);
-        restTimerInterval = null;
-    }
-    restTimeLeft = currentTimerPreset;
-}
-    // Called by navigate() in app.js when leaving the gym page
-    function cleanupWorkoutTimer() {
-        if (restTimerInterval) {
-            clearInterval(restTimerInterval);
-            restTimerInterval = null;
-        }
-        // Reset the timer display to its default preset when leaving the page
-        restTimeLeft = currentTimerPreset; 
-        const timerEl = document.getElementById('rest-timer');
-        if (timerEl) {
-            timerEl.textContent = restTimeLeft;
-            timerEl.classList.remove('paused'); // Ensure it's not "paused" if we navigate back
-        }
-    }
-
-    function startRestTimer() {
-        if (restTimerInterval) clearInterval(restTimerInterval);
-        
-        const timerEl = document.getElementById('rest-timer');
-        if (!timerEl) return;
-        // ... (rest of the function)
-    }
 function startRestTimer() {
     if (restTimerInterval) clearInterval(restTimerInterval);
     
