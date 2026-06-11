@@ -242,7 +242,7 @@ const EXERCISE_DATABASE = [
     { name: 'Pec Deck Fly (Single Arm)',      category: 'Chest',       equipment: 'Machine',    notes: 'Unilateral for imbalances' },
     { name: 'Resistance Band Chest Fly',      category: 'Chest',       equipment: 'Band',       notes: 'Home-friendly constant tension' },
     { name: 'Landmine Chest Press',           category: 'Chest',       equipment: 'Barbell',    notes: 'Unilateral or bilateral pressing' },
-    { name: 'Deficit Push-Ups',               category: 'Chest',       equipment: 'Bodyweight', notes: 'Hands on elevated surfaces for deeper stretch' }
+    { name: 'Deficit Push-Ups',               category: 'Chest',       equipment: 'Bodyweight', notes: 'Hands on elevated surfaces for deeper stretch' },
 
     // ── BACK ──
     { name: 'Barbell Rows (Bent-Over)',       category: 'Back',        equipment: 'Barbell',    notes: 'Maintain flat back, pull to lower chest' },
@@ -282,7 +282,7 @@ const EXERCISE_DATABASE = [
     { name: 'Lat-Focused Pulldowns (Narrow Grip)', category: 'Back',  equipment: 'Cable',      notes: 'Emphasize lat stretch and contraction' },
     { name: 'Machine Low Row',                category: 'Back',        equipment: 'Machine',    notes: 'Chest supported variation' },
     { name: 'Farmer\'s Carry',                category: 'Back',        equipment: 'Dumbbell',   notes: 'Heavy walks for grip and upper back endurance' },
-    { name: 'Trap Bar Deadlift',              category: 'Back',        equipment: 'Trap Bar',   notes: 'More quad-friendly deadlift variation' }
+    { name: 'Trap Bar Deadlift',              category: 'Back',        equipment: 'Trap Bar',   notes: 'More quad-friendly deadlift variation' },
 
     // ── SHOULDERS ──
     { name: 'Seated Machine Shoulder Press',  category: 'Shoulders',   equipment: 'Machine',    notes: 'Keep shoulder blades down and back' },
@@ -317,7 +317,7 @@ const EXERCISE_DATABASE = [
     { name: 'Band Overhead Pull-Aparts',      category: 'Shoulders',   equipment: 'Band',       notes: 'External rotation and shoulder mobility' },
     { name: 'Wall Angels',                    category: 'Shoulders',   equipment: 'Bodyweight', notes: 'Back against wall, slide arms up and down for mobility' },
     { name: 'Machine Pec Deck Reverse Fly',   category: 'Shoulders',   equipment: 'Machine',    notes: 'Rear delt focus (already in program but good to keep)' },
-    { name: 'Egyptian Lateral Raises',        category: 'Shoulders',   equipment: 'Cable',      notes: 'Lean into cable for stretch (already partially covered)' }
+    { name: 'Egyptian Lateral Raises',        category: 'Shoulders',   equipment: 'Cable',      notes: 'Lean into cable for stretch (already partially covered)' },
 
     // ── BICEPS ──
     { name: 'Barbell Bicep Curls',            category: 'Biceps',      equipment: 'Barbell',    notes: 'Keep elbows tucked, avoid swinging' },
@@ -339,7 +339,7 @@ const EXERCISE_DATABASE = [
     { name: 'Zottman Curls',                  category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Supinated up, pronated down' },
     { name: 'Chin-Ups (Supinated)',           category: 'Biceps',      equipment: 'Bodyweight', notes: 'Underhand grip, full range' },
     { name: 'Band Bicep Curls',               category: 'Biceps',      equipment: 'Band',       notes: 'Constant tension, great finisher' },
-    { name: 'Drag Curls',                     category: 'Biceps',      equipment: 'Barbell',    notes: 'Bar drags up body, elbows back' }
+    { name: 'Drag Curls',                     category: 'Biceps',      equipment: 'Barbell',    notes: 'Bar drags up body, elbows back' },
 
     // ── TRICEPS ──
     { name: 'Cable Tricep Pushdowns (Rope)',  category: 'Triceps',     equipment: 'Cable',      notes: 'Keep elbows pinned, squeeze at bottom' },
@@ -360,7 +360,7 @@ const EXERCISE_DATABASE = [
     { name: 'Cable Tricep Kickbacks',         category: 'Triceps',     equipment: 'Cable',      notes: 'Constant tension version' },
     { name: 'Single-Arm Overhead DB Extension', category: 'Triceps',   equipment: 'Dumbbell',   notes: 'One arm at a time, focus on stretch' },
     { name: 'Resistance Band Pushdowns',      category: 'Triceps',     equipment: 'Band',       notes: 'Home or travel friendly' },
-    { name: 'Lying Tricep Extension (DB)',    category: 'Triceps',     equipment: 'Dumbbell',   notes: 'Skull crusher variation with dumbbells' }
+    { name: 'Lying Tricep Extension (DB)',    category: 'Triceps',     equipment: 'Dumbbell',   notes: 'Skull crusher variation with dumbbells' },
 
     // ── QUADS / LEGS ──
     { name: 'Leg Press Machine',              category: 'Quads',       equipment: 'Machine',    notes: "Feet shoulder-width, don't lock knees" },
