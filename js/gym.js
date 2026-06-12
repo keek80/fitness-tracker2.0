@@ -1,6 +1,6 @@
 // ========== GYM LOG PAGE ==========
 let currentGymDay = null;
-let currentGymDate = new Date().toISOString().split('T')[0];
+let currentGymDate = getLocalDateString();
 let autoSelectedDay = false;
 
 const DAY_NAME_MAP = {
@@ -18,7 +18,7 @@ function getTodaysWorkout(dateStr) {
 }
 
 function isToday(dateStr) {
-    return dateStr === new Date().toISOString().split('T')[0];
+    return dateStr === getLocalDateString();
 }
 
 function renderGym() {
