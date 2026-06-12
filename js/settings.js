@@ -107,7 +107,7 @@ function exportData() {
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
-    a.download = `fat-loss-tracker-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `fat-loss-tracker-backup-${getLocalDateString()}.json`;
     a.click();
     URL.revokeObjectURL(url);
     showToast('📤 Data exported!');
