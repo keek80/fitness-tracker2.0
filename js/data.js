@@ -333,6 +333,11 @@ const EXERCISE_DATABASE = [
     { name: 'Cable Lateral Raise',            category: 'Shoulders', equipment: 'Cable', notes: 'Constant tension, raise with control' },
     { name: 'Cable Front Raise',              category: 'Shoulders', equipment: 'Cable', notes: 'Lift forward smoothly without swinging' },
     { name: 'Cable Y-Raise',                  category: 'Shoulders', equipment: 'Cable', notes: 'Great for upper traps and shoulder stability' },
+    { name: 'Smith Machine Seated Overhead Press', category: 'Shoulders', equipment: 'Smith Machine', notes: 'Use bench support, press straight up with control' },
+    { name: 'Smith Machine Standing Overhead Press', category: 'Shoulders', equipment: 'Smith Machine', notes: 'Brace core and keep bar path vertical' },
+    { name: 'Smith Machine High Incline Press', category: 'Shoulders', equipment: 'Smith Machine', notes: 'Bench at high incline to bias front delts' },
+    { name: 'Smith Machine Front Raise', category: 'Shoulders', equipment: 'Smith Machine', notes: 'Raise bar to shoulder height with controlled tempo' },
+    { name: 'Smith Machine Wide-Grip Upright Row', category: 'Shoulders', equipment: 'Smith Machine', notes: 'Wider grip can bias side delts more than a narrow grip' },
 
 
     // ── BICEPS ──
