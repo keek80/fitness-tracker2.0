@@ -1,6 +1,15 @@
 // ========== SUPABASE CONFIGURATION ==========
-const SUPABASE_URL = 'https://ihyekncythrcmuhiahzr.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_wiw7KN-039CekJ7q3MpH1g_R0WdoCpn';
+//const SUPABASE_URL = 'https://ihyekncythrcmuhiahzr.supabase.co';
+//const SUPABASE_KEY = 'sb_publishable_wiw7KN-039CekJ7q3MpH1g_R0WdoCpn';
+
+// ========== SUPABASE CONFIGURATION ==========
+const SUPABASE_URL = import.meta.env?.VITE_SUPABASE_URL 
+    || window.ENV?.SUPABASE_URL 
+    || 'https://ihyekncythrcmuhiahzr.supabase.co';  // fallback (remove later)
+
+const SUPABASE_KEY = import.meta.env?.VITE_SUPABASE_KEY 
+    || window.ENV?.SUPABASE_KEY 
+    || 'sb_publishable_wiw7KN-039CekJ7q3MpH1g_R0WdoCpn';  // fallback (remove later)
 
 // Initialize client using the CDN global
 const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
