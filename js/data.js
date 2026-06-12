@@ -424,7 +424,7 @@ const EXERCISE_DATABASE = [
     { name: 'Cable Pallof Press', category: 'Core', equipment: 'Cable', notes: 'Anti-rotation press, keep shoulders square' },
     { name: 'Cable Woodchop', category: 'Core', equipment: 'Cable', notes: 'Rotate through torso under control' },
     { name: 'Cable Kneeling Lift', category: 'Core', equipment: 'Cable', notes: 'Diagonal lift pattern for shoulders/core' },
-    { name: 'Cable Crunch', category: 'Core', equipment: 'Cable', notes: 'Crunch by pulling ribs toward pelvis' }
+    { name: 'Cable Crunch', category: 'Core', equipment: 'Cable', notes: 'Crunch by pulling ribs toward pelvis' },
     { name: "Dumbbell Side Bend",             category: "Core",        equipment: "Dumbbell",   notes: "Hold dumbbell in one hand, bend sideways, control the return" },
     { name: "Dumbbell Russian Twist",         category: "Core",        equipment: "Dumbbell",   notes: "Sit with knees bent, twist side to side holding dumbbell" },
     { name: "Dumbbell Dead Bug",              category: "Core",        equipment: "Dumbbell",   notes: "Press dumbbell toward ceiling while extending opposite arm/leg" },
