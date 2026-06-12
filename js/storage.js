@@ -305,4 +305,4 @@ deleteGymLog(date, dayId) {
         console.error('Import failed:', e);
         return false;
     }
-},
+};
