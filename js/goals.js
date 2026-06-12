@@ -4,7 +4,7 @@ function renderGoals() {
     const page = document.getElementById('page-goals');
     if (!page) return;
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
 
     page.innerHTML = `
         <div class="onboarding-wrap">
