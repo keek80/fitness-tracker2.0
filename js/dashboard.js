@@ -51,7 +51,7 @@ function renderDashboard() {
     const totalDays = program.days.length;
 
     // ===== TODAY'S WORKOUT DETECTION =====
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getLocalDateString();
     const todayDayOfWeek = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
     const todaysWorkoutDay = program.days.find(d => d.dayOfWeek === todayDayOfWeek);
     const todayAlreadyLogged = todaysWorkoutDay ? gymLogs.some(l => l.date === todayStr && l.dayId === todaysWorkoutDay.id) : false;
