@@ -135,38 +135,51 @@ async function saveInitialGoals() {
     const weeklyTarget = parseFloat(document.getElementById('goalsWeeklyTarget')?.value);
 
     // Validation
-    if (!startDate)                       return showToast('Please set a start date', 'error');
+    if (!startDate) return showToast('Please set a start date', 'error');
     if (!startWeight || startWeight < 50) return showToast('Please enter a valid current weight', 'error');
-    if (!goalWeight  || goalWeight  < 50) return showToast('Please enter a valid goal weight', 'error');
-    if (startWeight <= goalWeight)        return showToast('Current weight must be greater than goal weight', 'error');
+    if (!goalWeight || goalWeight < 50) return showToast('Please enter a valid goal weight', 'error');
+    if (startWeight <= goalWeight) return showToast('Current weight must be greater than goal weight', 'error');
 
     const btn = document.getElementById('goalsSaveBtn');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Saving...'; }
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = '⏳ Saving...';
+    }
+
+    const settings = {
+        startDate,
+        startWeight,
+        goalWeight,
+        weeklyTarget,
+        units: 'lbs',
+        setupComplete: true
+    };
 
     try {
-        const settings = {
-            startDate,
-            startWeight,
-            goalWeight,
-            weeklyTarget,
-            units:         'lbs',
-            setupComplete: true
-        };
-
-        // 1. Save to localStorage immediately (instant UI)
+        // Save locally first so onboarding always succeeds on-device
         Storage.saveSettings(settings);
 
-        // 2. Push to Supabase cloud
-        await SupabaseDB.upsertSettings(settings);
+        // Try cloud save, but don't fail onboarding if it doesn't work
+        try {
+            if (typeof SupabaseDB !== 'undefined' && SupabaseAuth.getCurrentUser()) {
+                await SupabaseDB.upsertSettings(settings);
+            }
+        } catch (cloudError) {
+            console.warn('Cloud settings save failed:', cloudError);
+            showToast('✅ Goals saved locally. Cloud sync will retry later.', 'success');
+        }
 
-        showToast('✅ Goals saved! Welcome to your journey! 🎉');
-
-        // Short delay so user sees the toast, then go to dashboard
-        setTimeout(() => navigate('dashboard'), 900);
+        showToast('🎯 Goals saved!');
+        renderDashboard();
+        navigate('dashboard');
 
     } catch (e) {
         console.error('Error saving goals:', e);
-        showToast('❌ Failed to save. Please check your connection and try again.', 'error');
-        if (btn) { btn.disabled = false; btn.textContent = '🚀 Start My Transformation'; }
+        showToast('Failed to save goals. Please try again.', 'error');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = '🚀 Start My Transformation';
+        }
     }
 }
