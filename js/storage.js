@@ -61,12 +61,25 @@ const Storage = {
         return logs;
     },
 
-    deleteGymLog(date, dayId) {
-        let logs = this.getGymLogs().filter(l => !(l.date === date && l.dayId === dayId));
-        this.set('gymlogs', logs);
-        if (typeof SupabaseSync !== 'undefined') SupabaseSync.deleteGymLog(date, dayId);
-        return logs;
-    },
+deleteGymLog(date, dayId) {
+    const existingLogs = this.getGymLogs();
+    const deletedLog = existingLogs.find(l => l.date === date && l.dayId === dayId);
+
+    let logs = existingLogs.filter(l => !(l.date === date && l.dayId === dayId));
+    this.set('gymlogs', logs);
+
+    if (typeof SupabaseSync !== 'undefined') {
+        SupabaseSync.deleteGymLog(date, dayId);
+    }
+
+    // Recalculate PRs for exercises that existed in the deleted workout
+    if (deletedLog && Array.isArray(deletedLog.exercises)) {
+        const exerciseNames = [...new Set(deletedLog.exercises.map(e => e.name).filter(Boolean))];
+        exerciseNames.forEach(name => this.recalculatePRsForExercise(name));
+    }
+
+    return logs;
+},
 
     getGymLogsForDay(dayId) {
         return this.getGymLogs().filter(l => l.dayId === dayId);
