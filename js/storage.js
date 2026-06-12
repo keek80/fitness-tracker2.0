@@ -1,6 +1,13 @@
 // ========== LOCAL STORAGE MANAGER (+ Supabase Sync) ==========
 // localStorage = instant reads, works offline
 // SupabaseSync = cloud backup, fires async after every write
+function getLocalDateString(date = new Date()) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 const Storage = {
     PREFIX: 'flt_',
 
@@ -169,7 +176,7 @@ deleteGymLog(date, dayId) {
     // ===== SETTINGS =====
     getSettings() {
         return this.get('settings', {
-            startDate:     new Date().toISOString().split('T')[0],
+            startDate:     getLocalDateString(),
             startWeight:   CLIENT_PROFILE.startWeight,
             goalWeight:    CLIENT_PROFILE.goalWeight,
             weeklyTarget:  CLIENT_PROFILE.weeklyRateLoss,
