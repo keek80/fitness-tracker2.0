@@ -117,7 +117,7 @@ deleteGymLog(date, dayId) {
                 bestWeight: weight,
                 bestReps:   reps,
                 bestVolume: weight * reps,
-                date:       new Date().toISOString().split('T')[0]
+                date:       getLocalDateString()
             };
             newPR = true;
         }
