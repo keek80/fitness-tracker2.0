@@ -221,24 +221,88 @@ deleteGymLog(date, dayId) {
         }, null, 2);
     },
 
-    importAll(jsonString) {
-        try {
-            const data = JSON.parse(jsonString);
-            if (data.weighins)  this.set('weighins', data.weighins);
-            if (data.gymlogs)   this.set('gymlogs',  data.gymlogs);
-            if (data.prs)       this.set('prs',       data.prs);
-            if (data.settings)  this.set('settings',  data.settings);
-            if (data.customProgram) {
-                localStorage.setItem('flt_custom_program', JSON.stringify(data.customProgram));
-            }
-            return true;
-        } catch { return false; }
-    },
+  importAll(jsonString) {
+    try {
+        const data = JSON.parse(jsonString);
 
-    clearAll() {
-        Object.keys(localStorage)
-            .filter(k => k.startsWith(this.PREFIX))
-            .forEach(k => localStorage.removeItem(k));
-        localStorage.removeItem('flt_custom_program');
+        if (!data || typeof data !== 'object') {
+            throw new Error('Backup must be a JSON object');
+        }
+
+        const weighins = Array.isArray(data.weighins) ? data.weighins : [];
+        const gymlogs = Array.isArray(data.gymlogs) ? data.gymlogs : [];
+        const prs = (data.prs && typeof data.prs === 'object' && !Array.isArray(data.prs)) ? data.prs : {};
+        const settings = (data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings))
+            ? data.settings
+            : this.getSettings();
+
+        // Validate settings shape
+        const safeSettings = {
+            startDate: typeof settings.startDate === 'string' && settings.startDate ? settings.startDate : this.getSettings().startDate,
+            startWeight: Number.isFinite(settings.startWeight) ? settings.startWeight : this.getSettings().startWeight,
+            goalWeight: Number.isFinite(settings.goalWeight) ? settings.goalWeight : this.getSettings().goalWeight,
+            weeklyTarget: Number.isFinite(settings.weeklyTarget) ? settings.weeklyTarget : this.getSettings().weeklyTarget,
+            units: settings.units === 'lbs' ? 'lbs' : 'lbs',
+            setupComplete: !!settings.setupComplete
+        };
+
+        // Basic weigh-in validation
+        const safeWeighins = weighins.filter(w =>
+            w &&
+            typeof w.date === 'string' &&
+            Number.isFinite(w.weight)
+        ).map(w => ({
+            date: w.date,
+            weight: w.weight,
+            notes: typeof w.notes === 'string' ? w.notes : ''
+        }));
+
+        // Basic gym log validation
+        const safeGymlogs = gymlogs.filter(log =>
+            log &&
+            typeof log.date === 'string' &&
+            typeof log.dayId === 'string' &&
+            Array.isArray(log.exercises)
+        ).map(log => ({
+            date: log.date,
+            dayId: log.dayId,
+            dayName: typeof log.dayName === 'string' ? log.dayName : '',
+            exercises: log.exercises.map(ex => ({
+                name: typeof ex.name === 'string' ? ex.name : 'Unknown Exercise',
+                weights: Array.isArray(ex.weights) ? ex.weights.map(w => Number(w) || 0) : [],
+                sets: Array.isArray(ex.sets) ? ex.sets.map(r => parseInt(r) || 0) : [],
+                notes: typeof ex.notes === 'string' ? ex.notes : ''
+            })),
+            bodyWeight: Number.isFinite(log.bodyWeight) ? log.bodyWeight : null
+        }));
+
+        // PR object validation
+        const safePRs = {};
+        Object.entries(prs).forEach(([name, pr]) => {
+            if (!pr || typeof pr !== 'object') return;
+            if (!Number.isFinite(pr.bestWeight)) return;
+
+            safePRs[name] = {
+                bestWeight: pr.bestWeight,
+                bestReps: Number.isFinite(pr.bestReps) ? pr.bestReps : 0,
+                bestVolume: Number.isFinite(pr.bestVolume) ? pr.bestVolume : (pr.bestWeight * (pr.bestReps || 0)),
+                date: typeof pr.date === 'string' ? pr.date : getLocalDateString()
+            };
+        });
+
+        this.set('weighins', safeWeighins);
+        this.set('gymlogs', safeGymlogs);
+        this.set('prs', safePRs);
+        this.set('settings', safeSettings);
+
+        // Optional custom program import
+        if (data.customProgram && typeof data.customProgram === 'object' && Array.isArray(data.customProgram.days)) {
+            localStorage.setItem('flt_custom_program', JSON.stringify(data.customProgram));
+        }
+
+        return true;
+    } catch (e) {
+        console.error('Import failed:', e);
+        return false;
     }
-};
+},
