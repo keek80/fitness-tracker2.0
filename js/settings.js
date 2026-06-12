@@ -88,16 +88,48 @@ function renderSettings() {
 }
 
 function saveSettingsForm() {
+    const startDate = document.getElementById('settStartDate').value;
+    const startWeight = parseFloat(document.getElementById('settStartWeight').value);
+    const goalWeight = parseFloat(document.getElementById('settGoalWeight').value);
+    const weeklyTarget = parseFloat(document.getElementById('settWeeklyTarget').value);
+
+    if (!startDate) {
+        showToast('Please select a start date', 'error');
+        return;
+    }
+
+    if (!Number.isFinite(startWeight) || startWeight < 50) {
+        showToast('Please enter a valid start weight', 'error');
+        return;
+    }
+
+    if (!Number.isFinite(goalWeight) || goalWeight < 50) {
+        showToast('Please enter a valid goal weight', 'error');
+        return;
+    }
+
+    if (goalWeight >= startWeight) {
+        showToast('Goal weight must be lower than start weight', 'error');
+        return;
+    }
+
+    if (!Number.isFinite(weeklyTarget) || weeklyTarget <= 0) {
+        showToast('Please enter a valid weekly target', 'error');
+        return;
+    }
+
     const settings = {
-        startDate:     document.getElementById('settStartDate').value,
-        startWeight:   parseFloat(document.getElementById('settStartWeight').value),
-        goalWeight:    parseFloat(document.getElementById('settGoalWeight').value),
-        weeklyTarget:  parseFloat(document.getElementById('settWeeklyTarget').value),
-        units:         'lbs',
+        startDate,
+        startWeight,
+        goalWeight,
+        weeklyTarget,
+        units: 'lbs',
         setupComplete: true
     };
+
     Storage.saveSettings(settings);
     showToast('✅ Settings saved!');
+    renderSettings();
     renderDashboard();
 }
 
