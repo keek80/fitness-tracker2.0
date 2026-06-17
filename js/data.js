@@ -404,19 +404,56 @@ const EXERCISE_DATABASE = [
     { name: 'Smith Machine Bulgarian Split Squat', category: 'Quads', equipment: 'Smith Machine', notes: 'Rear foot elevated, strong quad and glute stimulus' },
 
 
-    // ── HAMSTRINGS / GLUTES / CALVES ──
+    // ── HAMSTRINGS ──
     { name: 'Romanian Deadlift (DB/Barbell)', category: 'Hamstrings',  equipment: 'Barbell',    notes: 'Hinge at hips, slight knee bend, feel hamstring stretch' },
     { name: 'Leg Curl Machine',               category: 'Hamstrings',  equipment: 'Machine',    notes: 'Slow and controlled negative' },
-    { name: 'Hip Thrust (Barbell)',           category: 'Glutes',      equipment: 'Barbell',    notes: 'Drive hips up, squeeze glutes at top' },
-    { name: 'Standing Calf Raises Machine',   category: 'Calves',      equipment: 'Machine',    notes: 'Full range of motion, pause at top' },
     { name: 'Smith Machine Romanian Deadlift', category: 'Hamstrings', equipment: 'Smith Machine', notes: 'Hinge at hips, slight knee bend, feel hamstring stretch' },
     { name: 'Smith Machine Good Morning', category: 'Hamstrings', equipment: 'Smith Machine', notes: 'Use light-moderate load, hinge carefully, keep spine neutral' },
     { name: 'Cable Hamstring Curl', category: 'Hamstrings', equipment: 'Cable', notes: 'Use ankle strap, prone or standing setup' },
+    { name: 'Dumbbell Romanian Deadlift', category: 'Hamstrings', equipment: 'Dumbbell', notes: 'Hinge at hips with slight knee bend, feel deep hamstring stretch, drive through heels' },
+    { name: 'Single-Leg Romanian Deadlift (DB)', category: 'Hamstrings', equipment: 'Dumbbell', notes: 'Balance on one leg, hinge forward, keep back flat — great for stability' },
+    { name: 'Glute Ham Raise (Machine or Bodyweight)', category: 'Hamstrings', equipment: 'Machine', notes: 'Controlled eccentric, squeeze hamstrings and glutes at top' },
+    { name: 'Lying Dumbbell Leg Curl', category: 'Hamstrings', equipment: 'Dumbbell', notes: 'Place DB between feet/ankles, curl toward glutes with control' },
+    { name: 'Good Morning (Dumbbell or Barbell)', category: 'Hamstrings', equipment: 'Dumbbell', notes: 'Hinge at hips with flat back, light weight to start, feel hamstring stretch' },
+    { name: 'Nordic Hamstring Curl (Assisted)', category: 'Hamstrings', equipment: 'Bodyweight', notes: 'Kneel and lower slowly under control — advanced, use assistance if needed' },
+    { name: 'Swiss Ball Leg Curl', category: 'Hamstrings', equipment: 'Bodyweight', notes: 'Bridge position, curl ball toward glutes with heels on ball' },
+    
+    
+    // ── GLUTES ──
     { name: 'Smith Machine Hip Thrust', category: 'Glutes', equipment: 'Smith Machine', notes: 'Drive hips hard and pause at the top' },
     { name: 'Smith Machine Glute Bridge', category: 'Glutes', equipment: 'Smith Machine', notes: 'Shorter range than hip thrust, squeeze hard at lockout' },
     { name: 'Cable Glute Kickback', category: 'Glutes', equipment: 'Cable', notes: 'Use ankle strap and extend with control' },
     { name: 'Cable Hip Abduction', category: 'Glutes', equipment: 'Cable', notes: 'Move leg outward for glute medius focus' },
+    { name: 'Hip Thrust (Barbell)',           category: 'Glutes',      equipment: 'Barbell',    notes: 'Drive hips up, squeeze glutes at top' },
+
+    // ── CALVES ──
     { name: 'Smith Machine Standing Calf Raise', category: 'Calves', equipment: 'Smith Machine', notes: 'Use block for full ROM and pause at the bottom' },
+    { name: 'Standing Calf Raises Machine',   category: 'Calves',      equipment: 'Machine',    notes: 'Full range of motion, pause at top' },
+    { name: 'Seated Calf Raise (Machine or DB)', category: 'Calves', equipment: 'Machine', notes: 'Knees bent, full stretch at bottom and pause at top contraction' },
+    { name: 'Dumbbell Standing Calf Raise', category: 'Calves', equipment: 'Dumbbell', notes: 'Hold DBs at sides or one DB, use step/block for full ROM, slow eccentric' },
+    { name: 'Single-Leg Standing Calf Raise (Bodyweight or DB)', category: 'Calves', equipment: 'Dumbbell', notes: 'Balance on one foot, use wall for support if needed, full stretch and pause' },
+    { name: 'Donkey Calf Raise (Machine or Partner)', category: 'Calves', equipment: 'Machine', notes: 'Hips hinged, focus on deep stretch and powerful contraction' },
+    { name: 'Calf Raise on Leg Press Machine', category: 'Calves', equipment: 'Machine', notes: 'Feet low on platform, knees straight but soft, full range' },
+
+    
+    // ── ADDUCTORS (Inner Thighs) ──
+    { name: 'Cable Hip Adduction', category: 'Adductors', equipment: 'Cable', notes: 'Cross leg inward against resistance and control return' },
+    { name: 'Side-Lying Adductor Lift', category: 'Adductors', equipment: 'Bodyweight', notes: 'Lie on side, lift bottom leg upward against gravity, slow and controlled' },
+    { name: 'Sumo Squat (Dumbbell)', category: 'Adductors', equipment: 'Dumbbell', notes: 'Wide stance, toes out, squat deep while keeping chest up — great adductor emphasis' },
+    { name: 'Cossack Squat (Bodyweight or DB)', category: 'Adductors', equipment: 'Dumbbell', notes: 'Side lunge with one leg extended, shift weight laterally, alternate sides' },
+    { name: 'Lateral Lunge (Dumbbell)', category: 'Adductors', equipment: 'Dumbbell', notes: 'Step wide to side, bend one knee and sit back into hip, push back to start' },
+    { name: 'Seated Hip Adduction (Machine)', category: 'Adductors', equipment: 'Machine', notes: 'Squeeze thighs together, control the return for full stretch' },
+    { name: 'Cable Hip Adduction (Standing)', category: 'Adductors', equipment: 'Cable', notes: 'Cross working leg in front of body, focus on inner thigh squeeze' },
+    { name: ' Copenhagen Plank/Adductor Bridge', category: 'Adductors', equipment: 'Bodyweight', notes: 'Side plank with top leg on bench/elevated, drive bottom hip up' },
+    
+    // ── ABDUCTORS (Outer Hips / Glute Medius) ──
+    { name: 'Side-Lying Hip Abduction', category: 'Abductors', equipment: 'Bodyweight', notes: 'Lie on side, lift top leg upward, keep foot parallel or toes slightly down' },
+    { name: 'Clamshells (Bodyweight or Band)', category: 'Abductors', equipment: 'Bodyweight', notes: 'Side-lying with knees bent, open top knee while keeping feet together' },
+    { name: 'Dumbbell Lateral Lunge', category: 'Abductors', equipment: 'Dumbbell', notes: 'Emphasizes glute medius on the working leg — step out and push back' },
+    { name: 'Fire Hydrants (Bodyweight or Band)', category: 'Abductors', equipment: 'Bodyweight', notes: 'On all fours, lift bent leg out to side like a dog at a hydrant' },
+    { name: 'Standing Hip Abduction (Cable or Band)', category: 'Abductors', equipment: 'Cable', notes: 'Move leg outward away from midline, control return' },
+    { name: 'Banded Lateral Walks', category: 'Abductors', equipment: 'Band', notes: 'Band around knees/ankles, small steps sideways in slight squat' },
+    { name: 'Single-Leg Glute Bridge with Abduction', category: 'Abductors', equipment: 'Bodyweight', notes: 'Bridge on one leg, then abduct the raised leg outward at top' },
 
 
     // ── CORE (Updated with your requested dumbbell exercises) ──
@@ -443,12 +480,11 @@ const EXERCISE_DATABASE = [
     { name: 'Stationary Bike (Steady State)', category: 'Cardio',      equipment: 'Machine',    notes: 'Moderate resistance, maintain 70-80 RPM' },
     { name: 'Rowing Machine',                 category: 'Cardio',      equipment: 'Machine',    notes: '60% legs, 20% core, 20% arms' },
 
-    // Adductors
-    { name: 'Cable Hip Adduction', category: 'Adductors', equipment: 'Cable', notes: 'Cross leg inward against resistance and control return' },
+    
 
 ];
 
-const DB_CATEGORIES = ['All','Chest','Back','Shoulders','Biceps','Triceps','Quads','Hamstrings','Glutes','Calves','Core','Cardio'];
+const DB_CATEGORIES = ['All','Chest','Back','Shoulders','Biceps','Triceps','Quads','Hamstrings','Glutes','Calves',"Adductors",'Abductors','Core','Cardio'];
 
 // Equipment color map for badges
 const EQUIPMENT_COLORS = {
