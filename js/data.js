@@ -280,7 +280,6 @@ const EXERCISE_DATABASE = [
     { name: 'Deadlift (Conventional)',        category: 'Back',        equipment: 'Barbell',    notes: 'Full body, maintain neutral spine' },
     { name: 'Romanian Deadlift',              category: 'Back',        equipment: 'Barbell',    notes: 'Hamstring and lower back emphasis' },
     { name: 'Good Mornings',                  category: 'Back',        equipment: 'Barbell',    notes: 'Hinge at hips with light bar on back' },
-    { name: 'Shrugs (Dumbbell or Barbell)',   category: 'Back',        equipment: 'Dumbbell',   notes: 'Traps and upper back, hold squeeze at top' },
     { name: 'Band Pull-Aparts',               category: 'Back',        equipment: 'Band',       notes: 'Great for upper back posture and warm-up' },
     { name: 'Y-T-I Raises (Prone)',           category: 'Back',        equipment: 'Bodyweight', notes: 'Lying face down, form letters Y-T-I for rear delts/upper back' },
     { name: 'Cable Seated Rows (Neutral Grip)', category: 'Back',      equipment: 'Cable',      notes: 'V-bar or rope grip' },
@@ -294,6 +293,12 @@ const EXERCISE_DATABASE = [
     { name: 'Cable High Row', category: 'Back', equipment: 'Cable', notes: 'Pull high toward face/upper chest for rear delts and upper back' },
     { name: 'Cable Low Row', category: 'Back', equipment: 'Cable', notes: 'Pull toward lower torso, focus on contraction' },
 
+    // ── TRAPS ──
+    { name: 'Dumbbell Shrugs',                category: 'Traps',   equipment: 'Dumbbell',   notes: 'Traps + upper shoulders, hold squeeze at top' },
+    { name: 'Cable Y-Raise',                  category: 'Traps', equipment: 'Cable', notes: 'Great for upper traps and shoulder stability' },
+    { name: 'Barbell Shrugs',                 category: 'Traps',        equipment: 'Dumbbell',   notes: 'Traps and upper back, hold squeeze at top' },
+    { name: 'Smith Machine Shrugs',           category: 'Traps',       equipment: 'Smith Machine', notes: 'Guided heavy shrugs' },
+    { name: 'Face Pulls (Cable)',             category: 'Traps',       equipment: 'Cable',      notes: 'Upper traps + rear delts' },
 
     // ── SHOULDERS ──
     { name: 'Seated Machine Shoulder Press',  category: 'Shoulders',   equipment: 'Machine',    notes: 'Keep shoulder blades down and back' },
@@ -321,7 +326,6 @@ const EXERCISE_DATABASE = [
     { name: 'Dumbbell Upright Rows',          category: 'Shoulders',   equipment: 'Dumbbell',   notes: 'Elbows lead, keep below shoulder height' },
     { name: 'Cable Front Raises',             category: 'Shoulders',   equipment: 'Cable',      notes: 'Single or dual arm, controlled movement' },
     { name: 'Incline Dumbbell Front Raises',  category: 'Shoulders',   equipment: 'Dumbbell',   notes: 'Lying on incline bench for support' },
-    { name: 'Dumbbell Shrugs',                category: 'Shoulders',   equipment: 'Dumbbell',   notes: 'Traps + upper shoulders, hold squeeze at top' },
     { name: 'Farmer\'s Carry',                category: 'Shoulders',   equipment: 'Dumbbell',   notes: 'Heavy DBs, walk with strong posture and shoulder stability' },
     { name: 'Dumbbell Overhead Carry',        category: 'Shoulders',   equipment: 'Dumbbell',   notes: 'One or two arms overhead while walking' },
     { name: 'Dumbbell Halo',                  category: 'Shoulders',   equipment: 'Dumbbell',   notes: 'Circle around head for mobility and stability' },
@@ -332,7 +336,6 @@ const EXERCISE_DATABASE = [
     { name: 'Smith Machine Upright Row',      category: 'Shoulders', equipment: 'Smith Machine', notes: 'Pull elbows high, lead with elbows, avoid excessive height' },
     { name: 'Cable Lateral Raise',            category: 'Shoulders', equipment: 'Cable', notes: 'Constant tension, raise with control' },
     { name: 'Cable Front Raise',              category: 'Shoulders', equipment: 'Cable', notes: 'Lift forward smoothly without swinging' },
-    { name: 'Cable Y-Raise',                  category: 'Shoulders', equipment: 'Cable', notes: 'Great for upper traps and shoulder stability' },
     { name: 'Smith Machine Seated Overhead Press', category: 'Shoulders', equipment: 'Smith Machine', notes: 'Use bench support, press straight up with control' },
     { name: 'Smith Machine Standing Overhead Press', category: 'Shoulders', equipment: 'Smith Machine', notes: 'Brace core and keep bar path vertical' },
     { name: 'Smith Machine High Incline Press', category: 'Shoulders', equipment: 'Smith Machine', notes: 'Bench at high incline to bias front delts' },
@@ -353,7 +356,6 @@ const EXERCISE_DATABASE = [
     { name: 'Cable Hammer Curls (Rope)',      category: 'Biceps',      equipment: 'Cable',      notes: 'Neutral grip for brachialis' },
     { name: 'Spider Curls',                   category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Lying face down on incline bench' },
     { name: '21s (Barbell or DB)',            category: 'Biceps',      equipment: 'Dumbbell',   notes: '7 bottom half, 7 top half, 7 full reps' },
-    { name: 'Reverse Barbell Curls',          category: 'Biceps',      equipment: 'Barbell',    notes: 'Targets brachialis and forearms' },
     { name: 'Cable Concentration Curls',      category: 'Biceps',      equipment: 'Cable',      notes: 'Single arm, peak contraction' },
     { name: 'Zottman Curls',                  category: 'Biceps',      equipment: 'Dumbbell',   notes: 'Supinated up, pronated down' },
     { name: 'Chin-Ups (Supinated)',           category: 'Biceps',      equipment: 'Bodyweight', notes: 'Underhand grip, full range' },
@@ -388,6 +390,17 @@ const EXERCISE_DATABASE = [
     { name: 'Cable Skull Crusher', category: 'Triceps', equipment: 'Cable', notes: 'Keep elbows fixed and extend fully' },
     { name: 'Cable Reverse-Grip Pushdown', category: 'Triceps', equipment: 'Cable', notes: 'Underhand grip, targets medial head' },
     { name: 'Cross-Body Cable Tricep Extension', category: 'Triceps', equipment: 'Cable', notes: 'Single-arm variation with strong lockout' },
+    
+    // ── FOREARMS / GRIP ── (Added)
+    { name: 'Dumbbell Wrist Curl (Palms Up)', category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Seated or over bench, full range, squeeze at top' },
+    { name: 'Barbell Wrist Curl',             category: 'Forearms',    equipment: 'Barbell',    notes: 'Behind back or over bench variation for flexors' },
+    { name: 'Dumbbell Reverse Wrist Curl',    category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Palms down — targets extensors on top of forearm' },
+    { name: 'Reverse Grip Barbell Curl',      category: 'Forearms',    equipment: 'Barbell',    notes: 'Overhand grip biases brachioradialis' },
+    { name: "Farmer's Walk / Carry",          category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Heavy DBs or trap bar, walk with strong grip and upright posture' },
+    { name: 'Plate Pinch Hold',               category: 'Forearms',    equipment: 'Other',      notes: 'Pinch smooth plates together and hold for time' },
+    { name: 'Dead Hang from Pull-Up Bar',     category: 'Forearms',    equipment: 'Bodyweight', notes: 'Grip strength + lat stretch' },
+    { name: 'Hammer Curl (Neutral Grip)',     category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Thick forearm and brachialis builder' },
+    { name: 'Zottman Curl',                   category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Curl up supinated, rotate and lower pronated' },
 
 
     // ── QUADS / LEGS ──
@@ -402,7 +415,9 @@ const EXERCISE_DATABASE = [
     { name: 'Smith Machine Split Squat', category: 'Quads', equipment: 'Smith Machine', notes: 'Staggered stance, drive through front heel' },
     { name: 'Smith Machine Reverse Lunge', category: 'Quads', equipment: 'Smith Machine', notes: 'Step back smoothly, keep front knee tracking over toes' },
     { name: 'Smith Machine Bulgarian Split Squat', category: 'Quads', equipment: 'Smith Machine', notes: 'Rear foot elevated, strong quad and glute stimulus' },
-
+    { name: 'Hack Squat Machine',             category: 'Quads',       equipment: 'Machine',    notes: 'Great quad isolation with back support' },
+    { name: 'Step-Ups (High Box)',            category: 'Quads',       equipment: 'Dumbbell',   notes: 'Drive through heel, squeeze glute at top' },
+    
 
     // ── HAMSTRINGS ──
     { name: 'Romanian Deadlift (DB/Barbell)', category: 'Hamstrings',  equipment: 'Barbell',    notes: 'Hinge at hips, slight knee bend, feel hamstring stretch' },
@@ -420,12 +435,23 @@ const EXERCISE_DATABASE = [
     
     
     // ── GLUTES ──
-    { name: 'Smith Machine Hip Thrust', category: 'Glutes', equipment: 'Smith Machine', notes: 'Drive hips hard and pause at the top' },
-    { name: 'Smith Machine Glute Bridge', category: 'Glutes', equipment: 'Smith Machine', notes: 'Shorter range than hip thrust, squeeze hard at lockout' },
-    { name: 'Cable Glute Kickback', category: 'Glutes', equipment: 'Cable', notes: 'Use ankle strap and extend with control' },
-    { name: 'Cable Hip Abduction', category: 'Glutes', equipment: 'Cable', notes: 'Move leg outward for glute medius focus' },
+    { name: 'Barbell Hip Thrust',             category: 'Glutes',      equipment: 'Barbell',    notes: 'Drive hips up, squeeze glutes hard at top, chin tucked' },
+    { name: 'Smith Machine Hip Thrust',       category: 'Glutes',      equipment: 'Smith Machine', notes: 'Drive hips hard and pause at the top' },
+    { name: 'Smith Machine Glute Bridge',     category: 'Glutes',      equipment: 'Smith Machine', notes: 'Shorter range than hip thrust, squeeze hard at lockout' },
+    { name: 'Cable Glute Kickback',           category: 'Glutes',      equipment: 'Cable',      notes: 'Use ankle strap and extend with control' },
+    { name: 'Cable Hip Abduction',            category: 'Glutes',      equipment: 'Cable',      notes: 'Move leg outward for glute medius focus' },
     { name: 'Hip Thrust (Barbell)',           category: 'Glutes',      equipment: 'Barbell',    notes: 'Drive hips up, squeeze glutes at top' },
+    { name: 'Single-Leg Hip Thrust',          category: 'Glutes',      equipment: 'Dumbbell',   notes: 'One foot on bench — fix imbalances' },
+    { name: 'Glute Bridge (Bodyweight or DB)', category: 'Glutes',     equipment: 'Bodyweight', notes: 'Drive hips up, squeeze at top' },
+    { name: 'Step-Ups (High Box for Glutes)', category: 'Glutes',      equipment: 'Dumbbell',   notes: 'Drive through heel, full hip extension at top' },
+    { name: 'Bulgarian Split Squat (Glute Focus)', category: 'Glutes', equipment: 'Dumbbell',   notes: 'Lean slightly forward for more glute' },
+    { name: 'Sumo Deadlift (Barbell)',        category: 'Glutes',      equipment: 'Barbell',    notes: 'Wide stance, drive through heels' },
+    { name: 'Curtsy Lunge',                   category: 'Glutes',      equipment: 'Dumbbell',   notes: 'Cross leg behind for outer glute' },
+    { name: 'Fire Hydrants (Bodyweight)',     category: 'Glutes',      equipment: 'Bodyweight', notes: 'Lift knee out to side' },
+    { name: 'Donkey Kicks',                   category: 'Glutes',      equipment: 'Bodyweight', notes: 'Kick heel toward ceiling' },
+    { name: 'Hip Abduction Machine',          category: 'Glutes',      equipment: 'Machine',    notes: 'Controlled reps for glute medius' },
 
+    
     // ── CALVES ──
     { name: 'Smith Machine Standing Calf Raise', category: 'Calves', equipment: 'Smith Machine', notes: 'Use block for full ROM and pause at the bottom' },
     { name: 'Standing Calf Raises Machine',   category: 'Calves',      equipment: 'Machine',    notes: 'Full range of motion, pause at top' },
