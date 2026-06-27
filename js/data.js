@@ -361,10 +361,15 @@ const EXERCISE_DATABASE = [
     { name: 'Chin-Ups (Supinated)',           category: 'Biceps',      equipment: 'Bodyweight', notes: 'Underhand grip, full range' },
     { name: 'Band Bicep Curls',               category: 'Biceps',      equipment: 'Band',       notes: 'Constant tension, great finisher' },
     { name: 'Drag Curls',                     category: 'Biceps',      equipment: 'Barbell',    notes: 'Bar drags up body, elbows back' },
-    { name: 'Cable Curl', category: 'Biceps', equipment: 'Cable', notes: 'Constant tension, curl with elbows fixed' },
-    { name: 'Bayesian Curl', category: 'Biceps', equipment: 'Cable', notes: 'Arm set behind torso for a big biceps stretch' },
-    { name: 'Cable Preacher Curl', category: 'Biceps', equipment: 'Cable', notes: 'Use preacher bench with low pulley for constant tension' },
-    { name: 'High Cable Curl', category: 'Biceps', equipment: 'Cable', notes: 'Double-biceps style curl, elbows high' },
+    { name: 'Cable Curl',                     category: 'Biceps',      equipment: 'Cable',      notes: 'Constant tension, curl with elbows fixed' },
+    { name: 'Bayesian Curl',                  category: 'Biceps',      equipment: 'Cable',      notes: 'Arm set behind torso for a big biceps stretch' },
+    { name: 'Cable Preacher Curl',            category: 'Biceps',      equipment: 'Cable',      notes: 'Use preacher bench with low pulley for constant tension' },
+    { name: 'High Cable Curl',                category: 'Biceps',      equipment: 'Cable',      notes: 'Double-biceps style curl, elbows high' },
+    { name: 'Single-Arm Cable Bicep Curl',    category: 'Biceps',      equipment: 'Cable',      notes: 'Stand sideways to cable, full stretch at bottom, squeeze at top' },
+    { name: 'Single-Arm Cable Hammer Curl',   category: 'Biceps',      equipment: 'Cable',      notes: 'Neutral grip with rope attachment, targets brachialis' },
+    { name: 'Single-Arm Cable Preacher Curl', category: 'Biceps',      equipment: 'Cable',      notes: 'Use bench for support, strict isolation' },
+    { name: 'High Cable Bicep Curl',          category: 'Biceps',      equipment: 'Cable',      notes: 'High pulley, arms out to sides, curl hands toward head for peak contraction' },
+    { name: 'Overhead Cable Curl (High Pulley)', category: 'Biceps',   equipment: 'Cable',      notes: 'Stand between high pulleys, curl across body or directly — great stretch' },
 
     // ── TRICEPS ──
     { name: 'Cable Tricep Pushdowns (Rope)',  category: 'Triceps',     equipment: 'Cable',      notes: 'Keep elbows pinned, squeeze at bottom' },
@@ -390,6 +395,9 @@ const EXERCISE_DATABASE = [
     { name: 'Cable Skull Crusher', category: 'Triceps', equipment: 'Cable', notes: 'Keep elbows fixed and extend fully' },
     { name: 'Cable Reverse-Grip Pushdown', category: 'Triceps', equipment: 'Cable', notes: 'Underhand grip, targets medial head' },
     { name: 'Cross-Body Cable Tricep Extension', category: 'Triceps', equipment: 'Cable', notes: 'Single-arm variation with strong lockout' },
+    { name: 'Single-Arm Cable Tricep Pushdown', category: 'Triceps', equipment: 'Cable', notes: 'Elbow pinned, extend arm down and squeeze tricep' },
+    { name: 'Single-Arm Overhead Cable Tricep Extension', category: 'Triceps', equipment: 'Cable', notes: 'Full stretch overhead, one arm at a time' },
+    { name: 'Single-Arm Cable Tricep Pressdown (Overhand)', category: 'Triceps', equipment: 'Cable', notes: 'Straight bar or rope, focus on outer tricep head' },
     
     // ── FOREARMS / GRIP ── (Added)
     { name: 'Dumbbell Wrist Curl (Palms Up)', category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Seated or over bench, full range, squeeze at top' },
