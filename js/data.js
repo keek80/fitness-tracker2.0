@@ -518,7 +518,7 @@ const EXERCISE_DATABASE = [
 
 ];
 
-const DB_CATEGORIES = ['All','Chest','Back','Shoulders','Biceps','Triceps','Quads','Hamstrings','Glutes','Calves',"Adductors",'Abductors','Core','Cardio'];
+const DB_CATEGORIES = ['All','Chest','Back','Shoulders','Traps','Biceps','Forearms','Triceps','Quads','Hamstrings','Glutes','Calves',"Adductors",'Abductors','Core','Cardio'];
 
 // Equipment color map for badges
 const EQUIPMENT_COLORS = {
