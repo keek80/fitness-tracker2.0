@@ -398,6 +398,8 @@ const EXERCISE_DATABASE = [
     { name: 'Single-Arm Cable Tricep Pushdown', category: 'Triceps', equipment: 'Cable', notes: 'Elbow pinned, extend arm down and squeeze tricep' },
     { name: 'Single-Arm Overhead Cable Tricep Extension', category: 'Triceps', equipment: 'Cable', notes: 'Full stretch overhead, one arm at a time' },
     { name: 'Single-Arm Cable Tricep Pressdown (Overhand)', category: 'Triceps', equipment: 'Cable', notes: 'Straight bar or rope, focus on outer tricep head' },
+    { name: 'Tate Press', category: 'Triceps', equipment: 'Dumbbell', notes: 'Lying on bench, elbows flared out, lower dumbbells to chest then press up — great tricep isolation' },
+    
     
     // ── FOREARMS / GRIP ── (Added)
     { name: 'Dumbbell Wrist Curl (Palms Up)', category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Seated or over bench, full range, squeeze at top' },
@@ -409,6 +411,8 @@ const EXERCISE_DATABASE = [
     { name: 'Dead Hang from Pull-Up Bar',     category: 'Forearms',    equipment: 'Bodyweight', notes: 'Grip strength + lat stretch' },
     { name: 'Hammer Curl (Neutral Grip)',     category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Thick forearm and brachialis builder' },
     { name: 'Zottman Curl',                   category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Curl up supinated, rotate and lower pronated' },
+    { name: 'Wrist Pronation/Supination Rotations', category: 'Forearms', equipment: 'Dumbbell', notes: 'Hold light dumbbell, rotate wrist from palm up to palm down — excellent for forearm rotators and grip' },
+    { name: 'Single-Arm Wrist Pronation/Supination', category: 'Forearms', equipment: 'Dumbbell', notes: 'One arm at a time, controlled rotations for balanced development' },
 
 
     // ── QUADS / LEGS ──
