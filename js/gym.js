@@ -110,7 +110,7 @@ function renderGym() {
 
         <div id="exerciseList">
             ${day.exercises.map((ex, i) => {
-                /const saved = existingLog?.exercises?.[i];
+                
                 const saved = existingLog?.exercises?.find(e => e.name === ex.name);
                 const prev = previousLog?.exercises?.find(e => e.name === ex.name);
                 const pr = prs[ex.name];
