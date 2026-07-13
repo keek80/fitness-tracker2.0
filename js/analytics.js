@@ -349,40 +349,46 @@ function getExerciseTrend(entries) {
     };
 }
 function getWeeklyVolumeTrend(entries) {
-    if (!entries || entries.length < 2) return { direction: 'neutral', change: 0, thisWeekVolume: 0, lastWeekVolume: 0, bestWeight: 0 };
+    if (!entries || entries.length < 2) {
+        return { direction: 'neutral', change: 0, thisWeekVolume: 0, lastWeekVolume: 0, bestWeight: 0 };
+    }
 
-    const sorted = [...entries].sort((a,b) => new Date(b.date) - new Date(a.date)); // newest first
+    const sorted = [...entries].sort((a, b) => new Date(a.date) - new Date(b.date));
 
     let thisWeekVolume = 0;
     let lastWeekVolume = 0;
     let bestWeight = 0;
 
     const now = new Date();
-    const oneWeekAgo = new Date(now.getTime() - 7*24*60*60*1000);
+    now.setHours(23, 59, 59, 999);
+
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
 
     sorted.forEach(entry => {
         const entryDate = new Date(entry.date);
-        let volume = 0;
+        let sessionVolume = 0;
+
         const weights = entry.weights || [];
         const reps = entry.sets || [];
         for (let i = 0; i < Math.min(weights.length, reps.length); i++) {
-            volume += (weights[i] || 0) * (reps[i] || 0);
+            sessionVolume += (weights[i] || 0) * (reps[i] || 0);
         }
+
+        bestWeight = Math.max(bestWeight, Math.max(...weights, 0));
 
         if (entryDate >= oneWeekAgo) {
-            thisWeekVolume += volume;
-        } else {
-            lastWeekVolume += volume;
+            thisWeekVolume += sessionVolume;
+        } else if (entryDate >= twoWeeksAgo) {
+            lastWeekVolume += sessionVolume;
         }
-
-        bestWeight = Math.max(bestWeight, Math.max(...weights));
     });
 
     const change = lastWeekVolume > 0 
         ? Math.round(((thisWeekVolume - lastWeekVolume) / lastWeekVolume) * 100) 
         : (thisWeekVolume > 0 ? 100 : 0);
 
-    const direction = change > 10 ? 'up' : change < -10 ? 'down' : 'neutral';
+    const direction = change > 8 ? 'up' : change < -8 ? 'down' : 'neutral';
 
     return {
         direction,
