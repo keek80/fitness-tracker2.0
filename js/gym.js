@@ -184,16 +184,18 @@ function renderGym() {
 // ========== SWAP EXERCISE ==========
 function swapExercise(exIdx, originalName) {
     window.tempSwapOriginal = originalName;
-    navigate('exercises');  // Ensure picker DOM is loaded
+    
+    navigate('exercises'); // Make sure picker page is active
     
     setTimeout(() => {
         if (typeof openExercisePicker === 'function') {
             openExercisePicker();
             window.tempOnSelectExercise = selectExerciseForSwap;
+        } else {
+            showToast('Exercise picker not available', 'error');
         }
-    }, 400);
+    }, 500);
 }
-
 // ========== SAVE WITH SUBSTITUTIONS ==========
 function saveGymLog() {
     const day = getTrainingProgram().days.find(d => d.id === currentGymDay);
