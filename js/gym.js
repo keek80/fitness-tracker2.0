@@ -1,4 +1,4 @@
-// ========== GYM LOG PAGE ==========
+    // ========== GYM LOG PAGE ==========
 let currentGymDay = null;
 let currentGymDate = getLocalDateString();
 let autoSelectedDay = false;
@@ -229,8 +229,44 @@ function saveGymLog() {
     currentSubstitutions = {};
     renderGym();
 }
-
+function isLightColor(hex) {
+    const r = parseInt(hex.slice(1,3), 16);
+    const g = parseInt(hex.slice(3,5), 16);
+    const b = parseInt(hex.slice(5,7), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
 // Reset substitutions on date/day change
+function onGymDateChange(newDate) {
+    currentGymDate = newDate;
+    currentSubstitutions = {};
+    renderGym();
+}
+
+function selectGymDay(dayId) {
+    currentGymDay = dayId;
+    currentSubstitutions = {};
+    renderGym();
+}
+// ========== TEMPORARY EXERCISE SWAP ==========
+function swapExercise(exIdx, originalName) {
+    window.tempSwapOriginal = originalName;
+    if (typeof openExercisePicker === 'function') {
+        openExercisePicker();
+        window.tempOnSelectExercise = selectExerciseForSwap;
+    } else {
+        showToast('Go to Exercise Manager once to load the picker', 'error');
+    }
+}
+
+function selectExerciseForSwap(newName) {
+    if (!window.tempSwapOriginal) return;
+    currentSubstitutions[window.tempSwapOriginal] = newName;
+    showToast(`✅ Swapped to ${newName} for this session`, 'success');
+    renderGym();
+    delete window.tempSwapOriginal;
+}
+
+// Make sure these reset substitutions
 function onGymDateChange(newDate) {
     currentGymDate = newDate;
     currentSubstitutions = {};
