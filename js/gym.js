@@ -2,7 +2,7 @@
 let currentGymDay = null;
 let currentGymDate = getLocalDateString();
 let autoSelectedDay = false;
-let currentSubstitutions = {}; // Temporary swaps for this session only
+let currentSubstitutions = {}; // {originalName: substituteName} for this session only
 
 const DAY_NAME_MAP = {
     0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday',
@@ -62,40 +62,25 @@ function renderGym() {
     let scheduleIndicator = '';
 
     if (isTodayDate && isScheduledDay && todaysWorkout) {
-        scheduleIndicator = `
-            <div class="today-workout-banner">
-                <span class="today-badge">📅 TODAY</span>
-                <span>It's ${selectedDayName} — <strong>${day.name}</strong> is scheduled!</span>
-            </div>`;
+        scheduleIndicator = `<div class="today-workout-banner"><span class="today-badge">📅 TODAY</span><span>It's ${selectedDayName} — <strong>${day.name}</strong> is scheduled!</span></div>`;
     } else if (isTodayDate && !todaysWorkout) {
-        scheduleIndicator = `
-            <div class="rest-day-banner">
-                <span class="rest-badge">😴 REST DAY</span>
-                <span>It's ${selectedDayName} — no workout scheduled. But you can still log one!</span>
-            </div>`;
+        scheduleIndicator = `<div class="rest-day-banner"><span class="rest-badge">😴 REST DAY</span><span>It's ${selectedDayName} — no workout scheduled. But you can still log one!</span></div>`;
     } else if (!isTodayDate) {
-        scheduleIndicator = `
-            <div class="past-date-banner">
-                <span>📆 Logging for <strong>${formatDate(currentGymDate)}</strong> (${selectedDayName})</span>
-            </div>`;
+        scheduleIndicator = `<div class="past-date-banner"><span>📆 Logging for <strong>${formatDate(currentGymDate)}</strong> (${selectedDayName})</span></div>`;
     }
 
     page.innerHTML = `
         <div class="section-title">💪 Log Workout</div>
-        
         <div class="form-group">
             <label class="form-label">Date</label>
             <input type="date" id="gymDate" class="form-input" value="${currentGymDate}" onchange="onGymDateChange(this.value)">
         </div>
-
         ${scheduleIndicator}
-
         <div class="day-selector">
             ${program.days.map(d => {
                 const isActive = d.id === currentGymDay;
                 const isScheduled = d.id === todaysWorkout && isTodayDate;
-                return `
-                <button class="day-btn ${isActive ? 'active' : ''} ${isScheduled && !isActive ? 'scheduled' : ''}" 
+                return `<button class="day-btn ${isActive ? 'active' : ''} ${isScheduled && !isActive ? 'scheduled' : ''}" 
                         style="${isActive ? 'background:' + d.color + '; border-color:' + d.color + '; color:' + (isLightColor(d.color) ? '#000' : '#fff') : ''}"
                         onclick="selectGymDay('${d.id}')">
                     ${d.dayOfWeek.slice(0,3)}<br><span style="font-size:10px">${d.name}</span>
@@ -113,44 +98,44 @@ function renderGym() {
             ${day.exercises.map((ex, i) => {
                 const displayName = currentSubstitutions[ex.name] || ex.name;
                 const isSubstituted = !!currentSubstitutions[ex.name];
-                
+
                 const saved = existingLog?.exercises?.find(e => (e.originalName || e.name) === ex.name);
                 const prev = previousLog?.exercises?.find(e => (e.originalName || e.name) === ex.name);
                 const pr = prs[ex.name];
 
                 const prBadge = pr ? `<span class="pr-badge">🏆 PR: ${pr.bestWeight} lbs</span>` : '';
 
-                // ... (rest of the per-set rendering stays mostly the same - abbreviated here for brevity)
                 const prevWeights = prev ? (prev.weights || (prev.weight ? Array((prev.sets || []).length || ex.sets).fill(prev.weight) : [])) : [];
                 const prevSets = prev ? (prev.sets || []) : [];
 
                 const isAutoLoaded = !saved && prevWeights.some(w => w > 0);
 
-                const savedWeights = saved?.weights || (saved?.weight ? Array(ex.sets).fill(saved.weight) : Array.from({length: ex.sets}, (_, si) => prevWeights[si] !== undefined && prevWeights[si] > 0 ? prevWeights[si] : ''));
+                const savedWeights = saved?.weights ? saved.weights : saved?.weight ? Array(ex.sets).fill(saved.weight) : Array.from({length: ex.sets}, (_, si) => prevWeights[si] !== undefined && prevWeights[si] > 0 ? prevWeights[si] : '');
                 const savedReps = saved?.sets || Array(ex.sets).fill('');
 
                 let prevDisplay = '';
                 if (prev) {
-                    // ... existing prev display logic ...
+                    const prevParts = prevSets.map((r, si) => {
+                        const w = prevWeights[si] || 0;
+                        return r > 0 ? `${w > 0 ? w + 'lb×' : ''}${r}` : null;
+                    }).filter(Boolean);
+                    if (prevParts.length > 0) {
+                        const prevMaxW = prevWeights.length > 0 ? Math.max(...prevWeights.filter(w => w > 0)) : 0;
+                        prevDisplay = `<div class="prev-session-info"><span class="prev-label">Last session:</span><span class="prev-sets">${prevParts.join(' · ')}</span>${prevMaxW > 0 && saved ? `<button class="fill-btn" onclick="fillFromPrevious(${i}, [${prevWeights.join(',')}], [${prevSets.join(',')}])" title="Load previous session">⬆️ Load</button>` : ''}</div>`;
+                    }
                 }
 
                 return `
                 <div class="exercise-card">
                     <div class="exercise-name" style="${isSubstituted ? 'color:var(--accent-orange);' : ''}">
-                        ${displayName}
-                        ${isSubstituted ? `<small style="color:var(--accent-orange)"> (sub for ${ex.name})</small>` : ''}
-                        <button class="ex-action-btn" onclick="swapExercise(${i}, '${ex.name}')" style="float:right;font-size:18px;margin-left:8px;" title="Swap exercise for this session only">🔄</button>
+                        ${displayName} ${prBadge}
+                        <button class="ex-action-btn" onclick="swapExercise(${i}, '${ex.name}')" style="float:right; font-size:18px;" title="Swap for this session">🔄</button>
                     </div>
                     <div class="exercise-target">${ex.sets} × ${ex.repsTarget} · Rest ${ex.rest}${ex.notes ? ' · ' + ex.notes : ''}</div>
                     ${prevDisplay}
-
-                    ${isAutoLoaded ? `...` : ''}
-
+                    ${isAutoLoaded ? `<div style="font-size:11px; color:var(--accent-orange); margin-bottom:8px; padding:5px 10px; background:rgba(255,170,0,0.08); border-radius:6px; border:1px solid rgba(255,170,0,0.25);">⬆️ Weights pre-loaded from last session — enter your reps below</div>` : ''}
                     <div class="per-set-grid">
-                        <!-- Existing per-set inputs remain unchanged -->
-                        <div class="per-set-header">
-                            <span>SET</span><span>WEIGHT (lbs)</span><span>REPS</span>
-                        </div>
+                        <div class="per-set-header"><span>SET</span><span>WEIGHT (lbs)</span><span>REPS</span></div>
                         ${Array.from({length: ex.sets}, (_, s) => `
                             <div class="per-set-row">
                                 <div class="set-num-badge">${s + 1}</div>
@@ -159,9 +144,7 @@ function renderGym() {
                             </div>
                         `).join('')}
                     </div>
-
                     <button class="fill-down-btn" onclick="fillWeightsDown(${i}, ${ex.sets})" title="Copy Set 1 weight to all sets">↓ Apply Set 1 weight to all sets</button>
-
                     <div class="notes-row">
                         <input type="text" class="notes-input gym-notes" data-idx="${i}" value="${saved?.notes || ''}" placeholder="Notes for this exercise...">
                     </div>
@@ -169,70 +152,68 @@ function renderGym() {
             }).join('')}
         </div>
 
-        <div style="margin-top:12px">
-            <button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button>
+        <div style="margin-top:12px"><button class="btn btn-secondary" onclick="viewGymHistory()">📋 History</button></div>
+
+        <div id="gymHistorySection" class="hidden" style="margin-top:12px">
+            <div class="section-title" style="font-size:16px; margin-bottom:10px;">📋 ${day.name} History</div>
+            <div id="gymHistoryList"></div>
         </div>
 
-        <!-- Save button and timer remain the same -->
-        <div style="position:fixed; bottom:85px; left:16px; z-index:99999; ..."> ... existing save button ... </div>
-        <!-- Rest timer section remains unchanged -->
+        <!-- Save Button -->
+        <div style="position:fixed; bottom:85px; left:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div id="save-workout-btn" onclick="saveGymLog()" style="background:#00d68f; color:#000; width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-direction:column; box-shadow:0 10px 35px rgba(0,214,143,0.85); cursor:pointer; border:6px solid white; user-select:none; transition: transform 0.2s;">
+                <span style="font-size:28px; line-height:1;">💾</span>
+                <span style="font-size:11px; font-weight:900; line-height:1.5;">Save</span>
+            </div>
+        </div>
+
+        <!-- Rest Timer -->
+        <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" style="background:#1e2937; color:white; border:2px solid #475569; border-radius:9999px; padding:8px 16px; font-size:14px; min-width:130px;">
+                <option value="30">30s</option>
+                <option value="60" selected>60s</option>
+                <option value="90">90s</option>
+                <option value="120">2min</option>
+                <option value="180">3min</option>
+            </select>
+            <div id="rest-timer" onclick="toggleRestTimer()" style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:900; box-shadow:0 10px 35px rgba(0,212,255,0.85); cursor:pointer; border:6px solid white; user-select:none;">60</div>
+        </div>
     `;
 }
 
-// ========== NEW SWAP FUNCTIONALITY ==========
+// ========== SWAP EXERCISE ==========
 function swapExercise(exIdx, originalName) {
     window.tempSwapOriginal = originalName;
-    window.tempSwapIdx = exIdx;
-    
-    // Reuse Exercise Database picker from exercises.js
     if (typeof openExercisePicker === 'function') {
         openExercisePicker();
-        // Temporarily override selection handler (defined in exercises.js)
         window.tempOnSelectExercise = selectExerciseForSwap;
     } else {
-        showToast('Exercise database not loaded. Try navigating to Exercise Manager first.', 'error');
+        showToast('Open Exercise Manager once first to load picker', 'error');
     }
 }
 
 function selectExerciseForSwap(newName) {
     if (!window.tempSwapOriginal) return;
-    
     currentSubstitutions[window.tempSwapOriginal] = newName;
-    showToast(`✅ Replaced with ${newName}`, 'success');
+    showToast(`✅ Swapped to ${newName}`, 'success');
     renderGym();
-    
-    // Cleanup
     delete window.tempSwapOriginal;
-    delete window.tempSwapIdx;
 }
 
-// ========== UPDATED SAVE FUNCTION ==========
+// ========== SAVE WITH SUBSTITUTIONS ==========
 function saveGymLog() {
     const day = getTrainingProgram().days.find(d => d.id === currentGymDay);
     if (!day) return;
 
-    const exercisesData = day.exercises.map((ex, i) => {
-        const substitutedName = currentSubstitutions[ex.name] || ex.name;
-        
-        const weights = [];
-        const reps = [];
-        document.querySelectorAll(`.gym-weight[data-idx="${i}"]`).forEach(input => {
-            weights.push(parseFloat(input.value) || 0);
-        });
-        document.querySelectorAll(`.gym-reps[data-idx="${i}"]`).forEach(input => {
-            reps.push(parseInt(input.value) || 0);
-        });
+    const exercisesData = day.exercises.map((ex) => {
+        const subName = currentSubstitutions[ex.name] || ex.name;
+        // Collect inputs (same logic as before)
+        const weights = Array.from(document.querySelectorAll(`.gym-weight[data-idx="${day.exercises.indexOf(ex)}"]`)).map(el => parseFloat(el.value) || 0);
+        const reps = Array.from(document.querySelectorAll(`.gym-reps[data-idx="${day.exercises.indexOf(ex)}"]`)).map(el => parseInt(el.value) || 0);
+        const notesEl = document.querySelector(`.gym-notes[data-idx="${day.exercises.indexOf(ex)}"]`);
+        const notes = notesEl ? notesEl.value.trim() : '';
 
-        const notesInput = document.querySelector(`.gym-notes[data-idx="${i}"]`);
-        const notes = notesInput ? notesInput.value.trim() : '';
-
-        return {
-            name: substitutedName,
-            originalName: ex.name,           // Keep reference to original
-            weights: weights,
-            sets: reps,
-            notes: notes
-        };
+        return { name: subName, originalName: ex.name, weights, sets: reps, notes };
     });
 
     const log = {
@@ -240,18 +221,16 @@ function saveGymLog() {
         dayId: currentGymDay,
         dayName: day.name,
         exercises: exercisesData,
-        substitutions: { ...currentSubstitutions }  // Save for history/reference
+        substitutions: {...currentSubstitutions}
     };
 
     Storage.saveGymLog(log);
     showToast('✅ Workout saved!');
-    
-    // Reset substitutions for next session
     currentSubstitutions = {};
     renderGym();
 }
 
-// Existing functions (onGymDateChange, selectGymDay, etc.) - update to reset substitutions
+// Reset substitutions on date/day change
 function onGymDateChange(newDate) {
     currentGymDate = newDate;
     currentSubstitutions = {};
@@ -264,4 +243,6 @@ function selectGymDay(dayId) {
     renderGym();
 }
 
-// ... (keep all the rest of your original functions: onWeightChange, fillWeightsDown, fillFromPrevious, viewGymHistory, deleteGymLog, helpers, timer, etc. unchanged) ...
+// ========== KEEP ALL YOUR EXISTING HELPER FUNCTIONS BELOW ==========
+// onWeightChange, fillWeightsDown, fillFromPrevious, viewGymHistory, deleteGymLog, 
+// isLightColor, rest timer functions, etc. — copy them from your previous version if missing.
