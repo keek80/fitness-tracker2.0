@@ -232,12 +232,6 @@ function renderDBItem(ex) {
 }
 
 function selectExerciseFromDB(name, notes) {
-    // === GYM SWAP SUPPORT - Check first ===
-    if (window.tempOnSelectExercise) {
-        window.tempOnSelectExercise(name);
-        delete window.tempOnSelectExercise;
-        closeExercisePicker();
-        return;
     // Fill in the form fields
     const nameInput = document.getElementById('exNameInput');
     const notesInput = document.getElementById('exNotesInput');
