@@ -184,20 +184,25 @@ function renderGym() {
 // ========== SWAP EXERCISE ==========
 function swapExercise(exIdx, originalName) {
     window.tempSwapOriginal = originalName;
-    if (typeof openExercisePicker === 'function') {
+    
+    // Ensure we're on a page where the picker exists
+    if (typeof openExercisePicker !== 'function') {
+        showToast('Please visit Exercise Manager once to load the database', 'error');
+        navigate('exercises');
+        return;
+    }
+    
+    // Navigate to exercises page temporarily if needed, then open picker
+    if (!document.getElementById('exDBPicker')) {
+        navigate('exercises');
+        setTimeout(() => {
+            openExercisePicker();
+            window.tempOnSelectExercise = selectExerciseForSwap;
+        }, 300);
+    } else {
         openExercisePicker();
         window.tempOnSelectExercise = selectExerciseForSwap;
-    } else {
-        showToast('Open Exercise Manager once first to load picker', 'error');
     }
-}
-
-function selectExerciseForSwap(newName) {
-    if (!window.tempSwapOriginal) return;
-    currentSubstitutions[window.tempSwapOriginal] = newName;
-    showToast(`✅ Swapped to ${newName}`, 'success');
-    renderGym();
-    delete window.tempSwapOriginal;
 }
 
 // ========== SAVE WITH SUBSTITUTIONS ==========
