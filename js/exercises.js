@@ -111,14 +111,23 @@ function openExercisePicker() {
     dbPickerSearch = '';
     dbPickerCategory = 'All';
 
+    const picker = document.getElementById('exDBPicker');
+    if (!picker) {
+        console.error('Exercise picker modal not found in DOM');
+        showToast('Exercise picker not ready. Try again after visiting Exercise Manager.', 'error');
+        return;
+    }
+
     // Render category chips
     const catEl = document.getElementById('dbCategories');
-    catEl.innerHTML = DB_CATEGORIES.map(cat => `
-        <button class="ex-db-chip ${cat === dbPickerCategory ? 'active' : ''}"
-                onclick="selectDBCategory('${cat}')">
-            ${cat}
-        </button>
-    `).join('');
+    if (catEl) {
+        catEl.innerHTML = DB_CATEGORIES.map(cat => `
+            <button class="ex-db-chip ${cat === dbPickerCategory ? 'active' : ''}"
+                    onclick="selectDBCategory('${cat}')">
+                ${cat}
+            </button>
+        `).join('');
+    }
 
     // Clear search
     const searchEl = document.getElementById('dbSearchInput');
@@ -128,9 +137,9 @@ function openExercisePicker() {
     renderDBList();
 
     // Show picker
-    document.getElementById('exDBPicker').classList.remove('hidden');
+    picker.classList.remove('hidden');
 
-    // Focus search after a tick
+    // Focus search
     setTimeout(() => {
         const s = document.getElementById('dbSearchInput');
         if (s) s.focus();
