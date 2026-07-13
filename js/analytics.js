@@ -147,13 +147,15 @@ function renderExerciseProgressAnalytics(container, gymLogs) {
             if (entries.length < 2) return;
             const trend = typeof getExerciseTrend === 'function' ? getExerciseTrend(entries) : { direction: 'neutral', change: 0, bestWeight: 0 };
             html += `
-                <div class="card" style="margin-bottom:12px">
-                    <div style="display:flex;justify-content:space-between;">
-                        <strong>${name}</strong>
-                        <span class="${trend.direction === 'up' ? 'text-green' : 'text-red'}">${trend.direction === 'up' ? '↑' : '↓'} ${trend.change}%</span>
-                    </div>
-                    <small style="color:var(--text-muted)">${entries.length} sessions • Best: ${trend.bestWeight} lbs</small>
-                </div>`;
+    <div class="card" style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;">
+            <strong>${name}</strong>
+            <span class="${trend.direction === 'up' ? 'text-green' : trend.direction === 'down' ? 'text-red' : ''}">
+                ${trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→'} ${trend.change}%
+            </span>
+        </div>
+        <small style="color:var(--text-muted)">${entries.length} sessions • Best: ${trend.bestWeight} lbs (${trend.bestVolume} total volume)</small>
+    </div>`;
         });
     });
 
@@ -312,12 +314,32 @@ function buildExerciseHistory(dayLogs, day) {
 }
 
 function getExerciseTrend(entries) {
-    if (!entries || entries.length < 2) return { direction: 'neutral', change: 0, bestWeight: 0 };
+    if (!entries || entries.length < 2) return { direction: 'neutral', change: 0, bestWeight: 0, bestVolume: 0 };
+
     const sorted = [...entries].sort((a,b) => new Date(a.date) - new Date(b.date));
-    const latest = sorted[sorted.length - 1].bestWeight || 0;
-    const prev = sorted[sorted.length - 2].bestWeight || 0;
-    const bestWeight = Math.max(...sorted.map(e => e.bestWeight || 0));
-    if (latest > prev) return { direction: 'up', change: (((latest - prev) / Math.max(prev,1)) * 100).toFixed(1), bestWeight };
-    if (latest < prev) return { direction: 'down', change: (((prev - latest) / Math.max(prev,1)) * 100).toFixed(1), bestWeight };
-    return { direction: 'neutral', change: 0, bestWeight };
+    
+    // Calculate volume = weight * reps for each session
+    const volumes = sorted.map(entry => {
+        let volume = 0;
+        const weights = entry.weights || [];
+        const reps = entry.sets || [];
+        for (let i = 0; i < Math.min(weights.length, reps.length); i++) {
+            volume += (weights[i] || 0) * (reps[i] || 0);
+        }
+        return volume;
+    });
+
+    const bestVolume = Math.max(...volumes);
+    const recentVolume = volumes[volumes.length - 1];
+    const previousVolume = volumes[volumes.length - 2] || recentVolume;
+
+    const change = previousVolume > 0 ? Math.round(((recentVolume - previousVolume) / previousVolume) * 100) : 0;
+    const direction = change > 5 ? 'up' : change < -5 ? 'down' : 'neutral';
+
+    return {
+        direction,
+        change,
+        bestWeight: sorted[sorted.length-1].bestWeight || 0,
+        bestVolume: Math.round(bestVolume)
+    };
 }
