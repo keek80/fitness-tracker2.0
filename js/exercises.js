@@ -237,6 +237,13 @@ function selectExerciseFromDB(name, notes) {
     }, 150);
 
     showToast(`✅ ${name} selected`);
+
+// Support temporary swap from Gym Log
+    if (window.tempOnSelectExercise) {
+    window.tempOnSelectExercise(name);
+    delete window.tempOnSelectExercise;
+    return;
+}
 }
 
 function useCustomExerciseName() {
