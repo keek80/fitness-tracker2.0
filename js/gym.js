@@ -246,12 +246,18 @@ function selectGymDay(dayId) {
 // ========== TEMPORARY EXERCISE SWAP ==========
 function swapExercise(exIdx, originalName) {
     window.tempSwapOriginal = originalName;
-    if (typeof openExercisePicker === 'function') {
-        openExercisePicker();
-        window.tempOnSelectExercise = selectExerciseForSwap;
-    } else {
-        showToast('Go to Exercise Manager once to load the picker', 'error');
-    }
+    
+    // Navigate to Exercise Manager to ensure DOM/picker is loaded
+    navigate('exercises');
+    
+    setTimeout(() => {
+        if (typeof openExercisePicker === 'function') {
+            openExercisePicker();
+            window.tempOnSelectExercise = selectExerciseForSwap;
+        } else {
+            showToast('Exercise picker not ready. Try again.', 'error');
+        }
+    }, 600);
 }
 
 function selectExerciseForSwap(newName) {
