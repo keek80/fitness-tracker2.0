@@ -132,7 +132,7 @@ function renderExerciseProgressAnalytics(container, gymLogs) {
         return;
     }
 
-    container.innerHTML = `<div class="section-title">💪 Exercise Progress</div><div id="exProgress"></div>`;
+    container.innerHTML = `<div class="section-title">💪 Exercise Progress (Volume)</div><div id="exProgress"></div>`;
 
     const program = getTrainingProgram();
     let html = '';
@@ -142,26 +142,31 @@ function renderExerciseProgressAnalytics(container, gymLogs) {
         if (dayLogs.length < 2) return;
 
         const hist = typeof buildExerciseHistory === 'function' ? buildExerciseHistory(dayLogs, day) : {};
+
         Object.keys(hist).forEach(name => {
             const entries = hist[name];
             if (entries.length < 2) return;
-            const trend = typeof getExerciseTrend === 'function' ? getExerciseTrend(entries) : { direction: 'neutral', change: 0, bestWeight: 0 };
+
+            const trend = getWeeklyVolumeTrend(entries); // New helper
+
             html += `
-    <div class="card" style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;">
-            <strong>${name}</strong>
-            <span class="${trend.direction === 'up' ? 'text-green' : trend.direction === 'down' ? 'text-red' : ''}">
-                ${trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→'} ${trend.change}%
-            </span>
-        </div>
-        <small style="color:var(--text-muted)">${entries.length} sessions • Best: ${trend.bestWeight} lbs (${trend.bestVolume} total volume)</small>
-    </div>`;
+                <div class="card" style="margin-bottom:12px">
+                    <div style="display:flex;justify-content:space-between;">
+                        <strong>${name}</strong>
+                        <span class="${trend.direction === 'up' ? 'text-green' : trend.direction === 'down' ? 'text-red' : ''}">
+                            ${trend.direction === 'up' ? '↑' : trend.direction === 'down' ? '↓' : '→'} ${trend.change}%
+                        </span>
+                    </div>
+                    <small style="color:var(--text-muted)">
+                        This week: ${trend.thisWeekVolume} • Last week: ${trend.lastWeekVolume} 
+                        • Best: ${trend.bestWeight} lbs
+                    </small>
+                </div>`;
         });
     });
 
-    document.getElementById('exProgress').innerHTML = html || '<p style="text-align:center;padding:40px;color:var(--text-muted);">Not enough data yet.</p>';
+    document.getElementById('exProgress').innerHTML = html || '<p style="text-align:center;padding:40px;color:var(--text-muted);">Not enough data for weekly comparison yet.</p>';
 }
-
 // ========== PRS ==========
 function renderPRAnalytics(container, prs) {
     const entries = Object.entries(prs);
@@ -341,5 +346,49 @@ function getExerciseTrend(entries) {
         change,
         bestWeight: sorted[sorted.length-1].bestWeight || 0,
         bestVolume: Math.round(bestVolume)
+    };
+}
+function getWeeklyVolumeTrend(entries) {
+    if (!entries || entries.length < 2) return { direction: 'neutral', change: 0, thisWeekVolume: 0, lastWeekVolume: 0, bestWeight: 0 };
+
+    const sorted = [...entries].sort((a,b) => new Date(b.date) - new Date(a.date)); // newest first
+
+    let thisWeekVolume = 0;
+    let lastWeekVolume = 0;
+    let bestWeight = 0;
+
+    const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7*24*60*60*1000);
+
+    sorted.forEach(entry => {
+        const entryDate = new Date(entry.date);
+        let volume = 0;
+        const weights = entry.weights || [];
+        const reps = entry.sets || [];
+        for (let i = 0; i < Math.min(weights.length, reps.length); i++) {
+            volume += (weights[i] || 0) * (reps[i] || 0);
+        }
+
+        if (entryDate >= oneWeekAgo) {
+            thisWeekVolume += volume;
+        } else {
+            lastWeekVolume += volume;
+        }
+
+        bestWeight = Math.max(bestWeight, Math.max(...weights));
+    });
+
+    const change = lastWeekVolume > 0 
+        ? Math.round(((thisWeekVolume - lastWeekVolume) / lastWeekVolume) * 100) 
+        : (thisWeekVolume > 0 ? 100 : 0);
+
+    const direction = change > 10 ? 'up' : change < -10 ? 'down' : 'neutral';
+
+    return {
+        direction,
+        change,
+        thisWeekVolume: Math.round(thisWeekVolume),
+        lastWeekVolume: Math.round(lastWeekVolume),
+        bestWeight: Math.round(bestWeight)
     };
 }
