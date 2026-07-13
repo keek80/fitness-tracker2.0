@@ -355,15 +355,13 @@ function getWeeklyVolumeTrend(entries) {
 
     const sorted = [...entries].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    let thisWeekVolume = 0;
-    let lastWeekVolume = 0;
+    let recentVolume = 0;   // Last ~7 days
+    let priorVolume = 0;    // 7-14 days ago
     let bestWeight = 0;
 
     const now = new Date();
-    now.setHours(23, 59, 59, 999);
-
-    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
 
     sorted.forEach(entry => {
         const entryDate = new Date(entry.date);
@@ -377,24 +375,24 @@ function getWeeklyVolumeTrend(entries) {
 
         bestWeight = Math.max(bestWeight, Math.max(...weights, 0));
 
-        if (entryDate >= oneWeekAgo) {
-            thisWeekVolume += sessionVolume;
-        } else if (entryDate >= twoWeeksAgo) {
-            lastWeekVolume += sessionVolume;
+        if (entryDate >= sevenDaysAgo) {
+            recentVolume += sessionVolume;
+        } else if (entryDate >= fourteenDaysAgo) {
+            priorVolume += sessionVolume;
         }
     });
 
-    const change = lastWeekVolume > 0 
-        ? Math.round(((thisWeekVolume - lastWeekVolume) / lastWeekVolume) * 100) 
-        : (thisWeekVolume > 0 ? 100 : 0);
+    const change = priorVolume > 0 
+        ? Math.round(((recentVolume - priorVolume) / priorVolume) * 100) 
+        : (recentVolume > 0 ? 100 : 0);
 
-    const direction = change > 8 ? 'up' : change < -8 ? 'down' : 'neutral';
+    const direction = change > 5 ? 'up' : change < -5 ? 'down' : 'neutral';
 
     return {
         direction,
         change,
-        thisWeekVolume: Math.round(thisWeekVolume),
-        lastWeekVolume: Math.round(lastWeekVolume),
+        thisWeekVolume: Math.round(recentVolume),
+        lastWeekVolume: Math.round(priorVolume),
         bestWeight: Math.round(bestWeight)
     };
 }
