@@ -185,20 +185,15 @@ function renderGym() {
 function swapExercise(exIdx, originalName) {
     window.tempSwapOriginal = originalName;
     
-    // Ensure we're on a page where the picker exists
-    if (typeof openExercisePicker !== 'function') {
-        showToast('Please visit Exercise Manager once to load the database', 'error');
+    // Force navigate to Exercise Manager to ensure picker is initialized
+    if (!document.getElementById('exDBPicker') || typeof openExercisePicker !== 'function') {
+        showToast('Loading exercise database...', 'success');
         navigate('exercises');
-        return;
-    }
-    
-    // Navigate to exercises page temporarily if needed, then open picker
-    if (!document.getElementById('exDBPicker')) {
-        navigate('exercises');
+        
         setTimeout(() => {
             openExercisePicker();
             window.tempOnSelectExercise = selectExerciseForSwap;
-        }, 300);
+        }, 600); // Give time for page to render
     } else {
         openExercisePicker();
         window.tempOnSelectExercise = selectExerciseForSwap;
