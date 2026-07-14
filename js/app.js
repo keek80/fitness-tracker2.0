@@ -31,15 +31,17 @@ async function onSignedIn() {
     showMainAppView();
     initApp();
 
-    // === BAN CHECK ===
+        // === BAN CHECK ===
     const userId = SupabaseAuth.getUserId();
     if (userId) {
-        const { data: profile } = await _supabase
+        const { data: profile, error } = await _supabase
             .from('profiles')
             .select('banned')
             .eq('id', userId)
             .single();
-
+        
+        console.log('Ban check for user', userId, profile); // Debug
+        
         if (profile && profile.banned) {
             alert('Your account has been suspended. Contact support.');
             await SupabaseAuth.signOut();
