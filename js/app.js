@@ -31,6 +31,22 @@ async function onSignedIn() {
     showMainAppView();
     initApp();
 
+    // === BAN CHECK ===
+    const userId = SupabaseAuth.getUserId();
+    if (userId) {
+        const { data: profile } = await _supabase
+            .from('profiles')
+            .select('banned')
+            .eq('id', userId)
+            .single();
+
+        if (profile && profile.banned) {
+            alert('Your account has been suspended. Contact support.');
+            await SupabaseAuth.signOut();
+            return;
+        }
+    }
+
     const settings = Storage.getSettings();
     if (!settings.setupComplete) {
         navigate('goals');
