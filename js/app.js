@@ -69,6 +69,7 @@ function navigate(page) {
         exercises: '🛠️ Exercise Manager',
         settings:  '⚙️ Settings',
         goals:     '🎯 Set Your Goals'
+        admin:     '🛠️ Admin'
     };
     document.getElementById('pageTitle').textContent = titles[page] || 'Dashboard';
 
@@ -82,6 +83,7 @@ function navigate(page) {
         case 'exercises': renderExercises();  break;
         case 'settings':  renderSettings();   break;
         case 'goals':     renderGoals();      break;
+        case 'admin':     renderAdmin();      break;
     }
 
     closeDrawer();
