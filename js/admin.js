@@ -1,5 +1,5 @@
 // ========== ADMIN PAGE ==========
-const ADMIN_EMAILS = ['your-email@example.com']; // ← Change this to your actual email
+const ADMIN_EMAILS = ['keek@comcast.net']; // ← Change this to your actual email
 
 function isAdmin() {
     const email = SupabaseAuth.getUserEmail();
