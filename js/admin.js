@@ -43,12 +43,12 @@ async function quickPasswordReset() {
 
 async function loadUserList() {
     const listEl = document.getElementById('userList');
-    listEl.innerHTML = '<p>Loading users...</p>';
+    listEl.innerHTML = '<p>Loading...</p>';
 
     try {
         const { data, error } = await _supabase
             .from('profiles')
-            .select('*')
+            .select('id, email, full_name, created_at, banned')
             .order('created_at', { ascending: false });
 
         if (error || !data || data.length === 0) {
@@ -58,13 +58,16 @@ async function loadUserList() {
 
         let html = '';
         data.forEach(user => {
+            const status = user.banned ? '🚫 Banned' : '✅ Active';
             html += `
                 <div style="border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:8px;">
                     <strong>${user.email}</strong><br>
-                    <small>${user.full_name || 'No name'} • Joined ${new Date(user.created_at).toLocaleDateString()}</small><br>
+                    <small>${user.full_name || 'No name'} • ${status}</small><br>
                     <div style="margin-top:8px;">
-                        <button onclick="sendResetToUser('${user.email}')" style="font-size:12px; margin-right:4px;">Reset Password</button>
-                        <button onclick="deleteUser('${user.id}', '${user.email}')" style="font-size:12px; color:#ef4444;">Delete User</button>
+                        <button onclick="sendResetToUser('${user.email}')" style="font-size:12px;">Reset Password</button>
+                        <button onclick="toggleBan('${user.id}', ${!user.banned})" style="font-size:12px; margin-left:8px; color:${user.banned ? '#22c55e' : '#ef4444'}">
+                            ${user.banned ? 'Unban' : 'Ban'}
+                        </button>
                     </div>
                 </div>`;
         });
@@ -76,20 +79,18 @@ async function loadUserList() {
 
 function sendResetToUser(email) {
     if (confirm(`Send password reset to ${email}?`)) {
-        SupabaseAuth.resetPassword(email).then(() => alert('Reset email sent!'));
+        SupabaseAuth.resetPassword(email).then(() => alert('Sent!'));
     }
 }
 
-async function deleteUser(userId, email) {
-    if (!confirm(`DELETE user ${email} permanently? This cannot be undone.`)) return;
+async function toggleBan(userId, ban) {
+    if (!confirm(ban ? 'Ban this user?' : 'Unban this user?')) return;
 
-    try {
-        // Delete from profiles
-        await _supabase.from('profiles').delete().eq('id', userId);
-        // Note: Deleting from auth.users requires service role - use Supabase dashboard for full delete
-        alert(`Profile for ${email} deleted. Use Supabase dashboard to fully delete auth user if needed.`);
-        loadUserList();
-    } catch (err) {
-        alert('Error deleting user: ' + err.message);
-    }
+    await _supabase
+        .from('profiles')
+        .update({ banned: ban })
+        .eq('id', userId);
+
+    alert(ban ? 'User banned.' : 'User unbanned.');
+    loadUserList();
 }
