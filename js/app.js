@@ -195,6 +195,11 @@ async function startup() {
 
 // Listen for auth state changes
 _supabase?.auth?.onAuthStateChange?.((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') {
+        console.log('🔑 Password recovery mode activated');
+        navigate('update-password');
+    }
+    
     if (event === 'SIGNED_OUT') {
         Storage.clearAll();
         showAuthPageView();
