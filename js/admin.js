@@ -1,16 +1,15 @@
 // ========== ADMIN PAGE ==========
-const ADMIN_EMAILS = ['keek@comcast.net']; // ← Change this to your actual email
+const ADMIN_EMAILS = ['your-actual-email@gmail.com']; // ← Update this
 
 function isAdmin() {
     const email = SupabaseAuth.getUserEmail();
     return email && ADMIN_EMAILS.includes(email.toLowerCase());
 }
 
-function renderAdmin() {
+async function renderAdmin() {
     const page = document.getElementById('page-admin');
     if (!page) return;
 
-    // Hide page if not admin
     if (!isAdmin()) {
         page.innerHTML = `
             <div class="empty-state">
@@ -22,38 +21,80 @@ function renderAdmin() {
         return;
     }
 
-    // The HTML is already in index.html, so we just make sure it's visible
-    console.log('Admin page loaded');
+    // Full Admin UI
+    page.innerHTML = `
+        <div class="section-title">🛠️ Admin - User Support</div>
+        
+        <div class="card">
+            <div class="card-title">Password Reset</div>
+            <div class="form-group">
+                <label class="form-label">User Email</label>
+                <input type="email" id="adminResetEmail" class="form-input" placeholder="user@example.com">
+            </div>
+            <button class="btn btn-primary" onclick="sendPasswordReset()">📧 Send Password Reset Email</button>
+            <div id="adminResetStatus" style="margin-top:12px; font-size:13px;"></div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+            <div class="card-title">Registered Users</div>
+            <button class="btn btn-secondary" onclick="loadUserList()">🔄 Refresh User List</button>
+            <div id="userList" style="margin-top:12px; max-height:400px; overflow-y:auto;"></div>
+        </div>
+    `;
+
+    loadUserList(); // Load automatically
+}
+
+async function loadUserList() {
+    const listEl = document.getElementById('userList');
+    listEl.innerHTML = '<p>Loading users...</p>';
+
+    try {
+        const { data, error } = await _supabase
+            .from('profiles')
+            .select('id, email, full_name, created_at')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            listEl.innerHTML = '<p>No users found.</p>';
+            return;
+        }
+
+        let html = '<div style="display:flex; flex-direction:column; gap:8px;">';
+        data.forEach(user => {
+            html += `
+                <div style="border:1px solid var(--border); padding:10px; border-radius:8px;">
+                    <strong>${user.email}</strong><br>
+                    <small>${user.full_name || 'No name'} • Joined ${new Date(user.created_at).toLocaleDateString()}</small><br>
+                    <button onclick="sendPasswordResetTo('${user.email}')" style="margin-top:6px; font-size:12px;">Reset Password</button>
+                </div>`;
+        });
+        html += '</div>';
+        listEl.innerHTML = html;
+    } catch (err) {
+        listEl.innerHTML = `<p style="color:#ef4444">Error loading users: ${err.message}</p>`;
+    }
 }
 
 function sendPasswordReset() {
     const emailInput = document.getElementById('adminResetEmail');
-    const statusEl = document.getElementById('adminResetStatus');
-    
     const email = emailInput.value.trim();
-    if (!email) {
-        statusEl.innerHTML = `<span style="color:#ef4444">Please enter an email address.</span>`;
-        return;
-    }
-
-    statusEl.innerHTML = `Sending reset email to <strong>${email}</strong>...`;
+    if (!email) return alert('Enter an email');
 
     SupabaseAuth.resetPassword(email)
         .then(() => {
-            statusEl.innerHTML = `<span style="color:#22c55e">✅ Password reset email sent to ${email}</span>`;
+            alert(`Password reset email sent to ${email}`);
             emailInput.value = '';
         })
-        .catch(err => {
-            console.error(err);
-            statusEl.innerHTML = `<span style="color:#ef4444">Error: ${err.message}</span>`;
-        });
+        .catch(err => alert('Error: ' + err.message));
 }
 
-function copyCurrentUserEmail() {
-    const email = SupabaseAuth.getUserEmail();
-    if (email) {
-        navigator.clipboard.writeText(email).then(() => {
-            showToast('Email copied to clipboard');
-        });
+function sendPasswordResetTo(email) {
+    if (confirm(`Send password reset to ${email}?`)) {
+        SupabaseAuth.resetPassword(email)
+            .then(() => alert(`Reset email sent to ${email}`))
+            .catch(err => alert('Error: ' + err.message));
     }
 }
