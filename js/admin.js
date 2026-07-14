@@ -50,47 +50,36 @@ async function loadUserList() {
     listEl.innerHTML = '<p>Loading users...</p>';
 
     try {
-        // Try profiles table first
-        let { data, error } = await _supabase
+        const { data, error } = await _supabase
             .from('profiles')
             .select('id, email, full_name, created_at')
             .order('created_at', { ascending: false });
 
-        if (error || !data || data.length === 0) {
-            // Fallback: try to get from auth.users (limited info)
-            console.log('No profiles found, trying auth.users...');
-            const { data: authUsers, error: authError } = await _supabase.auth.admin.listUsers();
-            
-            if (authError) throw authError;
-            
-            data = authUsers.users.map(u => ({
-                id: u.id,
-                email: u.email,
-                full_name: u.user_metadata?.full_name || 'N/A',
-                created_at: u.created_at
-            }));
-        }
-
-        if (!data || data.length === 0) {
-            listEl.innerHTML = '<p>No users found in database.</p>';
+        if (error) {
+            console.warn('Profiles query failed:', error.message);
+            listEl.innerHTML = `<p style="color:#f59e0b">Could not load profiles.<br><small>Check RLS policy on profiles table.</small></p>`;
             return;
         }
 
-        let html = '<div style="display:flex; flex-direction:column; gap:8px;">';
+        if (!data || data.length === 0) {
+            listEl.innerHTML = `<p>No profiles found yet.<br>Users may exist but profiles table is empty.</p>`;
+            return;
+        }
+
+        let html = '<div style="display:flex;flex-direction:column;gap:8px;">';
         data.forEach(user => {
             html += `
-                <div style="border:1px solid var(--border); padding:12px; border-radius:8px; background:var(--bg-secondary);">
+                <div style="border:1px solid var(--border);padding:12px;border-radius:8px;">
                     <strong>${user.email}</strong><br>
                     <small>${user.full_name || 'No name'} • Joined ${new Date(user.created_at).toLocaleDateString()}</small><br>
-                    <button onclick="sendPasswordResetTo('${user.email}')" style="margin-top:8px; font-size:12px; padding:4px 8px;">Reset Password</button>
+                    <button onclick="sendPasswordResetTo('${user.email}')" style="margin-top:6px;font-size:12px;">Reset Password</button>
                 </div>`;
         });
         html += '</div>';
         listEl.innerHTML = html;
 
     } catch (err) {
-        console.error(err);
-        listEl.innerHTML = `<p style="color:#ef4444">Error: ${err.message}<br><small>Make sure RLS allows admin read on profiles table.</small></p>`;
+        listEl.innerHTML = `<p style="color:#ef4444">Error loading users: ${err.message}</p>`;
     }
 }
 
