@@ -22,3 +22,6 @@ async function updateUserPassword() {
         alert('Error: ' + err.message);
     }
 }
+// Make functions globally available for onclick handlers
+window.renderUpdatePassword = renderUpdatePassword;
+window.updateUserPassword = updateUserPassword;
