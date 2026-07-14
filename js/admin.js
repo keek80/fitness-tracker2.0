@@ -86,11 +86,15 @@ function sendResetToUser(email) {
 async function toggleBan(userId, ban) {
     if (!confirm(ban ? 'Ban this user?' : 'Unban this user?')) return;
 
-    await _supabase
+    const { error } = await _supabase
         .from('profiles')
         .update({ banned: ban })
         .eq('id', userId);
 
-    alert(ban ? 'User banned.' : 'User unbanned.');
-    loadUserList();
+    if (error) {
+        alert('Error: ' + error.message);
+    } else {
+        alert(ban ? 'User banned.' : 'User unbanned.');
+        loadUserList();
+    }
 }
