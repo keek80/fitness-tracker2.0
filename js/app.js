@@ -217,4 +217,9 @@ window.addEventListener('popstate', (e) => {
 // Load dark mode preference
 if (localStorage.getItem('darkMode') === 'true') {
     document.body.classList.add('dark-mode');
+ 
+    function renderUpdatePassword() {
+    console.log('Update password page rendered');
+    // The HTML is already in index.html, so no need to do more here
+}   
 }
