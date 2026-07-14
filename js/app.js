@@ -68,7 +68,7 @@ function navigate(page) {
         program:   '🏋️ Training Program',
         exercises: '🛠️ Exercise Manager',
         settings:  '⚙️ Settings',
-        goals:     '🎯 Set Your Goals'
+        goals:     '🎯 Set Your Goals',
         admin:     '🛠️ Admin'
     };
     document.getElementById('pageTitle').textContent = titles[page] || 'Dashboard';
