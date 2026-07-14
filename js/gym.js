@@ -1,8 +1,8 @@
-    // ========== GYM LOG PAGE ==========
+// ========== GYM LOG PAGE ==========
 let currentGymDay = null;
 let currentGymDate = getLocalDateString();
 let autoSelectedDay = false;
-let currentSubstitutions = {}; // {originalName: substituteName} for this session only
+let currentSubstitutions = {}; // Temporary swaps for this session only
 
 const DAY_NAME_MAP = {
     0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday',
@@ -181,32 +181,54 @@ function renderGym() {
     `;
 }
 
-// ========== SWAP EXERCISE ==========
-function swapExercise(exIdx, originalName) {
-    window.tempSwapOriginal = originalName;
-    
-    navigate('exercises'); // Make sure picker page is active
-    
-    setTimeout(() => {
-        if (typeof openExercisePicker === 'function') {
-            openExercisePicker();
-            window.tempOnSelectExercise = selectExerciseForSwap;
-        } else {
-            showToast('Exercise picker not available', 'error');
-        }
-    }, 500);
+// ========== WEIGHT HELPERS ==========
+function onWeightChange(exIdx, setIdx) {
+    if (setIdx !== 0) return;
+    const set1Input = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="0"]`);
+    if (!set1Input || !set1Input.value) return;
+
+    let s = 1;
+    while (true) {
+        const el = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="${s}"]`);
+        if (!el) break;
+        if (!el.value) el.value = set1Input.value;
+        s++;
+    }
 }
+
+function fillWeightsDown(exIdx, numSets) {
+    const set1 = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="0"]`);
+    if (!set1 || !set1.value) {
+        showToast('Enter Set 1 weight first', 'error');
+        return;
+    }
+    for (let s = 1; s < numSets; s++) {
+        const el = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="${s}"]`);
+        if (el) el.value = set1.value;
+    }
+}
+
+function fillFromPrevious(exIdx, prevWeights, prevReps) {
+    prevWeights.forEach((w, s) => {
+        const wEl = document.querySelector(`.gym-weight[data-idx="${exIdx}"][data-set="${s}"]`);
+        if (wEl && w > 0) wEl.value = w;
+    });
+    prevReps.forEach((r, s) => {
+        const rEl = document.querySelector(`.gym-reps[data-idx="${exIdx}"][data-set="${s}"]`);
+        if (rEl) rEl.value = r;
+    });
+}
+
 // ========== SAVE WITH SUBSTITUTIONS ==========
 function saveGymLog() {
     const day = getTrainingProgram().days.find(d => d.id === currentGymDay);
     if (!day) return;
 
-    const exercisesData = day.exercises.map((ex) => {
+    const exercisesData = day.exercises.map((ex, i) => {
         const subName = currentSubstitutions[ex.name] || ex.name;
-        // Collect inputs (same logic as before)
-        const weights = Array.from(document.querySelectorAll(`.gym-weight[data-idx="${day.exercises.indexOf(ex)}"]`)).map(el => parseFloat(el.value) || 0);
-        const reps = Array.from(document.querySelectorAll(`.gym-reps[data-idx="${day.exercises.indexOf(ex)}"]`)).map(el => parseInt(el.value) || 0);
-        const notesEl = document.querySelector(`.gym-notes[data-idx="${day.exercises.indexOf(ex)}"]`);
+        const weights = Array.from(document.querySelectorAll(`.gym-weight[data-idx="${i}"]`)).map(el => parseFloat(el.value) || 0);
+        const reps = Array.from(document.querySelectorAll(`.gym-reps[data-idx="${i}"]`)).map(el => parseInt(el.value) || 0);
+        const notesEl = document.querySelector(`.gym-notes[data-idx="${i}"]`);
         const notes = notesEl ? notesEl.value.trim() : '';
 
         return { name: subName, originalName: ex.name, weights, sets: reps, notes };
@@ -225,31 +247,11 @@ function saveGymLog() {
     currentSubstitutions = {};
     renderGym();
 }
-function isLightColor(hex) {
-    const r = parseInt(hex.slice(1,3), 16);
-    const g = parseInt(hex.slice(3,5), 16);
-    const b = parseInt(hex.slice(5,7), 16);
-    return (r * 299 + g * 587 + b * 114) / 1000 > 150;
-}
-// Reset substitutions on date/day change
-function onGymDateChange(newDate) {
-    currentGymDate = newDate;
-    currentSubstitutions = {};
-    renderGym();
-}
 
-function selectGymDay(dayId) {
-    currentGymDay = dayId;
-    currentSubstitutions = {};
-    renderGym();
-}
-// ========== TEMPORARY EXERCISE SWAP ==========
+// ========== SWAP EXERCISE ==========
 function swapExercise(exIdx, originalName) {
     window.tempSwapOriginal = originalName;
-    
-    // Navigate to Exercise Manager to ensure DOM/picker is loaded
     navigate('exercises');
-    
     setTimeout(() => {
         if (typeof openExercisePicker === 'function') {
             openExercisePicker();
@@ -257,18 +259,18 @@ function swapExercise(exIdx, originalName) {
         } else {
             showToast('Exercise picker not ready. Try again.', 'error');
         }
-    }, 600);
+    }, 500);
 }
 
 function selectExerciseForSwap(newName) {
     if (!window.tempSwapOriginal) return;
     currentSubstitutions[window.tempSwapOriginal] = newName;
-    showToast(`✅ Swapped to ${newName} for this session`, 'success');
+    showToast(`✅ Swapped to ${newName}`, 'success');
     renderGym();
     delete window.tempSwapOriginal;
 }
 
-// Make sure these reset substitutions
+// Reset substitutions
 function onGymDateChange(newDate) {
     currentGymDate = newDate;
     currentSubstitutions = {};
@@ -281,6 +283,62 @@ function selectGymDay(dayId) {
     renderGym();
 }
 
-// ========== KEEP ALL YOUR EXISTING HELPER FUNCTIONS BELOW ==========
-// onWeightChange, fillWeightsDown, fillFromPrevious, viewGymHistory, deleteGymLog, 
-// isLightColor, rest timer functions, etc. — copy them from your previous version if missing.
+// ========== REST TIMER ==========
+let restTimerInterval = null;
+let restTimeLeft = 60;
+let currentTimerPreset = 60;
+
+function toggleRestTimer() {
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        timerEl.classList.add('paused');
+        timerEl.textContent = '⏸';
+    } else {
+        if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
+        startRestTimer();
+    }
+}
+
+function startRestTimer() {
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    timerEl.classList.remove('paused');
+    timerEl.textContent = restTimeLeft;
+
+    restTimerInterval = setInterval(() => {
+        restTimeLeft--;
+        if (timerEl) timerEl.textContent = restTimeLeft;
+
+        if (restTimeLeft <= 0) {
+            clearInterval(restTimerInterval);
+            restTimerInterval = null;
+            timerEl.textContent = '✓';
+            timerEl.classList.add('paused');
+            // play sound if you have it
+            setTimeout(() => {
+                restTimeLeft = currentTimerPreset;
+                timerEl.textContent = restTimeLeft;
+                timerEl.classList.remove('paused');
+            }, 2200);
+        }
+    }, 1000);
+}
+
+function changeTimerDuration(seconds) {
+    currentTimerPreset = seconds;
+    restTimeLeft = seconds;
+    const timerEl = document.getElementById('rest-timer');
+    if (timerEl) timerEl.textContent = seconds;
+}
+
+function isLightColor(hex) {
+    const r = parseInt(hex.slice(1,3), 16);
+    const g = parseInt(hex.slice(3,5), 16);
+    const b = parseInt(hex.slice(5,7), 16);
+    return (r * 299 + g * 587 + b * 114) / 1000 > 150;
+}
