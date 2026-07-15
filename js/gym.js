@@ -256,10 +256,8 @@ function swapExercise(exIdx, originalName) {
         if (typeof openExercisePicker === 'function') {
             openExercisePicker();
             window.tempOnSelectExercise = selectExerciseForSwap;
-        } else {
-            showToast('Exercise picker not ready. Try again.', 'error');
         }
-    }, 500);
+    }, 400);
 }
 
 function selectExerciseForSwap(newName) {
@@ -270,7 +268,7 @@ function selectExerciseForSwap(newName) {
     delete window.tempSwapOriginal;
 }
 
-// Reset substitutions
+// ========== DATE / DAY CHANGE ==========
 function onGymDateChange(newDate) {
     currentGymDate = newDate;
     currentSubstitutions = {};
@@ -288,89 +286,40 @@ let restTimerInterval = null;
 let restTimeLeft = 60;
 let currentTimerPreset = 60;
 
-function toggleRestTimer() {
-    const timerEl = document.getElementById('rest-timer');
-    if (!timerEl) return;
-
-    if (restTimerInterval) {
-        clearInterval(restTimerInterval);
-        restTimerInterval = null;
-        timerEl.classList.add('paused');
-        timerEl.textContent = '⏸';
-    } else {
-        if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
-        startRestTimer();
-    }
-}
-
-// ========== SIMPLE REST TIMER ==========
-let restTimerInterval = null;
-let restTimeLeft = 60;
-let currentTimerPreset = 60;
-
 function playRingingSound() {
-    // Strong vibration fallback (works even if audio is blocked)
-    if (navigator.vibrate) {
-        navigator.vibrate([300, 100, 300, 100, 300]);
-    }
-
-    // Try audio
+    if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
         const gain = audioContext.createGain();
-
         oscillator.type = 'sine';
         oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
         gain.gain.setValueAtTime(0.8, audioContext.currentTime);
-
         oscillator.connect(gain);
         gain.connect(audioContext.destination);
         oscillator.start();
-
-        setTimeout(() => oscillator.frequency.setValueAtTime(600, audioContext.currentTime), 150);
-        setTimeout(() => {
-            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.6);
-            oscillator.stop(audioContext.currentTime + 0.8);
-        }, 600);
-    } catch (e) {
-        console.log('Audio blocked, using vibration only');
-    }
-
-    // Visual feedback
-    const timerEl = document.getElementById('rest-timer');
-    if (timerEl) {
-        timerEl.style.background = '#ef4444';
-        setTimeout(() => {
-            if (timerEl) timerEl.style.background = '#00d4ff';
-        }, 800);
-    }
+        setTimeout(() => oscillator.stop(audioContext.currentTime + 0.8), 600);
+    } catch (e) {}
 }
 
 function startRestTimer() {
     if (restTimerInterval) clearInterval(restTimerInterval);
-    
     const timerEl = document.getElementById('rest-timer');
     if (!timerEl) return;
-
     timerEl.classList.remove('paused');
     timerEl.textContent = restTimeLeft;
 
     restTimerInterval = setInterval(() => {
         restTimeLeft--;
         if (timerEl) timerEl.textContent = restTimeLeft;
-
         if (restTimeLeft <= 0) {
             clearInterval(restTimerInterval);
             restTimerInterval = null;
-            
             if (timerEl) {
                 timerEl.textContent = '✓';
                 timerEl.classList.add('paused');
             }
-            
             playRingingSound();
-            
             setTimeout(() => {
                 if (timerEl) {
                     restTimeLeft = currentTimerPreset;
@@ -385,7 +334,6 @@ function startRestTimer() {
 function toggleRestTimer() {
     const timerEl = document.getElementById('rest-timer');
     if (!timerEl) return;
-
     if (restTimerInterval) {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
@@ -400,10 +348,8 @@ function toggleRestTimer() {
 function changeTimerDuration(seconds) {
     currentTimerPreset = seconds;
     restTimeLeft = seconds;
-    
     const timerEl = document.getElementById('rest-timer');
     if (timerEl) timerEl.textContent = seconds;
-
     if (restTimerInterval) {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
@@ -418,13 +364,7 @@ function cleanupWorkoutTimer() {
     }
 }
 
-function changeTimerDuration(seconds) {
-    currentTimerPreset = seconds;
-    restTimeLeft = seconds;
-    const timerEl = document.getElementById('rest-timer');
-    if (timerEl) timerEl.textContent = seconds;
-}
-
+// ========== HELPERS ==========
 function isLightColor(hex) {
     const r = parseInt(hex.slice(1,3), 16);
     const g = parseInt(hex.slice(3,5), 16);
