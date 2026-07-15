@@ -320,7 +320,39 @@ function startRestTimer() {
             timerEl.textContent = '✓';
             timerEl.classList.add('paused');
             // play sound if you have it
-            playRingingSound();
+            function playRingingSound() {
+    try {
+        // Try vibration first (works even if audio is blocked)
+        if (navigator.vibrate) {
+            navigator.vibrate([150, 100, 150, 100, 150]);
+        }
+
+        // Try AudioContext (requires user interaction)
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        gain.gain.setValueAtTime(0.6, audioContext.currentTime);
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start();
+
+        setTimeout(() => {
+            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+        }, 200);
+
+        setTimeout(() => {
+            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.8);
+            oscillator.stop(audioContext.currentTime + 1);
+        }, 800);
+    } catch (e) {
+        console.log('Sound fallback');
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    }
+}
             setTimeout(() => {
                 restTimeLeft = currentTimerPreset;
                 timerEl.textContent = restTimeLeft;
