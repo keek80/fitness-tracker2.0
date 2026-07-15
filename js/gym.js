@@ -303,7 +303,53 @@ function toggleRestTimer() {
     }
 }
 
+// ========== SIMPLE REST TIMER ==========
+let restTimerInterval = null;
+let restTimeLeft = 60;
+let currentTimerPreset = 60;
+
+function playRingingSound() {
+    // Strong vibration fallback (works even if audio is blocked)
+    if (navigator.vibrate) {
+        navigator.vibrate([300, 100, 300, 100, 300]);
+    }
+
+    // Try audio
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        gain.gain.setValueAtTime(0.8, audioContext.currentTime);
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start();
+
+        setTimeout(() => oscillator.frequency.setValueAtTime(600, audioContext.currentTime), 150);
+        setTimeout(() => {
+            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.6);
+            oscillator.stop(audioContext.currentTime + 0.8);
+        }, 600);
+    } catch (e) {
+        console.log('Audio blocked, using vibration only');
+    }
+
+    // Visual feedback
+    const timerEl = document.getElementById('rest-timer');
+    if (timerEl) {
+        timerEl.style.background = '#ef4444';
+        setTimeout(() => {
+            if (timerEl) timerEl.style.background = '#00d4ff';
+        }, 800);
+    }
+}
+
 function startRestTimer() {
+    if (restTimerInterval) clearInterval(restTimerInterval);
+    
     const timerEl = document.getElementById('rest-timer');
     if (!timerEl) return;
 
@@ -317,49 +363,59 @@ function startRestTimer() {
         if (restTimeLeft <= 0) {
             clearInterval(restTimerInterval);
             restTimerInterval = null;
-            timerEl.textContent = '✓';
-            timerEl.classList.add('paused');
-            // play sound if you have it
-            function playRingingSound() {
-    try {
-        // Try vibration first (works even if audio is blocked)
-        if (navigator.vibrate) {
-            navigator.vibrate([150, 100, 150, 100, 150]);
-        }
-
-        // Try AudioContext (requires user interaction)
-        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        gain.gain.setValueAtTime(0.6, audioContext.currentTime);
-
-        oscillator.connect(gain);
-        gain.connect(audioContext.destination);
-        oscillator.start();
-
-        setTimeout(() => {
-            oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
-        }, 200);
-
-        setTimeout(() => {
-            gain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.8);
-            oscillator.stop(audioContext.currentTime + 1);
-        }, 800);
-    } catch (e) {
-        console.log('Sound fallback');
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-    }
-}
+            
+            if (timerEl) {
+                timerEl.textContent = '✓';
+                timerEl.classList.add('paused');
+            }
+            
+            playRingingSound();
+            
             setTimeout(() => {
-                restTimeLeft = currentTimerPreset;
-                timerEl.textContent = restTimeLeft;
-                timerEl.classList.remove('paused');
-            }, 2200);
+                if (timerEl) {
+                    restTimeLeft = currentTimerPreset;
+                    timerEl.textContent = restTimeLeft;
+                    timerEl.classList.remove('paused');
+                }
+            }, 1500);
         }
     }, 1000);
+}
+
+function toggleRestTimer() {
+    const timerEl = document.getElementById('rest-timer');
+    if (!timerEl) return;
+
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        timerEl.classList.add('paused');
+        timerEl.textContent = '⏸';
+    } else {
+        if (restTimeLeft <= 0) restTimeLeft = currentTimerPreset;
+        startRestTimer();
+    }
+}
+
+function changeTimerDuration(seconds) {
+    currentTimerPreset = seconds;
+    restTimeLeft = seconds;
+    
+    const timerEl = document.getElementById('rest-timer');
+    if (timerEl) timerEl.textContent = seconds;
+
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+        startRestTimer();
+    }
+}
+
+function cleanupWorkoutTimer() {
+    if (restTimerInterval) {
+        clearInterval(restTimerInterval);
+        restTimerInterval = null;
+    }
 }
 
 function changeTimerDuration(seconds) {
