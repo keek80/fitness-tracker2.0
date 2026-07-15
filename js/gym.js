@@ -320,6 +320,7 @@ function startRestTimer() {
             timerEl.textContent = '✓';
             timerEl.classList.add('paused');
             // play sound if you have it
+            playRingingSound();
             setTimeout(() => {
                 restTimeLeft = currentTimerPreset;
                 timerEl.textContent = restTimeLeft;
