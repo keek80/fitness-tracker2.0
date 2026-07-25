@@ -399,45 +399,36 @@ function getWeeklyVolumeTrend(entries) {
     };
 }
 // ========== WORKOUT HISTORY (DATE SELECTOR + CALENDAR) ==========
-let historySelectedDate = null; // YYYY-MM-DD
-let historyCalYear = null;      // year shown on calendar
-let historyCalMonth = null;     // 0-11
+let historySelectedDate = null;
+let historyCalYear = null;
+let historyCalMonth = null;
 
 function renderWorkoutHistory(container, gymLogs) {
-    // Default selected date = today
     if (!historySelectedDate) {
         historySelectedDate = typeof getLocalDateString === 'function'
             ? getLocalDateString()
             : new Date().toISOString().split('T')[0];
     }
 
-    // Default calendar month = month of selected date
     const sel = new Date(historySelectedDate + 'T12:00:00');
     if (historyCalYear === null || historyCalMonth === null) {
         historyCalYear = sel.getFullYear();
         historyCalMonth = sel.getMonth();
     }
 
-    // Dates that have at least one gym log
     const workoutDates = new Set((gymLogs || []).map(l => l.date));
-
     const dayLogs = (gymLogs || []).filter(l => l.date === historySelectedDate);
 
     let html = `
         <div class="section-title">📜 Workout History</div>
-
         <div class="card" style="margin-bottom:16px; padding:14px">
             <label class="form-label" style="margin-bottom:8px; display:block">Select Date</label>
             <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px">
-                <input type="date"
-                       id="historyDateInput"
-                       class="form-input"
-                       value="${historySelectedDate}"
-                       style="flex:1; min-width:160px"
+                <input type="date" id="historyDateInput" class="form-input"
+                       value="${historySelectedDate}" style="flex:1; min-width:160px"
                        onchange="onHistoryDateChange(this.value)">
                 <button class="btn btn-secondary btn-sm" onclick="setHistoryDateToday()">Today</button>
             </div>
-
             ${renderHistoryCalendar(workoutDates)}
         </div>
     `;
@@ -459,7 +450,6 @@ function renderWorkoutHistory(container, gymLogs) {
     dayLogs.forEach(log => {
         const dayName = log.dayName || log.dayId || 'Workout';
         const exercises = log.exercises || [];
-
         html += `
             <div class="card" style="margin-bottom:14px">
                 <div style="font-weight:600; font-size:16px; margin-bottom:4px">${dayName}</div>
@@ -474,6 +464,47 @@ function renderWorkoutHistory(container, gymLogs) {
     container.innerHTML = html;
 }
 
+function renderHistoryExercises(exercises) {
+    if (!exercises || exercises.length === 0) {
+        return `<div style="color:var(--text-muted); font-size:13px">No exercises recorded.</div>`;
+    }
+
+    let html = '';
+    exercises.forEach(ex => {
+        const name = ex.name || 'Unknown Exercise';
+        const weights = ex.weights || [];
+        const reps = ex.sets || [];
+        const setCount = Math.max(weights.length, reps.length, 0);
+
+        let setLines = '';
+        let hasData = false;
+        for (let i = 0; i < setCount; i++) {
+            const w = Number(weights[i]) || 0;
+            const r = Number(reps[i]) || 0;
+            if (w > 0 || r > 0) {
+                hasData = true;
+                setLines += `
+                    <div style="font-size:13px; padding:3px 0; color:var(--text-muted)">
+                        Set ${i + 1}: <strong style="color:var(--text)">${w || '—'}</strong> lbs ×
+                        <strong style="color:var(--text)">${r || '—'}</strong>
+                    </div>`;
+            }
+        }
+        if (!hasData) {
+            setLines = `<div style="font-size:13px; color:var(--text-muted)">No sets logged</div>`;
+        }
+
+        html += `
+            <div style="margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border, #2d3748)">
+                <div style="font-weight:600; font-size:14px; margin-bottom:4px">${name}</div>
+                ${setLines}
+            </div>
+        `;
+    });
+
+    return html || `<div style="color:var(--text-muted)">No exercises recorded.</div>`;
+}
+
 function renderHistoryCalendar(workoutDates) {
     const year = historyCalYear;
     const month = historyCalMonth;
@@ -482,7 +513,7 @@ function renderHistoryCalendar(workoutDates) {
     const weekdays = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
     const firstDay = new Date(year, month, 1);
-    const startWeekday = firstDay.getDay(); // 0 = Sun
+    const startWeekday = firstDay.getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     const todayStr = typeof getLocalDateString === 'function'
@@ -490,8 +521,6 @@ function renderHistoryCalendar(workoutDates) {
         : new Date().toISOString().split('T')[0];
 
     let cells = '';
-
-    // Leading empty cells
     for (let i = 0; i < startWeekday; i++) {
         cells += `<div style="aspect-ratio:1; min-height:36px"></div>`;
     }
@@ -519,15 +548,11 @@ function renderHistoryCalendar(workoutDates) {
         }
 
         cells += `
-            <button type="button"
-                    onclick="onHistoryDateChange('${dateStr}')"
-                    style="
-                        aspect-ratio:1; min-height:36px; border-radius:8px;
-                        border:${border}; background:${bg}; color:${color};
-                        font-size:13px; font-weight:${fontWeight}; cursor:pointer;
-                        display:flex; flex-direction:column; align-items:center; justify-content:center;
-                        padding:2px; position:relative;
-                    ">
+            <button type="button" onclick="onHistoryDateChange('${dateStr}')"
+                style="aspect-ratio:1; min-height:36px; border-radius:8px; border:${border};
+                       background:${bg}; color:${color}; font-size:13px; font-weight:${fontWeight};
+                       cursor:pointer; display:flex; flex-direction:column; align-items:center;
+                       justify-content:center; padding:2px;">
                 ${day}
                 ${hasWorkout && !isSelected ? '<span style="width:4px;height:4px;border-radius:50%;background:#00d68f;margin-top:2px"></span>' : ''}
             </button>
@@ -546,12 +571,10 @@ function renderHistoryCalendar(workoutDates) {
             <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; margin-bottom:6px">
                 ${weekdays.map(w => `<div style="font-size:11px; color:var(--text-muted); padding:4px 0">${w}</div>`).join('')}
             </div>
-            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px">
-                ${cells}
-            </div>
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px">${cells}</div>
             <div style="display:flex; gap:12px; margin-top:10px; font-size:11px; color:var(--text-muted); flex-wrap:wrap">
-                <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(0,214,143,0.35);border:1px solid rgba(0,214,143,0.5);vertical-align:middle;margin-right:4px"></span> Has workout</span>
-                <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent-blue,#0095ff);vertical-align:middle;margin-right:4px"></span> Selected</span>
+                <span>Green = has workout</span>
+                <span>Blue = selected</span>
             </div>
         </div>
     `;
@@ -572,7 +595,6 @@ function shiftHistoryCalendar(deltaMonths) {
 function onHistoryDateChange(dateStr) {
     if (!dateStr) return;
     historySelectedDate = dateStr;
-    // Jump calendar to that month
     const d = new Date(dateStr + 'T12:00:00');
     historyCalYear = d.getFullYear();
     historyCalMonth = d.getMonth();
@@ -586,118 +608,5 @@ function setHistoryDateToday() {
     const d = new Date(historySelectedDate + 'T12:00:00');
     historyCalYear = d.getFullYear();
     historyCalMonth = d.getMonth();
-    renderAnalytics();
-}
-
-    // Find all logs for the selected date
-    const dayLogs = (gymLogs || []).filter(l => l.date === historySelectedDate);
-
-    let html = `
-        <div class="section-title">📜 Workout History</div>
-
-        <div class="card" style="margin-bottom:16px; padding:14px">
-            <label class="form-label" style="margin-bottom:8px; display:block">Select Date</label>
-            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
-                <input type="date"
-                       id="historyDateInput"
-                       class="form-input"
-                       value="${historySelectedDate}"
-                       style="flex:1; min-width:160px"
-                       onchange="onHistoryDateChange(this.value)">
-                <button class="btn btn-secondary btn-sm" onclick="setHistoryDateToday()">Today</button>
-            </div>
-        </div>
-    `;
-
-    if (dayLogs.length === 0) {
-        html += `
-            <div class="empty-state" style="padding:30px 16px">
-                <div style="font-size:28px; margin-bottom:8px">📭</div>
-                <p>No workout logged on this date.</p>
-                <p style="font-size:13px; color:var(--text-muted); margin-top:6px">
-                    ${formatDateShort(historySelectedDate)}
-                </p>
-            </div>
-        `;
-        container.innerHTML = html;
-        return;
-    }
-
-    // One or more sessions on this date
-    dayLogs.forEach(log => {
-        const dayName = log.dayName || log.dayId || 'Workout';
-        const exercises = log.exercises || [];
-
-        html += `
-            <div class="card" style="margin-bottom:14px">
-                <div style="font-weight:600; font-size:16px; margin-bottom:4px">${dayName}</div>
-                <div style="font-size:12px; color:var(--text-muted); margin-bottom:14px">
-                    ${formatDateShort(log.date)} · ${exercises.length} exercise${exercises.length !== 1 ? 's' : ''}
-                </div>
-                ${renderHistoryExercises(exercises)}
-            </div>
-        `;
-    });
-
-    container.innerHTML = html;
-}
-
-function renderHistoryExercises(exercises) {
-    if (!exercises || exercises.length === 0) {
-        return `<div style="color:var(--text-muted); font-size:13px">No exercises recorded.</div>`;
-    }
-
-    let html = '';
-
-    exercises.forEach(ex => {
-        const name = ex.name || 'Unknown Exercise';
-        const weights = ex.weights || [];
-        const reps = ex.sets || []; // reps live in the "sets" array in this app
-        const setCount = Math.max(weights.length, reps.length, 0);
-
-        let setLines = '';
-        let hasData = false;
-
-        for (let i = 0; i < setCount; i++) {
-            const w = Number(weights[i]) || 0;
-            const r = Number(reps[i]) || 0;
-            if (w > 0 || r > 0) {
-                hasData = true;
-                setLines += `
-                    <div style="font-size:13px; padding:3px 0; color:var(--text-muted)">
-                        Set ${i + 1}: <strong style="color:var(--text)">${w || '—'}</strong> lbs ×
-                        <strong style="color:var(--text)">${r || '—'}</strong>
-                    </div>`;
-            }
-        }
-
-        if (!hasData) {
-            setLines = `<div style="font-size:13px; color:var(--text-muted)">No sets logged</div>`;
-        }
-
-        html += `
-            <div style="margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border, #2d3748)">
-                <div style="font-weight:600; font-size:14px; margin-bottom:4px">${name}</div>
-                ${setLines}
-            </div>
-        `;
-    });
-
-    // Remove last border
-    html = html.replace(/border-bottom:1px solid var\(--border, #2d3748\)">(\s*<div style="font-weight:600[^>]*>[^<]*<\/div>\s*[\s\S]*?)$/, '">$1');
-
-    return html || `<div style="color:var(--text-muted)">No exercises recorded.</div>`;
-}
-
-function onHistoryDateChange(dateStr) {
-    if (!dateStr) return;
-    historySelectedDate = dateStr;
-    renderAnalytics();
-}
-
-function setHistoryDateToday() {
-    historySelectedDate = typeof getLocalDateString === 'function'
-        ? getLocalDateString()
-        : new Date().toISOString().split('T')[0];
     renderAnalytics();
 }
