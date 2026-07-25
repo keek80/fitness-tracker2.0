@@ -552,3 +552,41 @@ function selectColor(btn, color) {
     btn.classList.add('selected');
     document.getElementById('dayColorInput').value = color;
 }
+// ==================== WORKOUT BUILDER (SPLIT TEMPLATES) ====================
+
+function openSplitBuilder() {
+    const templates = Object.values(SPLIT_TEMPLATES);
+    const body = `
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px">
+            Choose a starting split. This will replace your current program. You can fully customize it afterward.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+            ${templates.map(t => `
+                <button class="btn btn-secondary" style="text-align:left; padding:14px"
+                        onclick="applySplitTemplate('${t.id}')">
+                    <div style="font-weight:600; font-size:15px">${t.name}</div>
+                    <div style="font-size:12px; opacity:0.8; margin-top:4px">${t.description}</div>
+                </button>
+            `).join('')}
+        </div>
+    `;
+    openExModal('🏗️ Workout Builder', body);
+}
+
+function applySplitTemplate(templateId) {
+    const template = SPLIT_TEMPLATES[templateId];
+    if (!template) return;
+
+    if (isCustomProgram()) {
+        if (!confirm(`Replace your current custom program with the "${template.name}" template?\n\nThis cannot be undone.`)) return;
+    } else {
+        if (!confirm(`Load the "${template.name}" template?`)) return;
+    }
+
+    // Deep clone so we don't mutate the original template
+    const newProgram = JSON.parse(JSON.stringify({ days: template.days }));
+    saveTrainingProgram(newProgram);
+    closeExModal();
+    renderExercises();
+    showToast(`Loaded ${template.name} template`);
+}
