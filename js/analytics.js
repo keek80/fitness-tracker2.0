@@ -398,16 +398,196 @@ function getWeeklyVolumeTrend(entries) {
         bestWeight: Math.round(bestWeight)
     };
 }
-// ========== WORKOUT HISTORY (DATE SELECTOR) ==========
+// ========== WORKOUT HISTORY (DATE SELECTOR + CALENDAR) ==========
 let historySelectedDate = null; // YYYY-MM-DD
+let historyCalYear = null;      // year shown on calendar
+let historyCalMonth = null;     // 0-11
 
 function renderWorkoutHistory(container, gymLogs) {
-    // Default to today if nothing selected yet
+    // Default selected date = today
     if (!historySelectedDate) {
         historySelectedDate = typeof getLocalDateString === 'function'
             ? getLocalDateString()
             : new Date().toISOString().split('T')[0];
     }
+
+    // Default calendar month = month of selected date
+    const sel = new Date(historySelectedDate + 'T12:00:00');
+    if (historyCalYear === null || historyCalMonth === null) {
+        historyCalYear = sel.getFullYear();
+        historyCalMonth = sel.getMonth();
+    }
+
+    // Dates that have at least one gym log
+    const workoutDates = new Set((gymLogs || []).map(l => l.date));
+
+    const dayLogs = (gymLogs || []).filter(l => l.date === historySelectedDate);
+
+    let html = `
+        <div class="section-title">📜 Workout History</div>
+
+        <div class="card" style="margin-bottom:16px; padding:14px">
+            <label class="form-label" style="margin-bottom:8px; display:block">Select Date</label>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px">
+                <input type="date"
+                       id="historyDateInput"
+                       class="form-input"
+                       value="${historySelectedDate}"
+                       style="flex:1; min-width:160px"
+                       onchange="onHistoryDateChange(this.value)">
+                <button class="btn btn-secondary btn-sm" onclick="setHistoryDateToday()">Today</button>
+            </div>
+
+            ${renderHistoryCalendar(workoutDates)}
+        </div>
+    `;
+
+    if (dayLogs.length === 0) {
+        html += `
+            <div class="empty-state" style="padding:30px 16px">
+                <div style="font-size:28px; margin-bottom:8px">📭</div>
+                <p>No workout logged on this date.</p>
+                <p style="font-size:13px; color:var(--text-muted); margin-top:6px">
+                    ${formatDateShort(historySelectedDate)}
+                </p>
+            </div>
+        `;
+        container.innerHTML = html;
+        return;
+    }
+
+    dayLogs.forEach(log => {
+        const dayName = log.dayName || log.dayId || 'Workout';
+        const exercises = log.exercises || [];
+
+        html += `
+            <div class="card" style="margin-bottom:14px">
+                <div style="font-weight:600; font-size:16px; margin-bottom:4px">${dayName}</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:14px">
+                    ${formatDateShort(log.date)} · ${exercises.length} exercise${exercises.length !== 1 ? 's' : ''}
+                </div>
+                ${renderHistoryExercises(exercises)}
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
+function renderHistoryCalendar(workoutDates) {
+    const year = historyCalYear;
+    const month = historyCalMonth;
+    const monthNames = ['January','February','March','April','May','June',
+                        'July','August','September','October','November','December'];
+    const weekdays = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+
+    const firstDay = new Date(year, month, 1);
+    const startWeekday = firstDay.getDay(); // 0 = Sun
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const todayStr = typeof getLocalDateString === 'function'
+        ? getLocalDateString()
+        : new Date().toISOString().split('T')[0];
+
+    let cells = '';
+
+    // Leading empty cells
+    for (let i = 0; i < startWeekday; i++) {
+        cells += `<div style="aspect-ratio:1; min-height:36px"></div>`;
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const hasWorkout = workoutDates.has(dateStr);
+        const isSelected = dateStr === historySelectedDate;
+        const isToday = dateStr === todayStr;
+
+        let bg = 'transparent';
+        let color = 'var(--text)';
+        let border = '1px solid transparent';
+        let fontWeight = '500';
+
+        if (isSelected) {
+            bg = 'var(--accent-blue, #0095ff)';
+            color = '#fff';
+            fontWeight = '700';
+        } else if (hasWorkout) {
+            bg = 'rgba(0, 214, 143, 0.2)';
+            border = '1px solid rgba(0, 214, 143, 0.5)';
+        } else if (isToday) {
+            border = '1px solid var(--accent-blue, #0095ff)';
+        }
+
+        cells += `
+            <button type="button"
+                    onclick="onHistoryDateChange('${dateStr}')"
+                    style="
+                        aspect-ratio:1; min-height:36px; border-radius:8px;
+                        border:${border}; background:${bg}; color:${color};
+                        font-size:13px; font-weight:${fontWeight}; cursor:pointer;
+                        display:flex; flex-direction:column; align-items:center; justify-content:center;
+                        padding:2px; position:relative;
+                    ">
+                ${day}
+                ${hasWorkout && !isSelected ? '<span style="width:4px;height:4px;border-radius:50%;background:#00d68f;margin-top:2px"></span>' : ''}
+            </button>
+        `;
+    }
+
+    return `
+        <div style="margin-top:4px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px">
+                <button type="button" class="btn btn-secondary btn-sm" style="padding:6px 10px"
+                        onclick="shiftHistoryCalendar(-1)">‹</button>
+                <div style="font-weight:600; font-size:14px">${monthNames[month]} ${year}</div>
+                <button type="button" class="btn btn-secondary btn-sm" style="padding:6px 10px"
+                        onclick="shiftHistoryCalendar(1)">›</button>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; margin-bottom:6px">
+                ${weekdays.map(w => `<div style="font-size:11px; color:var(--text-muted); padding:4px 0">${w}</div>`).join('')}
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px">
+                ${cells}
+            </div>
+            <div style="display:flex; gap:12px; margin-top:10px; font-size:11px; color:var(--text-muted); flex-wrap:wrap">
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(0,214,143,0.35);border:1px solid rgba(0,214,143,0.5);vertical-align:middle;margin-right:4px"></span> Has workout</span>
+                <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--accent-blue,#0095ff);vertical-align:middle;margin-right:4px"></span> Selected</span>
+            </div>
+        </div>
+    `;
+}
+
+function shiftHistoryCalendar(deltaMonths) {
+    historyCalMonth += deltaMonths;
+    if (historyCalMonth < 0) {
+        historyCalMonth = 11;
+        historyCalYear -= 1;
+    } else if (historyCalMonth > 11) {
+        historyCalMonth = 0;
+        historyCalYear += 1;
+    }
+    renderAnalytics();
+}
+
+function onHistoryDateChange(dateStr) {
+    if (!dateStr) return;
+    historySelectedDate = dateStr;
+    // Jump calendar to that month
+    const d = new Date(dateStr + 'T12:00:00');
+    historyCalYear = d.getFullYear();
+    historyCalMonth = d.getMonth();
+    renderAnalytics();
+}
+
+function setHistoryDateToday() {
+    historySelectedDate = typeof getLocalDateString === 'function'
+        ? getLocalDateString()
+        : new Date().toISOString().split('T')[0];
+    const d = new Date(historySelectedDate + 'T12:00:00');
+    historyCalYear = d.getFullYear();
+    historyCalMonth = d.getMonth();
+    renderAnalytics();
+}
 
     // Find all logs for the selected date
     const dayLogs = (gymLogs || []).filter(l => l.date === historySelectedDate);
