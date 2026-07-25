@@ -14,16 +14,34 @@ function renderExercises() {
     page.innerHTML = `
         <div class="section-title">🛠️ Exercise Manager</div>
 
-        ${custom ? `
-            <div class="card" style="border-left: 3px solid var(--accent-orange); padding: 12px 14px;">
-                <div style="font-size:12px; color:var(--accent-orange)">⚠️ You're using a custom program. Changes are saved automatically.</div>
-            </div>
-        ` : `
-            <div class="card" style="border-left: 3px solid var(--accent-green); padding: 12px 14px;">
-                <div style="font-size:12px; color:var(--accent-green)">✅ Using the default 5-day Push/Pull/Legs split. Edit any exercise to create your custom version.</div>
-            </div>
-        `}
-
+               ${(() => {
+            const activeName = getActiveProgramName();
+            if (activeName) {
+                return `
+                    <div class="card" style="border-left: 3px solid var(--accent-blue, #0095ff); padding: 12px 14px;">
+                        <div style="font-size:12px; color:var(--accent-blue, #0095ff)">
+                            📂 Active program: <strong>${activeName}</strong>
+                        </div>
+                    </div>
+                `;
+            }
+            if (custom) {
+                return `
+                    <div class="card" style="border-left: 3px solid var(--accent-orange); padding: 12px 14px;">
+                        <div style="font-size:12px; color:var(--accent-orange)">
+                            ⚠️ You're using a custom program (unsaved name). Changes are saved automatically.
+                        </div>
+                    </div>
+                `;
+            }
+            return `
+                <div class="card" style="border-left: 3px solid var(--accent-green); padding: 12px 14px;">
+                    <div style="font-size:12px; color:var(--accent-green)">
+                        ✅ Using the default 5-day Push/Pull/Legs split. Edit any exercise to create your custom version.
+                    </div>
+                </div>
+            `;
+        })()}
         <div id="exerciseDaysList">
             ${program.days.map((day) => `
                 <div class="ex-day-card" style="border-left: 3px solid ${day.color}">
@@ -61,7 +79,7 @@ function renderExercises() {
             `).join('')}
         </div>
 
-                  <button class="btn btn-success" style="margin-top:16px" onclick="addDay()">
+                      <button class="btn btn-success" style="margin-top:16px" onclick="addDay()">
             ➕ Add Training Day
         </button>
 
@@ -636,6 +654,172 @@ function confirmSaveProgram() {
 
     if (saveCurrentProgramAs(name)) {
         closeExModal();
+        showToast(`Saved as "${name}"`);
+    } else {
+        showToast('Failed to save', 'error');
+    }
+}
+
+function openLoadProgramModal() {
+    const programs = getSavedPrograms();
+    const names = Object.keys(programs);
+
+    if (names.length === 0) {
+        openExModal('📂 Load Saved Program', `
+            <div style="text-align:center; padding:20px; color:var(--text-muted)">
+                <div style="font-size:32px; margin-bottom:12px">📂</div>
+                <p>No saved programs yet.</p>
+                <p style="font-size:13px">Save your current program first using the "Save Current Program" button.</p>
+            </div>
+        `);
+        return;
+    }
+
+    const body = `
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:14px">
+            Select a program to load. This will replace your current program.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+            ${names.map(name => {
+                const dayCount = programs[name].days ? programs[name].days.length : 0;
+                return `
+                    <div style="display:flex; gap:8px; align-items:center">
+                        <button class="btn btn-secondary" style="flex:1; text-align:left; padding:12px"
+                                onclick="confirmLoadProgram('${name.replace(/'/g, "\\'")}')">
+                            <div style="font-weight:600">${name}</div>
+                            <div style="font-size:12px; opacity:0.75">${dayCount} training day${dayCount !== 1 ? 's' : ''}</div>
+                        </button>
+                        <button class="btn btn-danger btn-sm" style="padding:10px 12px"
+                                onclick="confirmDeleteProgram('${name.replace(/'/g, "\\'")}')"
+                                title="Delete">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+    openExModal('📂 Load Saved Program', body);
+}
+
+function confirmLoadProgram(name) {
+    if (!confirm(`Load "${name}"?\n\nYour current program will be replaced.`)) return;
+
+    if (loadSavedProgram(name)) {
+        closeExModal();
+        renderExercises();
+        showToast(`Loaded "${name}"`);
+    } else {
+        showToast('Failed to load program', 'error');
+    }
+}
+
+function confirmDeleteProgram(name) {
+    if (!confirm(`Delete saved program "${name}"?\n\nThis cannot be undone.`)) return;
+
+    if (deleteSavedProgram(name)) {
+        showToast(`Deleted "${name}"`);
+        openLoadProgramModal(); // refresh the list
+    } else {
+        showToast('Failed to delete', 'error');
+    }
+}
+// ==================== WORKOUT BUILDER (SPLIT TEMPLATES) ====================
+
+function openSplitBuilder() {
+    const templates = Object.values(SPLIT_TEMPLATES);
+    const body = `
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px">
+            Choose a starting split. This will replace your current program. You can fully customize it afterward.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+            ${templates.map(t => `
+                <button class="btn btn-secondary" style="text-align:left; padding:14px"
+                        onclick="applySplitTemplate('${t.id}')">
+                    <div style="font-weight:600; font-size:15px">${t.name}</div>
+                    <div style="font-size:12px; opacity:0.8; margin-top:4px">${t.description}</div>
+                </button>
+            `).join('')}
+        </div>
+    `;
+    openExModal('🏗️ Workout Builder', body);
+}
+
+function applySplitTemplate(templateId) {
+    const template = SPLIT_TEMPLATES[templateId];
+    if (!template) return;
+
+    // Offer to save the current program first
+    if (isCustomProgram()) {
+        const saveFirst = confirm(
+            `You currently have a custom program.\n\n` +
+            `Would you like to SAVE it before loading the "${template.name}" template?\n\n` +
+            `OK = Save first, then load template\n` +
+            `Cancel = Load template without saving (current program will be lost)`
+        );
+
+        if (saveFirst) {
+            const name = prompt('Enter a name for your current program:', getActiveProgramName() || 'My Program');
+            if (name && name.trim()) {
+                saveCurrentProgramAs(name.trim());
+                showToast(`Saved current program as "${name.trim()}"`);
+            } else {
+                showToast('Template load cancelled', 'error');
+                return;
+            }
+        }
+    } else {
+        if (!confirm(`Load the "${template.name}" template?`)) return;
+    }
+
+    // Apply the template
+    const newProgram = JSON.parse(JSON.stringify({ days: template.days }));
+    saveTrainingProgram(newProgram);
+    setActiveProgramName(null);               // template is not a named saved program
+    closeExModal();
+    renderExercises();
+    showToast(`Loaded ${template.name} template`);
+}
+
+// ==================== SAVE / LOAD PROGRAMS ====================
+
+function openSaveProgramModal() {
+    const body = `
+        <div class="form-group">
+            <label class="form-label">Program Name</label>
+            <input type="text" id="saveProgramName" class="form-input"
+                   placeholder="e.g. My Summer PPL, Full Body Cut..."
+                   maxlength="40">
+        </div>
+        <button class="btn btn-success" style="width:100%; margin-top:12px"
+                onclick="confirmSaveProgram()">
+            💾 Save Program
+        </button>
+    `;
+    openExModal('💾 Save Current Program', body);
+
+    setTimeout(() => {
+        const input = document.getElementById('saveProgramName');
+        if (input) input.focus();
+    }, 100);
+}
+
+function confirmSaveProgram() {
+    const input = document.getElementById('saveProgramName');
+    const name = input ? input.value.trim() : '';
+    if (!name) {
+        showToast('Please enter a name', 'error');
+        return;
+    }
+
+    const existing = getSavedPrograms();
+    if (existing[name]) {
+        if (!confirm(`A program named "${name}" already exists. Overwrite it?`)) return;
+    }
+
+    if (saveCurrentProgramAs(name)) {
+        closeExModal();
+        renderExercises();
         showToast(`Saved as "${name}"`);
     } else {
         showToast('Failed to save', 'error');
