@@ -61,8 +61,12 @@ function renderExercises() {
             `).join('')}
         </div>
 
-        <button class="btn btn-success" style="margin-top:16px" onclick="addDay()">
+               <button class="btn btn-success" style="margin-top:16px" onclick="addDay()">
             ➕ Add Training Day
+        </button>
+
+        <button class="btn btn-primary" style="margin-top:10px; width:100%" onclick="openSplitBuilder()">
+            🏗️ Build from Split Template
         </button>
 
         ${custom ? `
