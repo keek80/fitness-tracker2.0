@@ -99,30 +99,65 @@ function renderGym() {
                 const displayName = currentSubstitutions[ex.name] || ex.name;
                 const isSubstituted = !!currentSubstitutions[ex.name];
 
-                const saved = existingLog?.exercises?.find(e => (e.originalName || e.name) === ex.name);
-                const prev = previousLog?.exercises?.find(e => (e.originalName || e.name) === ex.name);
-                const pr = prs[ex.name];
+                               const saved = existingLog?.exercises?.find(e => (e.originalName || e.name) === ex.name);
+                // Prefer same-day previous session; fall back to last time this exercise was logged anywhere
+                const prevFromDay = previousLog?.exercises?.find(e => (e.originalName || e.name) === ex.name);
+                const lastAny = !prevFromDay
+                    ? Storage.getLastExerciseLog(displayName, currentGymDate)
+                        || Storage.getLastExerciseLog(ex.name, currentGymDate)
+                    : null;
 
+                const prevWeights = prevFromDay
+                    ? (prevFromDay.weights || (prevFromDay.weight ? Array((prevFromDay.sets || []).length || ex.sets).fill(prevFromDay.weight) : []))
+                    : (lastAny ? lastAny.weights : []);
+                const prevSets = prevFromDay
+                    ? (prevFromDay.sets || [])
+                    : (lastAny ? lastAny.reps : []);
+                const prevDateLabel = prevFromDay
+                    ? (previousLog?.date || '')
+                    : (lastAny ? lastAny.date : '');
+
+                const pr = prs[ex.name] || prs[displayName];
                 const prBadge = pr ? `<span class="pr-badge">🏆 PR: ${pr.bestWeight} lbs</span>` : '';
 
-                const prevWeights = prev ? (prev.weights || (prev.weight ? Array((prev.sets || []).length || ex.sets).fill(prev.weight) : [])) : [];
-                const prevSets = prev ? (prev.sets || []) : [];
+                const numericPrevWeights = prevWeights.map(w => Number(w) || 0);
+                const lastWeightShown = numericPrevWeights.filter(w => w > 0);
+                const lastWeightMax = lastWeightShown.length ? Math.max(...lastWeightShown) : 0;
 
-                const isAutoLoaded = !saved && prevWeights.some(w => w > 0);
-
-                const savedWeights = saved?.weights ? saved.weights : saved?.weight ? Array(ex.sets).fill(saved.weight) : Array.from({length: ex.sets}, (_, si) => prevWeights[si] !== undefined && prevWeights[si] > 0 ? prevWeights[si] : '');
+                // Fill empty weight fields from last session when today is not already saved
+                const isAutoLoaded = !saved && lastWeightShown.length > 0;
+                const savedWeights = saved?.weights
+                    ? saved.weights
+                    : saved?.weight
+                        ? Array(ex.sets).fill(saved.weight)
+                        : Array.from({ length: ex.sets }, (_, si) =>
+                            numericPrevWeights[si] > 0 ? numericPrevWeights[si] : ''
+                          );
                 const savedReps = saved?.sets || Array(ex.sets).fill('');
 
                 let prevDisplay = '';
-                if (prev) {
-                    const prevParts = prevSets.map((r, si) => {
-                        const w = prevWeights[si] || 0;
-                        return r > 0 ? `${w > 0 ? w + 'lb×' : ''}${r}` : null;
-                    }).filter(Boolean);
-                    if (prevParts.length > 0) {
-                        const prevMaxW = prevWeights.length > 0 ? Math.max(...prevWeights.filter(w => w > 0)) : 0;
-                        prevDisplay = `<div class="prev-session-info"><span class="prev-label">Last session:</span><span class="prev-sets">${prevParts.join(' · ')}</span>${prevMaxW > 0 && saved ? `<button class="fill-btn" onclick="fillFromPrevious(${i}, [${prevWeights.join(',')}], [${prevSets.join(',')}])" title="Load previous session">⬆️ Load</button>` : ''}</div>`;
+                if (lastWeightMax > 0 || prevSets.some(r => Number(r) > 0)) {
+                    const parts = [];
+                    const n = Math.max(numericPrevWeights.length, prevSets.length, ex.sets);
+                    for (let si = 0; si < n; si++) {
+                        const w = numericPrevWeights[si] || 0;
+                        const r = Number(prevSets[si]) || 0;
+                        if (w > 0 || r > 0) {
+                            parts.push(`${w > 0 ? w + ' lb' : '—'}${r > 0 ? ' × ' + r : ''}`);
+                        }
                     }
+                    const loadBtn = (lastWeightMax > 0 || prevSets.some(r => Number(r) > 0))
+                        ? `<button class="fill-btn" type="button"
+                                onclick="fillFromPrevious(${i}, [${numericPrevWeights.join(',')}], [${prevSets.map(r => Number(r) || 0).join(',')}])"
+                                title="Load last weights & reps">⬆️ Load</button>`
+                        : '';
+
+                    prevDisplay = `
+                        <div class="prev-session-info">
+                            <span class="prev-label">Last${prevDateLabel ? ' (' + formatDateShort(prevDateLabel) + ')' : ''}:</span>
+                            <span class="prev-sets">${parts.join(' · ') || (lastWeightMax + ' lb')}</span>
+                            ${loadBtn}
+                        </div>`;
                 }
 
                 return `
@@ -139,7 +174,10 @@ function renderGym() {
                         ${Array.from({length: ex.sets}, (_, s) => `
                             <div class="per-set-row">
                                 <div class="set-num-badge">${s + 1}</div>
-                                <input type="number" class="set-input gym-weight" data-idx="${i}" data-set="${s}" value="${savedWeights[s] || ''}" placeholder="lbs" inputmode="decimal" onchange="onWeightChange(${i}, ${s})">
+                                 <input type="number" class="set-input gym-weight" data-idx="${i}" data-set="${s}"
+                                       value="${savedWeights[s] || ''}"
+                                       placeholder="${numericPrevWeights[s] > 0 ? numericPrevWeights[s] : (lastWeightMax > 0 ? lastWeightMax : 'lbs')}"
+                                       inputmode="decimal" onchange="onWeightChange(${i}, ${s})">
                                 <input type="number" class="set-input gym-reps" data-idx="${i}" data-set="${s}" value="${savedReps[s] || ''}" placeholder="${ex.repsTarget.split('-')[0] || '—'}" inputmode="numeric">
                             </div>
                         `).join('')}
