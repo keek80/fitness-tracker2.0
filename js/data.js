@@ -325,8 +325,7 @@ const SPLIT_TEMPLATES = {
     // You can easily add arnold, pushpull, etc. following the same pattern
 };
 
-// Backward compatibility alias
-const TRAINING_PROGRAM = DEFAULT_TRAINING_PROGRAM;
+
 
 // ========== DYNAMIC TRAINING PROGRAM ==========
 function getTrainingProgram() {
