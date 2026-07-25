@@ -100,6 +100,37 @@ deleteGymLog(date, dayId) {
     getPreviousGymLog(dayId, currentDate) {
         return this.getGymLogsForDay(dayId).find(l => l.date < currentDate) || null;
     },
+        // Last logged performance for an exercise by name (any day), before currentDate
+    getLastExerciseLog(exerciseName, currentDate) {
+        if (!exerciseName) return null;
+        const name = exerciseName.toLowerCase();
+        const logs = this.getGymLogs()
+            .filter(l => l.date < currentDate)
+            .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        for (const log of logs) {
+            const match = (log.exercises || []).find(ex => {
+                const n = (ex.name || '').toLowerCase();
+                const o = (ex.originalName || '').toLowerCase();
+                return n === name || o === name;
+            });
+            if (!match) continue;
+
+            const weights = match.weights
+                || (match.weight ? Array((match.sets || []).length || 1).fill(match.weight) : []);
+            const reps = match.sets || [];
+            const hasData = weights.some(w => Number(w) > 0) || reps.some(r => Number(r) > 0);
+            if (!hasData) continue;
+
+            return {
+                date: log.date,
+                dayName: log.dayName || log.dayId || '',
+                weights: weights.map(w => Number(w) || 0),
+                reps: reps.map(r => Number(r) || 0)
+            };
+        }
+        return null;
+    },
 
     // ===== PERSONAL RECORDS =====
     getPRs() { return this.get('prs', {}); },
