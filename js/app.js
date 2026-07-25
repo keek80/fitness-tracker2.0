@@ -136,6 +136,15 @@ function initApp() {
     if (drawerSubtitle && email) {
         drawerSubtitle.textContent = email;
     }
+        // Show Admin menu only for admin users
+    const adminNav = document.getElementById('navAdminItem');
+    if (adminNav) {
+        if (typeof isAdmin === 'function' && isAdmin()) {
+            adminNav.style.display = '';
+        } else {
+            adminNav.style.display = 'none';
+        }
+    }
 
     const splash = document.getElementById('splash');
     if (splash && !splash.classList.contains('done')) {
