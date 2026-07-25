@@ -167,16 +167,22 @@ function renderGym() {
             </div>
         </div>
 
-        <!-- Rest Timer -->
+               <!-- Rest Timer -->
         <div style="position:fixed; bottom:85px; right:16px; z-index:99999; display:flex; flex-direction:column; align-items:center; gap:8px;">
-            <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value))" style="background:#1e2937; color:white; border:2px solid #475569; border-radius:9999px; padding:8px 16px; font-size:14px; min-width:130px;">
-                <option value="30">30s</option>
-                <option value="60" selected>60s</option>
-                <option value="90">90s</option>
-                <option value="120">2min</option>
-                <option value="180">3min</option>
+            <select id="timer-preset" onchange="changeTimerDuration(parseInt(this.value, 10))"
+                    style="background:#1e2937; color:white; border:2px solid #475569; border-radius:9999px; padding:8px 16px; font-size:14px; min-width:130px;">
+                <option value="15"  ${currentTimerPreset === 15  ? 'selected' : ''}>15s</option>
+                <option value="30"  ${currentTimerPreset === 30  ? 'selected' : ''}>30s</option>
+                <option value="45"  ${currentTimerPreset === 45  ? 'selected' : ''}>45s</option>
+                <option value="60"  ${currentTimerPreset === 60  ? 'selected' : ''}>60s</option>
+                <option value="90"  ${currentTimerPreset === 90  ? 'selected' : ''}>90s</option>
+                <option value="120" ${currentTimerPreset === 120 ? 'selected' : ''}>2min</option>
+                <option value="180" ${currentTimerPreset === 180 ? 'selected' : ''}>3min</option>
             </select>
-            <div id="rest-timer" onclick="toggleRestTimer()" style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:900; box-shadow:0 10px 35px rgba(0,212,255,0.85); cursor:pointer; border:6px solid white; user-select:none;">60</div>
+            <div id="rest-timer" onclick="toggleRestTimer()"
+                 style="background:#00d4ff; color:#000; width:82px; height:82px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:900; box-shadow:0 10px 35px rgba(0,212,255,0.85); cursor:pointer; border:6px solid white; user-select:none;">
+                ${restTimerInterval ? restTimeLeft : currentTimerPreset}
+            </div>
         </div>
     `;
 }
@@ -283,8 +289,8 @@ function selectGymDay(dayId) {
 
 // ========== REST TIMER ==========
 let restTimerInterval = null;
-let restTimeLeft = 60;
-let currentTimerPreset = 60;
+let currentTimerPreset = parseInt(localStorage.getItem('flt_rest_timer_preset') || '60', 10);
+let restTimeLeft = currentTimerPreset;
 
 function playRingingSound() {
     if (navigator.vibrate) navigator.vibrate([300, 100, 300, 100, 300]);
@@ -348,8 +354,11 @@ function toggleRestTimer() {
 function changeTimerDuration(seconds) {
     currentTimerPreset = seconds;
     restTimeLeft = seconds;
+    localStorage.setItem('flt_rest_timer_preset', String(seconds));
+
     const timerEl = document.getElementById('rest-timer');
     if (timerEl) timerEl.textContent = seconds;
+
     if (restTimerInterval) {
         clearInterval(restTimerInterval);
         restTimerInterval = null;
