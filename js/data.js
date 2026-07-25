@@ -562,8 +562,8 @@ const EXERCISE_DATABASE = [
     { name: 'Resistance Band Chest Fly',      category: 'Chest',       equipment: 'Band',       notes: 'Home-friendly constant tension' },
     { name: 'Landmine Chest Press',           category: 'Chest',       equipment: 'Barbell',    notes: 'Unilateral or bilateral pressing' },
     { name: 'Deficit Push-Ups',               category: 'Chest',       equipment: 'Bodyweight', notes: 'Hands on elevated surfaces for deeper stretch' },
-    { name: 'Incline Dumbbell Press',         category: 'Chest',       equipment: 'Dumbbell',   notes: '30° incline angle, focus on upper chest contraction' },
-    { name: 'Incline Barbell Press',          category: 'Chest',       equipment: 'Barbell',    notes: '30-45° incline, focus on upper chest' },
+    { name: 'Incline Dumbbell Fly',         category: 'Chest',       equipment: 'Dumbbell',   notes: '30° incline angle, focus on upper chest contraction' },
+   
 
     // ── BACK ──
     { name: 'Barbell Rows (Bent-Over)',       category: 'Back',        equipment: 'Barbell',    notes: 'Maintain flat back, pull to lower chest' },
