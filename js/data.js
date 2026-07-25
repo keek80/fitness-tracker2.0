@@ -78,6 +78,253 @@ const DEFAULT_TRAINING_PROGRAM = {
     ]
 };
 
+// ========== SPLIT TEMPLATES (Workout Builder) ==========
+const SPLIT_TEMPLATES = {
+    fullbody: {
+        id: 'fullbody',
+        name: 'Full Body',
+        description: '3 days/week • Each muscle 3× per week. Best for beginners & fat loss.',
+        daysPerWeek: 3,
+        days: [
+            {
+                id: 'fb_a', name: 'Full Body A', dayOfWeek: 'Monday', color: '#e94560',
+                exercises: [
+                    { name: 'Barbell Bench Press', sets: 3, repsTarget: '6-10', rest: '120s', notes: 'Primary horizontal press' },
+                    { name: 'Barbell Rows (Bent-Over)', sets: 3, repsTarget: '6-10', rest: '120s', notes: 'Primary horizontal pull' },
+                    { name: 'Leg Press Machine', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Seated Overhead Dumbbell Press', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Romanian Deadlift (DB/Barbell)', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Cable Tricep Pushdowns (Rope)', sets: 2, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Barbell Bicep Curls', sets: 2, repsTarget: '10-12', rest: '60s', notes: '' },
+                    { name: 'Seated Abdominal Crunch Machine', sets: 2, repsTarget: '12-15', rest: '45s', notes: 'Core finisher' }
+                ]
+            },
+            {
+                id: 'fb_b', name: 'Full Body B', dayOfWeek: 'Wednesday', color: '#0095ff',
+                exercises: [
+                    { name: 'Incline Dumbbell Press', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Lat Pulldown (Wide Grip)', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Romanian Deadlift (DB/Barbell)', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Dumbbell Lateral Raises', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Leg Extension Machine', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Leg Curl Machine (Seated/Lying)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Overhead Cable Tricep Extension', sets: 2, repsTarget: '10-12', rest: '60s', notes: '' },
+                    { name: 'Dumbbell Hammer Curls', sets: 2, repsTarget: '10-12', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'fb_c', name: 'Full Body C', dayOfWeek: 'Friday', color: '#00d68f',
+                exercises: [
+                    { name: 'Dumbbell Bench Press', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Seated Cable Rows (Close Grip)', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Leg Press Machine', sets: 4, repsTarget: '10-15', rest: '120s', notes: '' },
+                    { name: 'Seated Machine Shoulder Press', sets: 3, repsTarget: '10-12', rest: '90s', notes: '' },
+                    { name: 'Standing Calf Raises Machine', sets: 3, repsTarget: '12-20', rest: '45s', notes: '' },
+                    { name: 'Cable Tricep Pushdowns (Rope)', sets: 2, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Machine Preacher Curls', sets: 2, repsTarget: '10-12', rest: '60s', notes: '' },
+                    { name: 'Cable Wood Chop High-to-Low (Both Sides)', sets: 2, repsTarget: '10-12/side', rest: '45s', notes: 'Core finisher' }
+                ]
+            }
+        ]
+    },
+
+    upperlower: {
+        id: 'upperlower',
+        name: 'Upper / Lower',
+        description: '4 days/week • Each muscle 2×. Excellent balance of volume & recovery.',
+        daysPerWeek: 4,
+        days: [
+            {
+                id: 'ul_upper_a', name: 'Upper A', dayOfWeek: 'Monday', color: '#e94560',
+                exercises: [
+                    { name: 'Barbell Bench Press', sets: 4, repsTarget: '6-10', rest: '120s', notes: '' },
+                    { name: 'Barbell Rows (Bent-Over)', sets: 4, repsTarget: '6-10', rest: '120s', notes: '' },
+                    { name: 'Seated Overhead Dumbbell Press', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Lat Pulldown (Wide Grip)', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Dumbbell Lateral Raises', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Cable Tricep Pushdowns (Rope)', sets: 3, repsTarget: '10-15', rest: '60s', notes: '' },
+                    { name: 'Barbell Bicep Curls', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'ul_lower_a', name: 'Lower A', dayOfWeek: 'Tuesday', color: '#00d68f',
+                exercises: [
+                    { name: 'Leg Press Machine', sets: 4, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Romanian Deadlift (DB/Barbell)', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Leg Extension Machine', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Leg Curl Machine (Seated/Lying)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Standing Calf Raises Machine', sets: 4, repsTarget: '12-20', rest: '45s', notes: '' },
+                    { name: 'Seated Abdominal Crunch Machine', sets: 3, repsTarget: '12-15', rest: '45s', notes: '' }
+                ]
+            },
+            {
+                id: 'ul_upper_b', name: 'Upper B', dayOfWeek: 'Thursday', color: '#ffaa00',
+                exercises: [
+                    { name: 'Incline Dumbbell Press', sets: 4, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Seated Cable Rows (Close Grip)', sets: 4, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Seated Machine Shoulder Press', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Assisted Pull-Up Machine', sets: 3, repsTarget: '6-10', rest: '90s', notes: '' },
+                    { name: 'Machine Pec Deck Reverse Fly', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Overhead Cable Tricep Extension', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' },
+                    { name: 'Dumbbell Hammer Curls', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'ul_lower_b', name: 'Lower B', dayOfWeek: 'Friday', color: '#a855f7',
+                exercises: [
+                    { name: 'Leg Press Machine', sets: 4, repsTarget: '10-15', rest: '120s', notes: '' },
+                    { name: 'Barbell Hip Thrust', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Leg Extension Machine', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Leg Curl Machine (Seated/Lying)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Standing Calf Raises Machine', sets: 4, repsTarget: '15-20', rest: '45s', notes: '' },
+                    { name: 'Cable Wood Chop High-to-Low (Both Sides)', sets: 3, repsTarget: '10-12/side', rest: '45s', notes: '' }
+                ]
+            }
+        ]
+    },
+
+    // Keep the existing DEFAULT as one of the options
+    ppl5: {
+        id: 'ppl5',
+        name: 'Push / Pull / Legs (5-day)',
+        description: 'Current default. Good volume with a built-in recovery day.',
+        daysPerWeek: 5,
+        days: DEFAULT_TRAINING_PROGRAM.days   // reuse existing
+    },
+
+    ppl6: {
+        id: 'ppl6',
+        name: 'Push / Pull / Legs (6-day)',
+        description: 'Classic high-frequency PPL. Each muscle 2× per week.',
+        daysPerWeek: 6,
+        days: [
+            // You can expand this with Push A/B, Pull A/B, Legs A/B using the same style as current default
+            // (I can flesh this out fully if you want)
+        ]
+    },
+
+    bro: {
+        id: 'bro',
+        name: 'Classic Bro Split',
+        description: '5 days • One major muscle group per day. High volume per session.',
+        daysPerWeek: 5,
+        days: [
+            {
+                id: 'bro_chest', name: 'Chest', dayOfWeek: 'Monday', color: '#e94560',
+                exercises: [
+                    { name: 'Barbell Bench Press', sets: 4, repsTarget: '6-10', rest: '120s', notes: '' },
+                    { name: 'Incline Dumbbell Press', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Pec Deck Fly Machine', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Cable Chest Fly (High-to-Low)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Machine Dips', sets: 3, repsTarget: '10-15', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'bro_back', name: 'Back', dayOfWeek: 'Tuesday', color: '#0095ff',
+                exercises: [
+                    { name: 'Lat Pulldown (Wide Grip)', sets: 4, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Barbell Rows (Bent-Over)', sets: 4, repsTarget: '6-10', rest: '120s', notes: '' },
+                    { name: 'Seated Cable Rows (Close Grip)', sets: 3, repsTarget: '10-12', rest: '90s', notes: '' },
+                    { name: 'Straight Arm Pulldowns (Cable)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Machine Pec Deck Reverse Fly', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'bro_shoulders', name: 'Shoulders', dayOfWeek: 'Wednesday', color: '#ffaa00',
+                exercises: [
+                    { name: 'Seated Overhead Dumbbell Press', sets: 4, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Dumbbell Lateral Raises', sets: 4, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Machine Pec Deck Reverse Fly', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Cable Lateral Raises', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'bro_legs', name: 'Legs', dayOfWeek: 'Thursday', color: '#00d68f',
+                exercises: [
+                    { name: 'Leg Press Machine', sets: 4, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Romanian Deadlift (DB/Barbell)', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Leg Extension Machine', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Leg Curl Machine (Seated/Lying)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Standing Calf Raises Machine', sets: 4, repsTarget: '12-20', rest: '45s', notes: '' },
+                    { name: 'Barbell Hip Thrust', sets: 3, repsTarget: '10-12', rest: '90s', notes: '' }
+                ]
+            },
+            {
+                id: 'bro_arms', name: 'Arms', dayOfWeek: 'Friday', color: '#a855f7',
+                exercises: [
+                    { name: 'Close-Grip Bench Press (Smith Machine)', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Cable Tricep Pushdowns (Rope)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Overhead Cable Tricep Extension', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' },
+                    { name: 'Barbell Bicep Curls', sets: 3, repsTarget: '8-12', rest: '60s', notes: '' },
+                    { name: 'Machine Preacher Curls', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' },
+                    { name: 'Dumbbell Hammer Curls', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' }
+                ]
+            }
+        ]
+    },
+
+    modifiedbro: {
+        id: 'modifiedbro',
+        name: 'Modified Bro Split',
+        description: '5 days • Pairs agonist/antagonist or related groups for better recovery & pump.',
+        daysPerWeek: 5,
+        days: [
+            {
+                id: 'mb_chest_tri', name: 'Chest + Triceps', dayOfWeek: 'Monday', color: '#e94560',
+                exercises: [
+                    { name: 'Barbell Bench Press', sets: 4, repsTarget: '6-10', rest: '120s', notes: '' },
+                    { name: 'Incline Dumbbell Press', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Pec Deck Fly Machine', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Cable Tricep Pushdowns (Rope)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Overhead Cable Tricep Extension', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'mb_back_bi', name: 'Back + Biceps', dayOfWeek: 'Tuesday', color: '#0095ff',
+                exercises: [
+                    { name: 'Lat Pulldown (Wide Grip)', sets: 4, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Barbell Rows (Bent-Over)', sets: 3, repsTarget: '6-10', rest: '120s', notes: '' },
+                    { name: 'Seated Cable Rows (Close Grip)', sets: 3, repsTarget: '10-12', rest: '90s', notes: '' },
+                    { name: 'Barbell Bicep Curls', sets: 3, repsTarget: '8-12', rest: '60s', notes: '' },
+                    { name: 'Dumbbell Hammer Curls', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'mb_legs', name: 'Legs', dayOfWeek: 'Wednesday', color: '#00d68f',
+                exercises: [
+                    { name: 'Leg Press Machine', sets: 4, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Romanian Deadlift (DB/Barbell)', sets: 3, repsTarget: '8-12', rest: '120s', notes: '' },
+                    { name: 'Leg Extension Machine', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Leg Curl Machine (Seated/Lying)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Standing Calf Raises Machine', sets: 4, repsTarget: '12-20', rest: '45s', notes: '' }
+                ]
+            },
+            {
+                id: 'mb_shoulders', name: 'Shoulders + Traps', dayOfWeek: 'Thursday', color: '#ffaa00',
+                exercises: [
+                    { name: 'Seated Overhead Dumbbell Press', sets: 4, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Dumbbell Lateral Raises', sets: 4, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Machine Pec Deck Reverse Fly', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Cable Lateral Raises', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' }
+                ]
+            },
+            {
+                id: 'mb_arms', name: 'Arms + Core', dayOfWeek: 'Friday', color: '#a855f7',
+                exercises: [
+                    { name: 'Close-Grip Bench Press (Smith Machine)', sets: 3, repsTarget: '8-12', rest: '90s', notes: '' },
+                    { name: 'Cable Tricep Pushdowns (Rope)', sets: 3, repsTarget: '12-15', rest: '60s', notes: '' },
+                    { name: 'Barbell Bicep Curls', sets: 3, repsTarget: '8-12', rest: '60s', notes: '' },
+                    { name: 'Machine Preacher Curls', sets: 3, repsTarget: '10-12', rest: '60s', notes: '' },
+                    { name: 'Seated Abdominal Crunch Machine', sets: 3, repsTarget: '12-15', rest: '45s', notes: '' },
+                    { name: 'Cable Wood Chop High-to-Low (Both Sides)', sets: 3, repsTarget: '10-12/side', rest: '45s', notes: '' }
+                ]
+            }
+        ]
+    }
+
+    // You can easily add arnold, pushpull, etc. following the same pattern
+};
+
 // Backward compatibility alias
 const TRAINING_PROGRAM = DEFAULT_TRAINING_PROGRAM;
 
