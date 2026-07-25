@@ -778,6 +778,7 @@ const EXERCISE_DATABASE = [
     { name: 'Fire Hydrants (Bodyweight)',     category: 'Glutes',      equipment: 'Bodyweight', notes: 'Lift knee out to side' },
     { name: 'Donkey Kicks',                   category: 'Glutes',      equipment: 'Bodyweight', notes: 'Kick heel toward ceiling' },
     { name: 'Hip Abduction Machine',          category: 'Glutes',      equipment: 'Machine',    notes: 'Controlled reps for glute medius' },
+    { name: 'Machine Glute Kickback',         category: 'Glutes',      equipment: 'Machine',    notes: 'Lean into pad, kick heel back and up, squeeze glute at top, control the return' },
 
     
     // ── CALVES ──
