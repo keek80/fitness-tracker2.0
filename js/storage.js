@@ -206,22 +206,58 @@ deleteGymLog(date, dayId) {
 
     // ===== EXPORT / IMPORT =====
     exportAll() {
-        return JSON.stringify({
-            weighins:      this.getWeighIns(),
-            gymlogs:       this.getGymLogs(),
-            prs:           this.getPRs(),
-            settings:      this.getSettings(),
-            customProgram: (() => {
-                try {
-                    const v = localStorage.getItem('flt_custom_program');
-                    return v ? JSON.parse(v) : null;
-                } catch { return null; }
-            })(),
-            exportDate: new Date().toISOString()
-        }, null, 2);
-    },
+    return JSON.stringify({
+        weighins:      this.getWeighIns(),
+        gymlogs:       this.getGymLogs(),
+        prs:           this.getPRs(),
+        settings:      this.getSettings(),
+        customProgram: (() => {
+            try {
+                const v = localStorage.getItem('flt_custom_program');
+                return v ? JSON.parse(v) : null;
+            } catch { return null; }
+        })(),
+        savedPrograms: (() => {
+            try {
+                const v = localStorage.getItem('flt_saved_programs');
+                return v ? JSON.parse(v) : {};
+            } catch { return {}; }
+        })(),
+        activeProgramName: (() => {
+            try {
+                return localStorage.getItem('flt_active_program_name') || null;
+            } catch { return null; }
+        })(),
+        exportDate: new Date().toISOString()
+    }, null, 2);
+},exportAll() {
+    return JSON.stringify({
+        weighins:      this.getWeighIns(),
+        gymlogs:       this.getGymLogs(),
+        prs:           this.getPRs(),
+        settings:      this.getSettings(),
+        customProgram: (() => {
+            try {
+                const v = localStorage.getItem('flt_custom_program');
+                return v ? JSON.parse(v) : null;
+            } catch { return null; }
+        })(),
+        savedPrograms: (() => {
+            try {
+                const v = localStorage.getItem('flt_saved_programs');
+                return v ? JSON.parse(v) : {};
+            } catch { return {}; }
+        })(),
+        activeProgramName: (() => {
+            try {
+                return localStorage.getItem('flt_active_program_name') || null;
+            } catch { return null; }
+        })(),
+        exportDate: new Date().toISOString()
+    }, null, 2);
+},
 
-     importAll(jsonString) {
+        importAll(jsonString) {
         try {
             const data = JSON.parse(jsonString);
 
@@ -311,6 +347,18 @@ deleteGymLog(date, dayId) {
                 localStorage.setItem('flt_custom_program', JSON.stringify(data.customProgram));
             }
 
+            // Restore saved programs library
+            if (data.savedPrograms && typeof data.savedPrograms === 'object' && !Array.isArray(data.savedPrograms)) {
+                localStorage.setItem('flt_saved_programs', JSON.stringify(data.savedPrograms));
+            }
+
+            // Restore active program name
+            if (typeof data.activeProgramName === 'string' && data.activeProgramName) {
+                localStorage.setItem('flt_active_program_name', data.activeProgramName);
+            } else {
+                localStorage.removeItem('flt_active_program_name');
+            }
+
             return true;
         } catch (e) {
             console.error('Import failed:', e);
@@ -319,9 +367,10 @@ deleteGymLog(date, dayId) {
     },
 
     clearAll() {
-        Object.keys(localStorage)
-            .filter(k => k.startsWith(this.PREFIX))
-            .forEach(k => localStorage.removeItem(k));
-        localStorage.removeItem('flt_custom_program');
-    }
-};
+    Object.keys(localStorage)
+        .filter(k => k.startsWith(this.PREFIX))
+        .forEach(k => localStorage.removeItem(k));
+    localStorage.removeItem('flt_custom_program');
+    localStorage.removeItem('flt_saved_programs');
+    localStorage.removeItem('flt_active_program_name');
+}
