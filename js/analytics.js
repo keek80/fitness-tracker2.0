@@ -398,60 +398,63 @@ function getWeeklyVolumeTrend(entries) {
         bestWeight: Math.round(bestWeight)
     };
 }
-// ========== WORKOUT HISTORY ==========
-let expandedHistoryKey = null; // tracks which session is expanded
+// ========== WORKOUT HISTORY (DATE SELECTOR) ==========
+let historySelectedDate = null; // YYYY-MM-DD
 
 function renderWorkoutHistory(container, gymLogs) {
-    if (!gymLogs || gymLogs.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <p>No workouts logged yet.</p>
-                <p style="font-size:13px; color:var(--text-muted); margin-top:8px">
-                    Complete a session in the Gym Log to see it here.
-                </p>
-            </div>`;
-        return;
+    // Default to today if nothing selected yet
+    if (!historySelectedDate) {
+        historySelectedDate = typeof getLocalDateString === 'function'
+            ? getLocalDateString()
+            : new Date().toISOString().split('T')[0];
     }
 
-    // Sort newest first
-    const sorted = [...gymLogs].sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Find all logs for the selected date
+    const dayLogs = (gymLogs || []).filter(l => l.date === historySelectedDate);
 
     let html = `
         <div class="section-title">📜 Workout History</div>
-        <div style="font-size:13px; color:var(--text-muted); margin-bottom:14px">
-            Tap a session to see exercises, sets, and weights.
+
+        <div class="card" style="margin-bottom:16px; padding:14px">
+            <label class="form-label" style="margin-bottom:8px; display:block">Select Date</label>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
+                <input type="date"
+                       id="historyDateInput"
+                       class="form-input"
+                       value="${historySelectedDate}"
+                       style="flex:1; min-width:160px"
+                       onchange="onHistoryDateChange(this.value)">
+                <button class="btn btn-secondary btn-sm" onclick="setHistoryDateToday()">Today</button>
+            </div>
         </div>
     `;
 
-    sorted.forEach((log, idx) => {
-        const key = `${log.date}__${log.dayId || idx}`;
-        const isExpanded = expandedHistoryKey === key;
-        const dayName = log.dayName || log.dayId || 'Workout';
-        const exerciseCount = (log.exercises || []).length;
+    if (dayLogs.length === 0) {
+        html += `
+            <div class="empty-state" style="padding:30px 16px">
+                <div style="font-size:28px; margin-bottom:8px">📭</div>
+                <p>No workout logged on this date.</p>
+                <p style="font-size:13px; color:var(--text-muted); margin-top:6px">
+                    ${formatDateShort(historySelectedDate)}
+                </p>
+            </div>
+        `;
+        container.innerHTML = html;
+        return;
+    }
 
-        // Quick summary of completed sets
-        let totalSets = 0;
-        (log.exercises || []).forEach(ex => {
-            const reps = ex.sets || [];
-            totalSets += reps.filter(r => r > 0).length;
-        });
+    // One or more sessions on this date
+    dayLogs.forEach(log => {
+        const dayName = log.dayName || log.dayId || 'Workout';
+        const exercises = log.exercises || [];
 
         html += `
-            <div class="card" style="margin-bottom:10px; padding:0; overflow:hidden">
-                <button onclick="toggleHistorySession('${key}')"
-                        style="width:100%; text-align:left; padding:14px; background:transparent; border:none; color:inherit; cursor:pointer">
-                    <div style="display:flex; justify-content:space-between; align-items:center">
-                        <div>
-                            <div style="font-weight:600; font-size:15px">${dayName}</div>
-                            <div style="font-size:12px; color:var(--text-muted); margin-top:3px">
-                                ${formatDateShort(log.date)} · ${exerciseCount} exercise${exerciseCount !== 1 ? 's' : ''} · ${totalSets} set${totalSets !== 1 ? 's' : ''}
-                            </div>
-                        </div>
-                        <div style="font-size:18px; opacity:0.6">${isExpanded ? '▲' : '▼'}</div>
-                    </div>
-                </button>
-
-                ${isExpanded ? renderHistoryDetail(log) : ''}
+            <div class="card" style="margin-bottom:14px">
+                <div style="font-weight:600; font-size:16px; margin-bottom:4px">${dayName}</div>
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:14px">
+                    ${formatDateShort(log.date)} · ${exercises.length} exercise${exercises.length !== 1 ? 's' : ''}
+                </div>
+                ${renderHistoryExercises(exercises)}
             </div>
         `;
     });
@@ -459,31 +462,31 @@ function renderWorkoutHistory(container, gymLogs) {
     container.innerHTML = html;
 }
 
-function renderHistoryDetail(log) {
-    if (!log.exercises || log.exercises.length === 0) {
-        return `<div style="padding:12px 14px; border-top:1px solid var(--border, #2d3748); color:var(--text-muted)">No exercises recorded.</div>`;
+function renderHistoryExercises(exercises) {
+    if (!exercises || exercises.length === 0) {
+        return `<div style="color:var(--text-muted); font-size:13px">No exercises recorded.</div>`;
     }
 
-    let detail = `<div style="padding:8px 14px 14px; border-top:1px solid var(--border, #2d3748)">`;
+    let html = '';
 
-    log.exercises.forEach(ex => {
+    exercises.forEach(ex => {
         const name = ex.name || 'Unknown Exercise';
         const weights = ex.weights || [];
-        const reps = ex.sets || []; // in this app, "sets" array holds the reps completed
-        const setCount = Math.max(weights.length, reps.length);
+        const reps = ex.sets || []; // reps live in the "sets" array in this app
+        const setCount = Math.max(weights.length, reps.length, 0);
 
-        // Build set lines: e.g. "Set 1: 135 × 10"
         let setLines = '';
         let hasData = false;
 
         for (let i = 0; i < setCount; i++) {
-            const w = weights[i] || 0;
-            const r = reps[i] || 0;
+            const w = Number(weights[i]) || 0;
+            const r = Number(reps[i]) || 0;
             if (w > 0 || r > 0) {
                 hasData = true;
                 setLines += `
                     <div style="font-size:13px; padding:3px 0; color:var(--text-muted)">
-                        Set ${i + 1}: <strong style="color:var(--text)">${w || '—'}</strong> lbs × <strong style="color:var(--text)">${r || '—'}</strong>
+                        Set ${i + 1}: <strong style="color:var(--text)">${w || '—'}</strong> lbs ×
+                        <strong style="color:var(--text)">${r || '—'}</strong>
                     </div>`;
             }
         }
@@ -492,19 +495,29 @@ function renderHistoryDetail(log) {
             setLines = `<div style="font-size:13px; color:var(--text-muted)">No sets logged</div>`;
         }
 
-        detail += `
-            <div style="margin-bottom:14px">
+        html += `
+            <div style="margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--border, #2d3748)">
                 <div style="font-weight:600; font-size:14px; margin-bottom:4px">${name}</div>
                 ${setLines}
             </div>
         `;
     });
 
-    detail += `</div>`;
-    return detail;
+    // Remove last border
+    html = html.replace(/border-bottom:1px solid var\(--border, #2d3748\)">(\s*<div style="font-weight:600[^>]*>[^<]*<\/div>\s*[\s\S]*?)$/, '">$1');
+
+    return html || `<div style="color:var(--text-muted)">No exercises recorded.</div>`;
 }
 
-function toggleHistorySession(key) {
-    expandedHistoryKey = (expandedHistoryKey === key) ? null : key;
-    renderAnalytics(); // re-render so the expansion updates
+function onHistoryDateChange(dateStr) {
+    if (!dateStr) return;
+    historySelectedDate = dateStr;
+    renderAnalytics();
+}
+
+function setHistoryDateToday() {
+    historySelectedDate = typeof getLocalDateString === 'function'
+        ? getLocalDateString()
+        : new Date().toISOString().split('T')[0];
+    renderAnalytics();
 }
