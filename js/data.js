@@ -729,6 +729,14 @@ const EXERCISE_DATABASE = [
     { name: 'Zottman Curl',                   category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Curl up supinated, rotate and lower pronated' },
     { name: 'Wrist Pronation/Supination Rotations', category: 'Forearms', equipment: 'Dumbbell', notes: 'Hold light dumbbell, rotate wrist from palm up to palm down — excellent for forearm rotators and grip' },
     { name: 'Single-Arm Wrist Pronation/Supination', category: 'Forearms', equipment: 'Dumbbell', notes: 'One arm at a time, controlled rotations for balanced development' },
+    { name: 'Barbell Reverse Curl',           category: 'Forearms',    equipment: 'Barbell',    notes: 'Overhand (pronated) grip, elbows tucked, control the eccentric — strong brachioradialis builder' },
+    { name: 'EZ-Bar Reverse Curl',            category: 'Forearms',    equipment: 'Barbell',    notes: 'EZ bar is easier on the wrists than a straight bar while still targeting brachioradialis' },
+    { name: 'Dumbbell Reverse Curl',          category: 'Forearms',    equipment: 'Dumbbell',   notes: 'Palms facing down throughout, curl with control, avoid swinging' },
+    { name: 'Cable Reverse Curl',             category: 'Forearms',    equipment: 'Cable',      notes: 'Use straight bar or EZ attachment, constant tension, overhand grip' },
+    { name: 'Cable Reverse Curl (Rope)',      category: 'Forearms',    equipment: 'Cable',      notes: 'Rope attachment with overhand grip, slight outward rotation at the top' },
+    { name: 'Preacher Reverse Curl (EZ-Bar)', category: 'Forearms',    equipment: 'Barbell',    notes: 'Strict isolation on preacher bench, overhand grip, slow negatives' },
+    { name: 'Machine Reverse Curl',           category: 'Forearms',    equipment: 'Machine',    notes: 'If available, overhand grip on preacher or seated curl machine' },
+    { name: 'Single-Arm Dumbbell Reverse Curl', category: 'Forearms',  equipment: 'Dumbbell',   notes: 'One arm at a time for better focus and imbalance correction' },
 
 
     // ── QUADS / LEGS ──
