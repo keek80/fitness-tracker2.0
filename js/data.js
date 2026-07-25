@@ -355,6 +355,48 @@ function resetTrainingProgram() {
 function isCustomProgram() {
     return localStorage.getItem('flt_custom_program') !== null;
 }
+// ========== SAVED PROGRAMS (multiple named programs) ==========
+function getSavedPrograms() {
+    try {
+        const raw = localStorage.getItem('flt_saved_programs');
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === 'object') return parsed;
+        }
+    } catch (e) { console.warn('Error loading saved programs:', e); }
+    return {};
+}
+
+function saveSavedPrograms(programs) {
+    try {
+        localStorage.setItem('flt_saved_programs', JSON.stringify(programs));
+    } catch (e) { console.error('Error saving programs list:', e); }
+}
+
+function saveCurrentProgramAs(name) {
+    if (!name || !name.trim()) return false;
+    const nameClean = name.trim();
+    const current = getTrainingProgram();
+    const programs = getSavedPrograms();
+    programs[nameClean] = JSON.parse(JSON.stringify(current)); // deep clone
+    saveSavedPrograms(programs);
+    return true;
+}
+
+function loadSavedProgram(name) {
+    const programs = getSavedPrograms();
+    if (!programs[name]) return false;
+    saveTrainingProgram(JSON.parse(JSON.stringify(programs[name])));
+    return true;
+}
+
+function deleteSavedProgram(name) {
+    const programs = getSavedPrograms();
+    if (!programs[name]) return false;
+    delete programs[name];
+    saveSavedPrograms(programs);
+    return true;
+}
 
 // ========== MEAL PLAN DATA ==========
 const MEAL_PLAN = {
