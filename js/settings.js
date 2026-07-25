@@ -44,26 +44,39 @@ function renderSettings() {
             </div>
         </div>
 
-        <!-- PROFILE / GOALS -->
+                <!-- PROFILE / GOALS -->
         <div class="section-title">🎯 Goals</div>
         <div class="card">
+            <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px">
+                Change these anytime. They power your dashboard projections and progress tracking.
+            </div>
             <div class="form-group">
                 <label class="form-label">Start Date</label>
                 <input type="date" id="settStartDate" class="form-input" value="${settings.startDate || ''}">
             </div>
-            <div class="form-group">
-                <label class="form-label">Start Weight (lbs)</label>
-                <input type="number" id="settStartWeight" class="form-input" value="${settings.startWeight || ''}" step="0.1">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+                <div class="form-group">
+                    <label class="form-label">Start Weight (lbs)</label>
+                    <input type="number" id="settStartWeight" class="form-input"
+                           value="${settings.startWeight || ''}" step="0.1" inputmode="decimal">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Goal Weight (lbs)</label>
+                    <input type="number" id="settGoalWeight" class="form-input"
+                           value="${settings.goalWeight || ''}" step="0.1" inputmode="decimal">
+                </div>
             </div>
             <div class="form-group">
-                <label class="form-label">Goal Weight (lbs)</label>
-                <input type="number" id="settGoalWeight" class="form-input" value="${settings.goalWeight || ''}" step="0.1">
+                <label class="form-label">Weekly Loss Target</label>
+                <select id="settWeeklyTarget" class="form-input">
+                    <option value="0.5" ${Number(settings.weeklyTarget) === 0.5 ? 'selected' : ''}>0.5 lbs/week — Conservative</option>
+                    <option value="1.0" ${Number(settings.weeklyTarget) === 1.0 ? 'selected' : ''}>1.0 lbs/week — Steady</option>
+                    <option value="1.5" ${Number(settings.weeklyTarget) === 1.5 || !settings.weeklyTarget ? 'selected' : ''}>1.5 lbs/week — Moderate</option>
+                    <option value="2.0" ${Number(settings.weeklyTarget) === 2.0 ? 'selected' : ''}>2.0 lbs/week — Aggressive</option>
+                    <option value="2.5" ${Number(settings.weeklyTarget) === 2.5 ? 'selected' : ''}>2.5 lbs/week — Very Aggressive</option>
+                </select>
             </div>
-            <div class="form-group">
-                <label class="form-label">Weekly Loss Target (lbs/week)</label>
-                <input type="number" id="settWeeklyTarget" class="form-input" value="${settings.weeklyTarget || ''}" step="0.1">
-            </div>
-            <button class="btn btn-primary" onclick="saveSettingsForm()">💾 Save Settings</button>
+            <button class="btn btn-primary" onclick="saveSettingsForm()">💾 Save Goals</button>
         </div>
 
         <!-- DATA MANAGEMENT -->
