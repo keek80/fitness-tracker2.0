@@ -349,12 +349,14 @@ function saveTrainingProgram(program) {
 
 function resetTrainingProgram() {
     localStorage.removeItem('flt_custom_program');
+    setActiveProgramName(null);               // clear active name
     if (typeof SupabaseSync !== 'undefined') SupabaseSync.deleteCustomProgram();
 }
 
 function isCustomProgram() {
     return localStorage.getItem('flt_custom_program') !== null;
 }
+
 // ========== SAVED PROGRAMS (multiple named programs) ==========
 function getSavedPrograms() {
     try {
@@ -380,6 +382,7 @@ function saveCurrentProgramAs(name) {
     const programs = getSavedPrograms();
     programs[nameClean] = JSON.parse(JSON.stringify(current)); // deep clone
     saveSavedPrograms(programs);
+    setActiveProgramName(nameClean);
     return true;
 }
 
@@ -387,6 +390,7 @@ function loadSavedProgram(name) {
     const programs = getSavedPrograms();
     if (!programs[name]) return false;
     saveTrainingProgram(JSON.parse(JSON.stringify(programs[name])));
+    setActiveProgramName(name);
     return true;
 }
 
@@ -396,6 +400,27 @@ function deleteSavedProgram(name) {
     delete programs[name];
     saveSavedPrograms(programs);
     return true;
+}
+
+// ========== ACTIVE PROGRAM NAME ==========
+function getActiveProgramName() {
+    try {
+        return localStorage.getItem('flt_active_program_name') || null;
+    } catch {
+        return null;
+    }
+}
+
+function setActiveProgramName(name) {
+    try {
+        if (name) {
+            localStorage.setItem('flt_active_program_name', name);
+        } else {
+            localStorage.removeItem('flt_active_program_name');
+        }
+    } catch (e) {
+        console.warn('Error setting active program name:', e);
+    }
 }
 
 // ========== MEAL PLAN DATA ==========
