@@ -4,6 +4,16 @@ let programDayView = null;
 function renderProgram() {
     const page = document.getElementById('page-program');
     const program = getTrainingProgram();
+        const dayCount = program.days ? program.days.length : 0;
+    const activeName = (typeof getActiveProgramName === 'function') ? getActiveProgramName() : null;
+    const splitLabel = activeName
+        ? activeName
+        : (dayCount === 3 ? 'Full Body-style'
+            : dayCount === 4 ? '4-day split'
+            : dayCount === 5 ? '5-day split'
+            : dayCount === 6 ? '6-day split'
+            : dayCount > 0 ? dayCount + '-day custom'
+            : 'No program');
     
     // Default to first day if current doesn't exist
     if (!programDayView || !program.days.find(d => d.id === programDayView)) {
@@ -28,15 +38,17 @@ function renderProgram() {
             <button class="btn btn-secondary btn-sm" style="width:auto; padding:6px 12px; font-size:12px" onclick="navigate('exercises')">🛠️ Edit</button>
         </div>
         
-        <div class="card">
+                <div class="card">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px">
-                <div><strong>Split:</strong> Push / Pull / Legs</div>
-                <div><strong>Days/Week:</strong> ${program.days.length}</div>
+                <div><strong>Program:</strong> ${splitLabel}</div>
+                <div><strong>Days/Week:</strong> ${dayCount}</div>
                 <div><strong>Session:</strong> 45-60 min</div>
                 <div><strong>Focus:</strong> Strength & Fat Loss</div>
-                <div><strong>Rest Days:</strong> Sat & Sun</div>
-                <div><strong>Core:</strong> Machine finisher each day</div>
             </div>
+            <button class="btn btn-secondary btn-sm" style="width:100%; margin-top:12px"
+                    onclick="navigate('exercises')">
+                Edit in Exercise Manager
+            </button>
         </div>
 
         <div class="day-selector">
@@ -51,6 +63,10 @@ function renderProgram() {
 
         ${renderProgramDay(program.days.find(d => d.id === programDayView))}
 
+        <div class="section-title" style="margin-top:8px">Guidelines</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px">
+            General rules that apply no matter which split you run. Edit days and exercises in Exercise Manager.
+        </div>
         <div class="section-title">🔥 Warm-Up Protocol (Every Session)</div>
         <div class="card" style="font-size:13px; color:var(--text-secondary); line-height:1.8">
             <div>1️⃣ 5 min walk on treadmill or bike (low intensity)</div>
@@ -82,12 +98,12 @@ function renderProgram() {
             </div>
         `).join('')}
 
-        <div class="section-title">🧘 Rest Days (Saturday & Sunday)</div>
+        <div class="section-title">🧘 Rest Days Ideas</div>
         <div class="card" style="font-size:13px; color:var(--text-secondary); line-height:1.8">
             <div>🚶 Walking: 20-30 min (low intensity)</div>
             <div>🧘 Stretching or yoga: 10-15 min</div>
             <div>🧽 Foam rolling: 5-10 min (quads, IT band, upper back)</div>
-            <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border); color:var(--accent-orange)">💡 Wednesday is a heavy leg day — prioritize sleep and nutrition that night for recovery</div>
+                        <div style="margin-top:8px; padding-top:8px; border-top:1px solid var(--border); color:var(--accent-orange)">After hard training days, prioritize sleep and nutrition for recovery</div>
         </div>
 
         <div class="section-title">🎯 Core Finisher Rules</div>
