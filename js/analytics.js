@@ -423,7 +423,7 @@ function renderWorkoutHistory(container, gymLogs) {
         <div class="section-title">📜 Workout History</div>
         <div class="card" style="margin-bottom:16px; padding:14px">
             <label class="form-label" style="margin-bottom:8px; display:block">Select Date</label>
-            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:14px">
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-bottom:8px">
                 <input type="date" id="historyDateInput" class="form-input"
                        value="${historySelectedDate}" style="flex:1; min-width:160px"
                        onchange="onHistoryDateChange(this.value)">
@@ -521,8 +521,8 @@ function renderHistoryCalendar(workoutDates) {
         : new Date().toISOString().split('T')[0];
 
     let cells = '';
-    for (let i = 0; i < startWeekday; i++) {
-        cells += `<div style="aspect-ratio:1; min-height:36px"></div>`;
+        for (let i = 0; i < startWeekday; i++) {
+        cells += `<div style="min-height:28px"></div>`;
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
@@ -547,33 +547,40 @@ function renderHistoryCalendar(workoutDates) {
             border = '1px solid var(--accent-blue, #0095ff)';
         }
 
-        cells += `
+                cells += `
             <button type="button" onclick="onHistoryDateChange('${dateStr}')"
-                style="aspect-ratio:1; min-height:36px; border-radius:8px; border:${border};
-                       background:${bg}; color:${color}; font-size:13px; font-weight:${fontWeight};
-                       cursor:pointer; display:flex; flex-direction:column; align-items:center;
-                       justify-content:center; padding:2px;">
+                style="
+                    min-height:28px; height:28px; border-radius:6px;
+                    border:${border}; background:${bg}; color:${color};
+                    font-size:11px; font-weight:${fontWeight}; cursor:pointer;
+                    display:flex; flex-direction:column; align-items:center;
+                    justify-content:center; padding:0; line-height:1;
+                ">
                 ${day}
-                ${hasWorkout && !isSelected ? '<span style="width:4px;height:4px;border-radius:50%;background:#00d68f;margin-top:2px"></span>' : ''}
+                ${hasWorkout && !isSelected ? '<span style="width:3px;height:3px;border-radius:50%;background:#00d68f;margin-top:1px"></span>' : ''}
             </button>
         `;
     }
 
-    return `
-        <div style="margin-top:4px">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px">
-                <button type="button" class="btn btn-secondary btn-sm" style="padding:6px 10px"
+        return `
+        <div style="margin-top:2px">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px">
+                <button type="button" class="btn btn-secondary btn-sm"
+                        style="padding:4px 8px; font-size:12px; min-width:32px"
                         onclick="shiftHistoryCalendar(-1)">‹</button>
-                <div style="font-weight:600; font-size:14px">${monthNames[month]} ${year}</div>
-                <button type="button" class="btn btn-secondary btn-sm" style="padding:6px 10px"
+                <div style="font-weight:600; font-size:13px">${monthNames[month]} ${year}</div>
+                <button type="button" class="btn btn-secondary btn-sm"
+                        style="padding:4px 8px; font-size:12px; min-width:32px"
                         onclick="shiftHistoryCalendar(1)">›</button>
             </div>
-            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; margin-bottom:6px">
-                ${weekdays.map(w => `<div style="font-size:11px; color:var(--text-muted); padding:4px 0">${w}</div>`).join('')}
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:2px; text-align:center; margin-bottom:2px">
+                ${weekdays.map(w => `<div style="font-size:10px; color:var(--text-muted); padding:2px 0">${w}</div>`).join('')}
             </div>
-            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px">${cells}</div>
-            <div style="display:flex; gap:12px; margin-top:10px; font-size:11px; color:var(--text-muted); flex-wrap:wrap">
-                <span>Green = has workout</span>
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:2px">
+                ${cells}
+            </div>
+            <div style="display:flex; gap:10px; margin-top:6px; font-size:10px; color:var(--text-muted); flex-wrap:wrap">
+                <span>Green = workout</span>
                 <span>Blue = selected</span>
             </div>
         </div>
