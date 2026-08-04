@@ -787,7 +787,7 @@ const EXERCISE_DATABASE = [
     { name: 'Dumbbell Standing Calf Raise', category: 'Calves', equipment: 'Dumbbell', notes: 'Hold DBs at sides or one DB, use step/block for full ROM, slow eccentric', videoUrl: 'https://www.youtube.com/watch?v=YMmgqO8Jo-k' },
     { name: 'Single-Leg Standing Calf Raise (Bodyweight or DB)', category: 'Calves', equipment: 'Dumbbell', notes: 'Balance on one foot, use wall for support if needed, full stretch and pause', videoUrl: 'https://www.youtube.com/watch?v=YMmgqO8Jo-k' },
     { name: 'Donkey Calf Raise (Machine or Partner)', category: 'Calves', equipment: 'Machine', notes: 'Hips hinged, focus on deep stretch and powerful contraction', videoUrl: 'https://www.youtube.com/watch?v=YMmgqO8Jo-k' },
-    { name: 'Calf Raise on Leg Press Machine', category: 'Calves', equipment: 'Machine', notes: 'Feet low on platform, knees straight but soft, full range', videoUrl: 'https://www.youtube.com/watch?v=YMmgqO8Jo-k' },
+    { name: 'Calf Raise on Leg Press Machine', category: 'Calves', equipment: 'Machine', notes: 'Feet low on platform, knees straight but soft, full range', videoUrl: 'https://youtu.be/M4FojyRAcuE?si=0gVAVDh7hXzc1jta' },
 
     // ── ADDUCTORS ──
     { name: 'Cable Hip Adduction', category: 'Adductors', equipment: 'Cable', notes: 'Cross leg inward against resistance and control return', videoUrl: 'https://www.youtube.com/watch?v=YRRnnZsRs9U' },
