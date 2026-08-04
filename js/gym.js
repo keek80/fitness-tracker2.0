@@ -120,6 +120,11 @@ function renderGym() {
                 const pr = prs[ex.name] || prs[displayName];
                 const prBadge = pr ? `<span class="pr-badge">🏆 PR: ${pr.bestWeight} lbs</span>` : '';
 
+                const videoUrl = getExerciseVideo(displayName) || getExerciseVideo(ex.name);
+                const videoBtn = videoUrl
+                    ? `<button class="ex-action-btn" onclick="openVideo('${videoUrl}')" title="Watch form">▶️</button>`
+                    : '';
+
                 const numericPrevWeights = prevWeights.map(w => Number(w) || 0);
                 const lastWeightShown = numericPrevWeights.filter(w => w > 0);
                 const lastWeightMax = lastWeightShown.length ? Math.max(...lastWeightShown) : 0;
@@ -163,9 +168,9 @@ function renderGym() {
                 return `
                 <div class="exercise-card">
                     <div class="exercise-name" style="${isSubstituted ? 'color:var(--accent-orange);' : ''}">
-                        ${displayName} ${prBadge}
+                        ${displayName} ${prBadge} ${videoBtn}
                         <button class="ex-action-btn" onclick="swapExercise(${i}, '${ex.name}')" style="float:right; font-size:18px;" title="Swap for this session">🔄</button>
-                    </div>
+                </div>
                     <div class="exercise-target">${ex.sets} × ${ex.repsTarget} · Rest ${ex.rest}${ex.notes ? ' · ' + ex.notes : ''}</div>
                     ${prevDisplay}
                     ${isAutoLoaded ? `<div style="font-size:11px; color:var(--accent-orange); margin-bottom:8px; padding:5px 10px; background:rgba(255,170,0,0.08); border-radius:6px; border:1px solid rgba(255,170,0,0.25);">⬆️ Weights pre-loaded from last session — enter your reps below</div>` : ''}
