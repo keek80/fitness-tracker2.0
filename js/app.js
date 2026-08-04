@@ -123,6 +123,17 @@ function showToast(message, type = 'success') {
     toast.style.color = type === 'error' ? '#fff' : '#000';
     setTimeout(() => { toast.classList.add('hidden'); }, 2500);
 }
+// ========== VIDEO HELPERS ==========
+function openVideo(url) {
+    if (!url) return;
+    window.open(url, '_blank');
+}
+
+function getExerciseVideo(name) {
+    if (typeof EXERCISE_DATABASE === 'undefined' || !name) return null;
+    const entry = EXERCISE_DATABASE.find(e => e.name === name);
+    return entry?.videoUrl || null;
+}
 
 // Menu button
 document.getElementById('menuBtn').addEventListener('click', openDrawer);
