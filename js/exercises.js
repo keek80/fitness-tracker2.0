@@ -246,12 +246,15 @@ function renderDBList() {
 
 function renderDBItem(ex) {
     const color = EQUIPMENT_COLORS[ex.equipment] || '#718096';
-    // Escape single quotes for onclick safety
     const safeName = ex.name.replace(/'/g, "\\'");
     const safeNotes = (ex.notes || '').replace(/'/g, "\\'");
+    const videoBtn = ex.videoUrl
+        ? `<span class="video-badge" onclick="event.stopPropagation(); openVideo('${ex.videoUrl}')" title="Watch form">▶️</span>`
+        : '';
+
     return `
         <button class="ex-db-item" onclick="selectExerciseFromDB('${safeName}', '${safeNotes}')">
-            <div class="ex-db-item-name">${ex.name}</div>
+            <div class="ex-db-item-name">${ex.name} ${videoBtn}</div>
             <div class="ex-db-item-meta">
                 <span class="ex-db-badge" style="background:${color}22; color:${color}; border:1px solid ${color}44">
                     ${ex.equipment}
@@ -260,7 +263,6 @@ function renderDBItem(ex) {
             </div>
         </button>`;
 }
-
 function selectExerciseFromDB(name, notes) {
     // Fill in the form fields
     const nameInput = document.getElementById('exNameInput');
