@@ -734,7 +734,7 @@ const EXERCISE_DATABASE = [
     { name: 'Single-Arm Dumbbell Reverse Curl', category: 'Forearms', equipment: 'Dumbbell', notes: 'One arm at a time for better focus and imbalance correction', videoUrl: 'https://www.youtube.com/watch?v=ykJmrZ5v0Oo' },
 
     // ── QUADS ──
-    { name: 'Leg Press Machine', category: 'Quads', equipment: 'Machine', notes: 'Feet shoulder-width, don\'t lock knees', videoUrl: 'https://www.youtube.com/watch?v=IZxyjW7MPJQ' },
+    { name: 'Leg Press Machine', category: 'Quads', equipment: 'Machine', notes: 'Feet shoulder-width, don\'t lock knees', videoUrl: 'https://youtu.be/ETOAyWM6i6A?si=Wn07Z6AUzFK18Sbq' },
     { name: 'Leg Extension Machine', category: 'Quads', equipment: 'Machine', notes: 'Squeeze quads hard at the top', videoUrl: 'https://www.youtube.com/watch?v=YyvSfVjQeL0' },
     { name: 'Barbell Back Squat', category: 'Quads', equipment: 'Barbell', notes: 'Chest up, knees track over toes', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
     { name: 'Goblet Squat (DB)', category: 'Quads', equipment: 'Dumbbell', notes: 'Squat to comfortable depth, chest up', videoUrl: 'https://www.youtube.com/watch?v=ultWZbUMPL8' },
