@@ -951,6 +951,16 @@ select.form-input {
     color: var(--text-primary);
     margin-bottom: 3px;
 }
+.video-badge {
+    font-size: 13px;
+    margin-left: 6px;
+    cursor: pointer;
+    opacity: 0.85;
+    vertical-align: middle;
+}
+.video-badge:hover {
+    opacity: 1;
+}
 .ex-db-item-meta {
     display: flex;
     align-items: center;
