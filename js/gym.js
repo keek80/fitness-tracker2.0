@@ -122,7 +122,7 @@ function renderGym() {
 
                 const videoUrl = getExerciseVideo(displayName) || getExerciseVideo(ex.name);
                 const videoBtn = videoUrl
-                    ? `<button class="ex-action-btn" onclick="openVideo('${videoUrl}')" title="Watch form">▶️</button>`
+                    ? `<button class="ex-action-btn" onclick="openVideo('${videoUrl}')" title="Watch form">▶️ Video Tutorial</button>`
                     : '';
 
                 const numericPrevWeights = prevWeights.map(w => Number(w) || 0);
