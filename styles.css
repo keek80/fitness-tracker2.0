@@ -712,6 +712,8 @@ select.form-input {
 .today-workout-card .day-selector {
     margin-bottom: 0;
 }
+.alt-day-selector { margin-top: -8px; }
+.day-btn.alt-day { border-style: dashed; opacity: 0.9; }
 
 /* ================================================================
    PER-SET WEIGHT & REPS GRID (Gym Log)
