@@ -567,6 +567,13 @@ const EXERCISE_DATABASE = [
   { name: 'Smith Machine Decline Press', category: 'Chest', equipment: 'Smith Machine', notes: 'Lower chest emphasis, control the eccentric', videoUrl: 'https://www.youtube.com/watch?v=xs6Eux3zaE0' },
   { name: 'Smith Machine Incline Bench Press', category: 'Chest', equipment: 'Smith Machine', notes: 'Set bench at 30-45°, lower to upper chest, drive straight up', videoUrl: 'https://www.youtube.com/watch?v=b8DqTO6ak0k' },
   { name: 'Svend Press', category: 'Chest', equipment: 'Bodyweight', notes: 'Press hands together at chest level, squeeze hard', videoUrl: 'https://www.youtube.com/watch?v=cIoUZOnypS8' },
+  { name: 'TRX Chest Press', category: 'Chest', equipment: 'TRX', notes: 'Face away from anchor, body in a rigid plank. Walk feet back to load more. Lower chest between handles, press out without shrugging', videoUrl: 'https://www.youtube.com/watch?v=i_45-JMoXg4' },
+  { name: 'TRX Chest Fly', category: 'Chest', equipment: 'TRX', notes: 'Soft elbows, open arms wide until pecs stretch, squeeze handles together. Keep a straight plank — do not sag hips', videoUrl: 'https://www.youtube.com/watch?v=xIAu_CMX2UE' },
+  { name: 'TRX Push-Up (Feet in Straps)', category: 'Chest', equipment: 'TRX', notes: 'Toes in foot cradles, hands on floor. Brace core, lower chest, press up. Harder than a regular push-up because the feet are unstable', videoUrl: 'https://www.youtube.com/watch?v=VuI393nVoGY' },
+  { name: 'TRX Clock Press', category: 'Chest', equipment: 'TRX', notes: 'One arm presses while the other opens to the side like a clock. Alternate sides. Keep ribs down and hips square', videoUrl: 'https://www.youtube.com/watch?v=YDJvigsyA_U' },
+  { name: 'TRX Single-Arm Chest Press', category: 'Chest', equipment: 'TRX', notes: 'Single-handle mode. Square hips to fight rotation. Press with one arm, free hand can tap hip or stay at side', videoUrl: 'https://www.youtube.com/watch?v=i_45-JMoXg4' },
+
+
 
   // ═══════════════════════════════════════════════════════════
   //  BACK  (41)
@@ -612,6 +619,13 @@ const EXERCISE_DATABASE = [
   { name: 'T-Bar Row', category: 'Back', equipment: 'Barbell', notes: 'Keep chest on pad or brace core, squeeze at contraction', videoUrl: 'https://www.youtube.com/watch?v=j3Igk5nyZE4' },
   { name: 'Trap Bar Deadlift', category: 'Back', equipment: 'Trap Bar', notes: 'More quad-friendly deadlift variation', videoUrl: 'https://www.youtube.com/watch?v=1jC_nqcSCp8' },
   { name: 'Y-T-I Raises (Prone)', category: 'Back', equipment: 'Bodyweight', notes: 'Lying face down, form letters Y-T-I for rear delts/upper back', videoUrl: 'https://www.youtube.com/watch?v=xD6i2HCbm_8' },
+  { name: 'TRX Low Row', category: 'Back', equipment: 'TRX', notes: 'Face anchor, palms in, elbows tight to ribs. Pull handles to lower ribs and squeeze shoulder blades. Walk feet forward to make it harder', videoUrl: 'https://www.youtube.com/watch?v=nXfYNAwB_Lo' },
+  { name: 'TRX Mid Row', category: 'Back', equipment: 'TRX', notes: 'Neutral grip, pull handles to mid-chest with elbows about 45 degrees. Pause and squeeze mid-back', videoUrl: 'https://www.youtube.com/watch?v=7d8SbPUdHR0' },
+  { name: 'TRX High Row', category: 'Back', equipment: 'TRX', notes: 'Pull handles toward upper chest / collarbones with elbows high. Targets upper back and rear delts', videoUrl: 'https://www.youtube.com/watch?v=DLcGQqKVEwA' },
+  { name: 'TRX Reverse-Grip Row', category: 'Back', equipment: 'TRX', notes: 'Underhand grip, elbows close. Strong mid-back and biceps bias. Keep body in one straight line', videoUrl: 'https://www.youtube.com/watch?v=nXfYNAwB_Lo' },
+  { name: 'TRX Single-Arm Row', category: 'Back', equipment: 'TRX', notes: 'Single-handle mode. Square hips and shoulders — do not twist. Pull elbow to hip, pause, lower under control', videoUrl: 'https://www.youtube.com/watch?v=QPpXD2ta0Xw' },
+  { name: 'TRX Power Pull', category: 'Back', equipment: 'TRX', notes: 'One-arm row plus a reach/rotation toward the floor, then pull and rotate back. Train anti-rotation and mid-back', videoUrl: 'https://www.youtube.com/watch?v=fFGhTpQHOBA' },
+  { name: 'TRX Inverted Row', category: 'Back', equipment: 'TRX', notes: 'Body more horizontal under the straps. Pull chest to handles. Great bodyweight row when you want more load than a standing low row', videoUrl: 'https://www.youtube.com/watch?v=99b9P4LOYV0' },
 
   // ═══════════════════════════════════════════════════════════
   //  SHOULDERS  (37)
@@ -653,6 +667,12 @@ const EXERCISE_DATABASE = [
   { name: 'Wall Angels', category: 'Shoulders', equipment: 'Bodyweight', notes: 'Back against wall, slide arms up and down for mobility', videoUrl: 'https://www.youtube.com/watch?v=1UU4VvklQ44' },
   { name: 'Y-Raises (Scaption)', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Thumbs up, 45-degree angle — rotator cuff friendly', videoUrl: 'https://www.youtube.com/watch?v=nvGTvUiaEOs' },
   { name: 'Z-Press', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Seated on floor with no back support — advanced core + shoulder', videoUrl: 'https://www.youtube.com/watch?v=wce-elEhBHw' },
+  { name: 'TRX Y Fly', category: 'Shoulders', equipment: 'TRX', notes: 'Face anchor, raise arms into a Y overhead. Lead with the pinkies, squeeze lower traps. Small lean, high quality reps', videoUrl: 'https://www.youtube.com/watch?v=32SsJD-9UeQ' },
+  { name: 'TRX T Fly', category: 'Shoulders', equipment: 'TRX', notes: 'Open arms straight out to a T. Soft elbows, squeeze rear delts and mid-traps. Do not shrug', videoUrl: 'https://www.youtube.com/watch?v=eCu-wLNpdkk' },
+  { name: 'TRX W Fly', category: 'Shoulders', equipment: 'TRX', notes: 'Pull into a W / goal-post shape with external rotation. Excellent rear-delt and rotator-cuff work', videoUrl: 'https://www.youtube.com/watch?v=tN403d_1bsQ' },
+  { name: 'TRX Face Pull', category: 'Shoulders', equipment: 'TRX', notes: 'Pull handles toward forehead, elbows high, externally rotate at the top. Rear delts, rhomboids, rotator cuff', videoUrl: 'https://www.youtube.com/watch?v=Jbyoxer58j4' },
+  { name: 'TRX Front Raise', category: 'Shoulders', equipment: 'TRX', notes: 'Face away, raise arms in front to shoulder height while holding a plank lean. Control the lower', videoUrl: 'https://www.youtube.com/watch?v=hfHUWysKgXc' },
+  { name: 'TRX Overhead Press', category: 'Shoulders', equipment: 'TRX', notes: 'Face away, press handles overhead from ear height. Keep ribs down and a rigid plank. Walk feet back to load more', videoUrl: 'https://www.youtube.com/watch?v=sJ9ZVUOxkf8' },
 
   // ═══════════════════════════════════════════════════════════
   //  TRAPS  (5)
@@ -662,6 +682,7 @@ const EXERCISE_DATABASE = [
   { name: 'Dumbbell Shrugs', category: 'Traps', equipment: 'Dumbbell', notes: 'Traps + upper shoulders, hold squeeze at top', videoUrl: 'https://www.youtube.com/watch?v=cJRVVxmytaM' },
   { name: 'Face Pulls (Cable)', category: 'Traps', equipment: 'Cable', notes: 'Upper traps + rear delts', videoUrl: 'https://www.youtube.com/watch?v=V8dZ3pyiCBo' },
   { name: 'Smith Machine Shrugs', category: 'Traps', equipment: 'Smith Machine', notes: 'Guided heavy shrugs', videoUrl: 'https://www.youtube.com/watch?v=cT5_GyOXIgE' },
+  { name: 'TRX Shrug (Standing)', category: 'Traps', equipment: 'TRX', notes: 'Face anchor, arms long, shrug shoulders toward ears then depress. Keep elbows soft. Upper-trap isolation on straps', videoUrl: 'https://www.youtube.com/watch?v=Jbyoxer58j4' },
 
   // ═══════════════════════════════════════════════════════════
   //  BICEPS  (26)
@@ -692,6 +713,10 @@ const EXERCISE_DATABASE = [
   { name: 'Single-Arm Cable Preacher Curl', category: 'Biceps', equipment: 'Cable', notes: 'Use bench for support, strict isolation', videoUrl: 'https://www.youtube.com/watch?v=I90Pu35wfVY' },
   { name: 'Spider Curls', category: 'Biceps', equipment: 'Dumbbell', notes: 'Lying face down on incline bench', videoUrl: 'https://www.youtube.com/watch?v=nvufDW-MSQk' },
   { name: 'Zottman Curls', category: 'Biceps', equipment: 'Dumbbell', notes: 'Supinated up, pronated down', videoUrl: 'https://www.youtube.com/watch?v=D7bMA4WEKMI' },
+  { name: 'TRX Bicep Curl', category: 'Biceps', equipment: 'TRX', notes: 'Face anchor, palms up, elbows high as if resting on a table. Curl handles to temples, lower without dropping elbows', videoUrl: 'https://www.youtube.com/watch?v=hOGwNsoOsKY' },
+  { name: 'TRX Hammer Curl', category: 'Biceps', equipment: 'TRX', notes: 'Neutral / thumbs-up grip. Same high-elbow setup as the curl. Hits brachialis and forearms', videoUrl: 'https://www.youtube.com/watch?v=hOGwNsoOsKY' },
+  { name: 'TRX Reverse Curl', category: 'Biceps', equipment: 'TRX', notes: 'Overhand grip, elbows high. Brachialis and brachioradialis emphasis. Slow negatives', videoUrl: 'https://www.youtube.com/watch?v=hOGwNsoOsKY' },
+  { name: 'TRX Single-Arm Bicep Curl', category: 'Biceps', equipment: 'TRX', notes: 'Single-handle mode. Keep shoulder packed and hips square. Full squeeze at the top', videoUrl: 'https://www.youtube.com/watch?v=hOGwNsoOsKY' },
 
   // ═══════════════════════════════════════════════════════════
   //  TRICEPS  (27)
@@ -723,6 +748,11 @@ const EXERCISE_DATABASE = [
   { name: 'Tricep Dips (Machine or Bench)', category: 'Triceps', equipment: 'Machine', notes: 'Upright torso for tricep focus', videoUrl: 'https://www.youtube.com/watch?v=WVj_4Qv-0r4' },
   { name: 'Tricep Kickbacks (Dumbbell)', category: 'Triceps', equipment: 'Dumbbell', notes: 'Hinge at hips, extend arm fully back, squeeze', videoUrl: 'https://www.youtube.com/watch?v=6SS6K3lAwZ8' },
   { name: 'Tricep Pushdowns (Straight Bar)', category: 'Triceps', equipment: 'Cable', notes: 'Pronated grip variation', videoUrl: 'https://www.youtube.com/watch?v=LlBqt8dksdk' },
+  { name: 'TRX Tricep Extension', category: 'Triceps', equipment: 'TRX', notes: 'Face away, arms overhead, bend elbows so hands go behind the head, then extend. Elbows stay fixed. Rigid plank', videoUrl: 'https://www.youtube.com/watch?v=KBNCEvBXOl8' },
+  { name: 'TRX Kneeling Tricep Press', category: 'Triceps', equipment: 'TRX', notes: 'Kneel facing away, press handles from forehead to lockout. Easier than standing extension, still long-head focused', videoUrl: 'https://www.youtube.com/watch?v=kYdvEZ_0-MI' },
+  { name: 'TRX Tricep Kickback', category: 'Triceps', equipment: 'TRX', notes: 'Face anchor, pin elbows at sides, extend hands toward hips. Pause at lockout. Offset stance for balance', videoUrl: 'https://www.youtube.com/watch?v=KBNCEvBXOl8' },
+  { name: 'TRX Close-Grip Chest Press', category: 'Triceps', equipment: 'TRX', notes: 'Chest-press setup with hands closer and elbows tucked. More tricep, less pec. Do not flare elbows', videoUrl: 'https://www.youtube.com/watch?v=i_45-JMoXg4' },
+
 
   // ═══════════════════════════════════════════════════════════
   //  FOREARMS  (18)
@@ -745,6 +775,7 @@ const EXERCISE_DATABASE = [
   { name: 'Single-Arm Wrist Pronation/Supination', category: 'Forearms', equipment: 'Dumbbell', notes: 'One arm at a time, controlled rotations for balanced development', videoUrl: 'https://www.youtube.com/watch?v=Y-2-lnALVZE' },
   { name: 'Wrist Pronation/Supination Rotations', category: 'Forearms', equipment: 'Dumbbell', notes: 'Hold light dumbbell, rotate wrist from palm up to palm down — excellent for forearm rotators and grip', videoUrl: 'https://www.youtube.com/watch?v=Y-2-lnALVZE' },
   { name: 'Zottman Curl', category: 'Forearms', equipment: 'Dumbbell', notes: 'Curl up supinated, rotate and lower pronated', videoUrl: 'https://www.youtube.com/watch?v=D7bMA4WEKMI' },
+  { name: 'TRX Grip Hold / Dead Hang on Handles', category: 'Forearms', equipment: 'TRX', notes: 'Hang or lean back from the handles and hold. Crush the grips, keep shoulders packed. Train grip endurance', videoUrl: 'https://www.youtube.com/watch?v=nXfYNAwB_Lo' },
 
   // ═══════════════════════════════════════════════════════════
   //  QUADS  (13)
@@ -762,6 +793,12 @@ const EXERCISE_DATABASE = [
   { name: 'Smith Machine Reverse Lunge', category: 'Quads', equipment: 'Smith Machine', notes: 'Step back smoothly, keep front knee tracking over toes', videoUrl: 'https://www.youtube.com/watch?v=bMNZAlCi11w' },
   { name: 'Smith Machine Split Squat', category: 'Quads', equipment: 'Smith Machine', notes: 'Staggered stance, drive through front heel', videoUrl: 'https://www.youtube.com/watch?v=MXrSCU4P9L4' },
   { name: 'Step-Ups (High Box)', category: 'Quads', equipment: 'Dumbbell', notes: 'Drive through heel, squeeze glute at top', videoUrl: 'https://www.youtube.com/watch?v=9ZknEYboBOQ' },
+  { name: 'TRX Squat', category: 'Quads', equipment: 'TRX', notes: 'Face anchor, light tension on straps for balance. Sit hips down and back, drive through heels. Use straps only as needed', videoUrl: 'https://www.youtube.com/watch?v=DTXphTGYd0g' },
+  { name: 'TRX Pistol Squat', category: 'Quads', equipment: 'TRX', notes: 'Assisted single-leg squat. Standing leg tracks over mid-foot, other leg floats. Use straps for balance, not to yank up', videoUrl: 'https://www.youtube.com/watch?v=NgAF-qWv95I' },
+  { name: 'TRX Reverse Lunge', category: 'Quads', equipment: 'TRX', notes: 'Face anchor, step back into a lunge, front knee stacked over ankle. Drive through front heel. Alternate or stay on one side', videoUrl: 'https://www.youtube.com/watch?v=YkyxCk7t3rM' },
+  { name: 'TRX Front Lunge', category: 'Quads', equipment: 'TRX', notes: 'Step forward into a lunge while holding the straps. Keep torso tall. Control the descent', videoUrl: 'https://www.youtube.com/watch?v=COtOiAgKEpk' },
+  { name: 'TRX Jump Squat', category: 'Quads', equipment: 'TRX', notes: 'Assisted squat jump. Soft landings, straps keep you upright. Great quad and conditioning finisher', videoUrl: 'https://www.youtube.com/watch?v=421o1Bx_9RU' },
+
 
   // ═══════════════════════════════════════════════════════════
   //  HAMSTRINGS  (12)
@@ -778,6 +815,9 @@ const EXERCISE_DATABASE = [
   { name: 'Smith Machine Good Morning', category: 'Hamstrings', equipment: 'Smith Machine', notes: 'Use light-moderate load, hinge carefully, keep spine neutral', videoUrl: 'https://www.youtube.com/watch?v=XUaP-K7AESE' },
   { name: 'Smith Machine Romanian Deadlift', category: 'Hamstrings', equipment: 'Smith Machine', notes: 'Hinge at hips, slight knee bend, feel hamstring stretch', videoUrl: 'https://www.youtube.com/watch?v=nmGzbW15qYo' },
   { name: 'Swiss Ball Leg Curl', category: 'Hamstrings', equipment: 'Bodyweight', notes: 'Bridge position, curl ball toward glutes with heels on ball', videoUrl: 'https://www.youtube.com/watch?v=BLWh0Y30nZk' },
+  { name: 'TRX Hamstring Curl', category: 'Hamstrings', equipment: 'TRX', notes: 'Heels in cradles, hips up. Curl heels toward glutes, keep hips high, extend slow. Do not let hips drop', videoUrl: 'https://www.youtube.com/watch?v=RkEHyudfkyM' },
+  { name: 'TRX Single-Leg Hamstring Curl', category: 'Hamstrings', equipment: 'TRX', notes: 'Same as hamstring curl but one heel in a strap. Other leg can hover or rest. Hips stay level', videoUrl: 'https://www.youtube.com/watch?v=JcJ2i2gUW3o' },
+  { name: 'TRX Hip Hinge', category: 'Hamstrings', equipment: 'TRX', notes: 'Face anchor, soft knees, push hips back like an RDL. Feel hamstrings load, then stand tall and squeeze glutes', videoUrl: 'https://www.youtube.com/watch?v=WzDINowG-mw' },
 
   // ═══════════════════════════════════════════════════════════
   //  GLUTES  (16)
@@ -798,6 +838,11 @@ const EXERCISE_DATABASE = [
   { name: 'Smith Machine Hip Thrust', category: 'Glutes', equipment: 'Smith Machine', notes: 'Drive hips hard and pause at the top', videoUrl: 'https://www.youtube.com/watch?v=ADgWjz9i42Y' },
   { name: 'Step-Ups (High Box for Glutes)', category: 'Glutes', equipment: 'Dumbbell', notes: 'Drive through heel, full hip extension at top', videoUrl: 'https://www.youtube.com/watch?v=9ZknEYboBOQ' },
   { name: 'Sumo Deadlift (Barbell)', category: 'Glutes', equipment: 'Barbell', notes: 'Wide stance, drive through heels', videoUrl: 'https://www.youtube.com/watch?v=7gRCzkbCT24' },
+  { name: 'TRX Bulgarian Split Squat', category: 'Glutes', equipment: 'TRX', notes: 'Rear foot in a cradle, face away. Drop back knee, front heel planted. Torso slight forward lean for glute bias', videoUrl: 'https://www.youtube.com/watch?v=DRO5j-2bptQ' },
+  { name: 'TRX Hip Press (Glute Bridge)', category: 'Glutes', equipment: 'TRX', notes: 'Heels in straps, drive hips to a bridge and squeeze glutes hard at the top. Can pause or pulse', videoUrl: 'https://www.youtube.com/watch?v=RkEHyudfkyM' },
+  { name: 'TRX Curtsy Lunge', category: 'Glutes', equipment: 'TRX', notes: 'Face anchor, step one leg behind and across. Sit into the working glute. Keep hips square', videoUrl: 'https://www.youtube.com/watch?v=COtOiAgKEpk' },
+  { name: 'TRX Sprinter Start', category: 'Glutes', equipment: 'TRX', notes: 'Lean into straps in a split stance, drive the back knee through like a sprint. Glute, hip flexor, and power work', videoUrl: 'https://www.youtube.com/watch?v=QPpXD2ta0Xw' },
+
 
   // ═══════════════════════════════════════════════════════════
   //  CALVES  (7)
@@ -809,6 +854,8 @@ const EXERCISE_DATABASE = [
   { name: 'Single-Leg Standing Calf Raise (Bodyweight or DB)', category: 'Calves', equipment: 'Dumbbell', notes: 'Balance on one foot, use wall for support if needed, full stretch and pause', videoUrl: 'https://www.youtube.com/watch?v=RodSTSylf94' },
   { name: 'Smith Machine Standing Calf Raise', category: 'Calves', equipment: 'Smith Machine', notes: 'Use block for full ROM and pause at the bottom', videoUrl: 'https://www.youtube.com/watch?v=FNdI5TynYxs' },
   { name: 'Standing Calf Raises Machine', category: 'Calves', equipment: 'Machine', notes: 'Full range of motion, pause at top', videoUrl: 'https://www.youtube.com/watch?v=f51Ac8SveFE' },
+  { name: 'TRX Calf Raise', category: 'Calves', equipment: 'TRX', notes: 'Hold straps for balance, rise onto the balls of the feet, pause, lower heels under control. Single-leg to progress', videoUrl: 'https://www.youtube.com/watch?v=DTXphTGYd0g' },
+
 
   // ═══════════════════════════════════════════════════════════
   //  ADDUCTORS  (8)
@@ -821,6 +868,8 @@ const EXERCISE_DATABASE = [
   { name: 'Seated Hip Adduction (Machine)', category: 'Adductors', equipment: 'Machine', notes: 'Squeeze thighs together, control the return for full stretch', videoUrl: 'https://www.youtube.com/watch?v=GmRSV_n2E_0' },
   { name: 'Side-Lying Adductor Lift', category: 'Adductors', equipment: 'Bodyweight', notes: 'Lie on side, lift bottom leg upward against gravity, slow and controlled', videoUrl: 'https://www.youtube.com/watch?v=p-ShPzWxjzA' },
   { name: 'Sumo Squat (Dumbbell)', category: 'Adductors', equipment: 'Dumbbell', notes: 'Wide stance, toes out, squat deep while keeping chest up — great adductor emphasis', videoUrl: 'https://www.youtube.com/watch?v=MwNY25e4QEA' },
+  { name: 'TRX Side Lunge', category: 'Adductors', equipment: 'TRX', notes: 'Face anchor, step wide to one side, sit into that hip, other leg straight. Push back to stand. Inner-thigh stretch and strength', videoUrl: 'https://www.youtube.com/watch?v=8AtuaND6k5k' },
+  { name: 'TRX Cossack Squat', category: 'Adductors', equipment: 'TRX', notes: 'Assisted deep side squat. Working hip sits low, other leg long with toes up if mobility allows. Use straps for balance', videoUrl: 'https://www.youtube.com/watch?v=kZdZsw22lU4' },
 
   // ═══════════════════════════════════════════════════════════
   //  ABDUCTORS  (7)
@@ -832,6 +881,8 @@ const EXERCISE_DATABASE = [
   { name: 'Side-Lying Hip Abduction', category: 'Abductors', equipment: 'Bodyweight', notes: 'Lie on side, lift top leg upward, keep foot parallel or toes slightly down', videoUrl: 'https://www.youtube.com/watch?v=s6lDpy4AO6w' },
   { name: 'Single-Leg Glute Bridge with Abduction', category: 'Abductors', equipment: 'Bodyweight', notes: 'Bridge on one leg, then abduct the raised leg outward at top', videoUrl: 'https://www.youtube.com/watch?v=VxLQfus25XE' },
   { name: 'Standing Hip Abduction (Cable or Band)', category: 'Abductors', equipment: 'Cable', notes: 'Move leg outward away from midline, control return', videoUrl: 'https://www.youtube.com/watch?v=bGlm-qTnfTI' },
+  { name: 'TRX Hip Abduction (Bridge)', category: 'Abductors', equipment: 'TRX', notes: 'Heels in straps in a glute bridge, open knees against the straps then close with control. Glute med and outer hip', videoUrl: 'https://www.youtube.com/watch?v=RkEHyudfkyM' },
+  { name: 'TRX Ice Skater', category: 'Abductors', equipment: 'TRX', notes: 'Lateral bound / skate from side to side holding the straps. Push off the outside hip. Athletic outer-hip work', videoUrl: 'https://www.youtube.com/watch?v=8Oi19DgBbe8' },
 
   // ═══════════════════════════════════════════════════════════
   //  CORE  (16)
@@ -852,6 +903,16 @@ const EXERCISE_DATABASE = [
   { name: 'Plank Hold', category: 'Core', equipment: 'Bodyweight', notes: 'Squeeze glutes and abs, keep hips level', videoUrl: 'https://www.youtube.com/watch?v=3QZlgJ40LfU' },
   { name: 'Seated Abdominal Crunch Machine', category: 'Core', equipment: 'Machine', notes: 'Focus on spinal flexion, control the eccentric', videoUrl: 'https://www.youtube.com/watch?v=CNHS2OoUi30' },
   { name: 'Side Plank Hold', category: 'Core', equipment: 'Bodyweight', notes: 'Weak side first, keep hips elevated', videoUrl: 'https://www.youtube.com/watch?v=NQsqPcarPXY' },
+  { name: 'TRX Plank', category: 'Core', equipment: 'TRX', notes: 'Feet in cradles, forearms or hands on floor. Body in one line, squeeze glutes, do not sag or pike. Hold time', videoUrl: 'https://www.youtube.com/watch?v=3CXvwTv9m6Q' },
+  { name: 'TRX Pike', category: 'Core', equipment: 'TRX', notes: 'From plank with feet in straps, lift hips and pull feet toward hands. Legs stay straight. Lower with control', videoUrl: 'https://www.youtube.com/watch?v=MsoAvIhumtY' },
+  { name: 'TRX Knee Tuck (Crunch)', category: 'Core', equipment: 'TRX', notes: 'From plank, pull knees toward chest then extend. Keep shoulders stacked over hands. Slow the eccentric', videoUrl: 'https://www.youtube.com/watch?v=EfLm_jkdx_E' },
+  { name: 'TRX Oblique Crunch', category: 'Core', equipment: 'TRX', notes: 'From plank, pull both knees toward one elbow. Alternate sides. Hips stay level, no sag', videoUrl: 'https://www.youtube.com/watch?v=EfLm_jkdx_E' },
+  { name: 'TRX Body Saw', category: 'Core', equipment: 'TRX', notes: 'Forearm plank with feet in straps. Rock the body forward and back a few inches. Tiny range, huge core demand', videoUrl: 'https://www.youtube.com/watch?v=cGdhCCg5VaE' },
+  { name: 'TRX Kneeling Rollout', category: 'Core', equipment: 'TRX', notes: 'Kneel facing away, arms long, roll handles forward then pull back with lats and abs. Do not dump into the low back', videoUrl: 'https://www.youtube.com/watch?v=XQOYs0nurds' },
+  { name: 'TRX Fallout', category: 'Core', equipment: 'TRX', notes: 'Standing ab-wheel pattern. Face away, fall forward as arms reach overhead, then pull back to stand. Brace hard', videoUrl: 'https://www.youtube.com/watch?v=uXZoxfcOnBg' },
+  { name: 'TRX Mountain Climbers', category: 'Core', equipment: 'TRX', notes: 'Plank, feet in straps, drive knees in alternately. Hips stay quiet. Slow for core, faster for conditioning', videoUrl: 'https://www.youtube.com/watch?v=cGdhCCg5VaE' },
+  { name: 'TRX Resisted Rotation', category: 'Core', equipment: 'TRX', notes: 'Stand side-on to the anchor, hold both handles at the chest, rotate away then return with control. Obliques and anti-rotation', videoUrl: 'https://www.youtube.com/watch?v=EvVASgb3xzc' },
+  { name: 'TRX Side Plank', category: 'Core', equipment: 'TRX', notes: 'Feet in straps, forearm on floor, stacked hips. Hold or add hip dips. Keep a long line from head to heels', videoUrl: 'https://www.youtube.com/watch?v=3CXvwTv9m6Q' },
 
   // ═══════════════════════════════════════════════════════════
   //  CARDIO  (3)
@@ -859,6 +920,8 @@ const EXERCISE_DATABASE = [
   { name: 'Rowing Machine', category: 'Cardio', equipment: 'Machine', notes: '60% legs, 20% core, 20% arms', videoUrl: 'https://www.youtube.com/watch?v=zQ82RYIFLN8' },
   { name: 'Stationary Bike (Steady State)', category: 'Cardio', equipment: 'Machine', notes: 'Moderate resistance, maintain 70-80 RPM', videoUrl: 'https://www.youtube.com/watch?v=aYKqF4h-9pE' },
   { name: 'Treadmill Walk (Incline)', category: 'Cardio', equipment: 'Machine', notes: '10-15% incline, 3.0-3.5 mph for steady state cardio', videoUrl: 'https://www.youtube.com/watch?v=aYKqF4h-9pE' },
+  { name: 'TRX Burpee', category: 'Cardio', equipment: 'TRX', notes: 'Rear foot in a strap, drop into a single-leg burpee, jump up. Athletic full-body conditioner', videoUrl: 'https://www.youtube.com/watch?v=1t0RrXa_x1w' },
+  { name: 'TRX Squat to Y Fly', category: 'Cardio', equipment: 'TRX', notes: 'Squat facing the anchor then stand into a Y raise. Full-body flow. Keep tension on the straps the whole time', videoUrl: 'https://www.youtube.com/watch?v=VuI393nVoGY' },
 ];
 
 if (typeof module !== 'undefined' && module.exports) {
