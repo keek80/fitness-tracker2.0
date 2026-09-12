@@ -640,7 +640,7 @@ const EXERCISE_DATABASE = [
   // ═══════════════════════════════════════════════════════════
   { name: 'Arnold Press', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Rotate palms outward as you press up', videoUrl: 'https://www.youtube.com/watch?v=6Z15_WdXmVw' },
   { name: 'Band Lateral Raises', category: 'Shoulders', equipment: 'Band', notes: 'Constant tension, excellent for warm-up or home', videoUrl: 'https://www.youtube.com/watch?v=gfEyrmxbCbw' },
-  { name: 'Band Overhead Pull-Aparts', category: 'Shoulders', equipment: 'Band', notes: 'External rotation and shoulder mobility', videoUrl: 'https://www.youtube.com/watch?v=tzYip9kdVUU' },
+  { name: 'Band Overhead Pull-Aparts', category: 'Shoulders', equipment: 'Band', notes: 'nal rotation and shoulder mobility', videoUrl: 'https://www.youtube.com/watch?v=tzYip9kdVUU' },
   { name: 'Barbell Overhead Press', category: 'Shoulders', equipment: 'Barbell', notes: 'Brace core, press straight up', videoUrl: 'https://www.youtube.com/watch?v=2yjwXTZQDDI' },
   { name: 'Bent-Over Rear Delt Rows', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Elbows high, pull like a wide row', videoUrl: 'https://www.youtube.com/watch?v=LsT-bR_zxLo' },
   { name: 'Cable Front Raise', category: 'Shoulders', equipment: 'Cable', notes: 'Lift forward smoothly without swinging', videoUrl: 'https://www.youtube.com/watch?v=KjqHI59JizY' },
@@ -684,7 +684,7 @@ const EXERCISE_DATABASE = [
   { name: 'Chest-Supported Rear Delt Raise', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Incline bench, pinkies slightly up, sweep arms out not back', videoUrl: 'https://www.youtube.com/watch?v=nlkF7_2U-oQ' },
   { name: 'Cuban Rotation', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Upright-row to external rotation. Light weight, rotator-cuff + rear delt', videoUrl: 'https://www.youtube.com/watch?v=yaNee5sOFqk' },
   { name: 'Landmine Lateral Raise', category: 'Shoulders', equipment: 'Barbell', notes: 'Stand sideways to the landmine and raise in the scapular plane', videoUrl: 'https://www.youtube.com/watch?v=l2h02K1vtc8' },
-  { name: 'Dumbbell External Rotation (Elbow Pinned)', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Elbow glued to the side. Light DB or plate. Rotate forearm out. Cuff warm-up only', videoUrl: 'https://www.youtube.com/watch?v=jFuQkhXh7Rc' },
+  { name: 'Dumbbell External Rotation (Elbow Pinned)', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Elbow glued to the side. Light DB or plate. Rotate forearm out. Cuff warm-up only', videoUrl: 'https://www.youtube.com/watch?v=Ccsu1i5A7Zw' },
     
     
   // ═══════════════════════════════════════════════════════════
