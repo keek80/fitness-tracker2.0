@@ -684,7 +684,7 @@ const EXERCISE_DATABASE = [
   { name: 'Chest-Supported Rear Delt Raise', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Incline bench, pinkies slightly up, sweep arms out not back', videoUrl: 'https://www.youtube.com/watch?v=nlkF7_2U-oQ' },
   { name: 'Cuban Rotation', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Upright-row to external rotation. Light weight, rotator-cuff + rear delt', videoUrl: 'https://www.youtube.com/watch?v=yaNee5sOFqk' },
   { name: 'Landmine Lateral Raise', category: 'Shoulders', equipment: 'Barbell', notes: 'Stand sideways to the landmine and raise in the scapular plane', videoUrl: 'https://www.youtube.com/watch?v=l2h02K1vtc8' },
-  { name: 'Dumbbell External Rotation (Elbow Pinned)', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Elbow glued to the side. Light DB or plate. Rotate forearm out. Cuff warm-up only', videoUrl: 'https://www.youtube.com/watch?v=jFuQkhXh7Rc' }
+  { name: 'Dumbbell External Rotation (Elbow Pinned)', category: 'Shoulders', equipment: 'Dumbbell', notes: 'Elbow glued to the side. Light DB or plate. Rotate forearm out. Cuff warm-up only', videoUrl: 'https://www.youtube.com/watch?v=jFuQkhXh7Rc' },
     
     
   // ═══════════════════════════════════════════════════════════
