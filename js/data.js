@@ -527,7 +527,7 @@ const DAY_COLORS = [
 const EXERCISE_DATABASE = [
 
   // ═══════════════════════════════════════════════════════════
-  //  CHEST  (38)
+  //  CHEST  (50)
   // ═══════════════════════════════════════════════════════════
   { name: 'Barbell Bench Press', category: 'Chest', equipment: 'Barbell', notes: 'Control the negative (3 sec down), retract shoulder blades', videoUrl: 'https://www.youtube.com/watch?v=hWbUlkb5Ms4' },
   { name: 'Cable Chest Fly (High-to-Low)', category: 'Chest', equipment: 'Cable', notes: 'Arms slightly bent, focus on chest stretch and contraction', videoUrl: 'https://www.youtube.com/watch?v=Iwe6AmxVf7o' },
