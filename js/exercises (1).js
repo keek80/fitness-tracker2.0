@@ -1,0 +1,1058 @@
+// ========== EXERCISE MANAGER PAGE ==========
+let editingDayId = null;
+let editingExerciseIdx = null;
+
+// Exercise DB picker state
+let dbPickerCategory = 'All';
+let dbPickerSearch = '';
+
+function renderExercises() {
+    const page = document.getElementById('page-exercises');
+    const program = getTrainingProgram();
+    const custom = isCustomProgram();
+
+    page.innerHTML = `
+        <div class="section-title">🛠️ Exercise Manager</div>
+
+               ${(() => {
+            const activeName = getActiveProgramName();
+            if (activeName) {
+                return `
+                    <div class="card" style="border-left: 3px solid var(--accent-blue, #0095ff); padding: 12px 14px;">
+                        <div style="font-size:12px; color:var(--accent-blue, #0095ff)">
+                            📂 Active program: <strong>${activeName}</strong>
+                        </div>
+                    </div>
+                `;
+            }
+            if (custom) {
+                return `
+                    <div class="card" style="border-left: 3px solid var(--accent-orange); padding: 12px 14px;">
+                        <div style="font-size:12px; color:var(--accent-orange)">
+                            ⚠️ You're using a custom program (unsaved name). Changes are saved automatically.
+                        </div>
+                    </div>
+                `;
+            }
+            return `
+                <div class="card" style="border-left: 3px solid var(--accent-green); padding: 12px 14px;">
+                    <div style="font-size:12px; color:var(--accent-green)">
+                        ✅ Using the default 5-day Push/Pull/Legs split. Edit any exercise to create your custom version.
+                    </div>
+                </div>
+            `;
+        })()}
+        <div id="exerciseDaysList">
+            ${program.days.map((day) => `
+                <div class="ex-day-card" style="border-left: 3px solid ${day.color}">
+                    <div class="ex-day-header">
+                        <div>
+                            <div class="ex-day-name" style="color:${day.color}">${day.name}</div>
+                            <div class="ex-day-info">${(day.alternate || day.dayOfWeek === 'Alternate') ? 'Alternate | not in weekly cycle' : day.dayOfWeek} | ${day.exercises.length} exercises</div>
+                        </div>
+                        <div class="ex-day-actions">
+                            <select class="form-input" style="width:auto; font-size:12px; padding:4px 8px"
+                                    onchange="reassignDayWeekday('${day.id}', this.value)"
+                                    title="Assign weekday or keep as Alternate">
+                                ${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday','Alternate']
+                                    .map(d => `<option value="${d}" ${d === (day.alternate ? 'Alternate' : day.dayOfWeek) ? 'selected' : ''}>${d === 'Alternate' ? 'Alt' : d.slice(0,3)}</option>`).join('')}
+                            </select>
+                            <button class="ex-action-btn" onclick="editDay('${day.id}')" title="Edit Day">✏️</button>
+                            <button class="ex-action-btn" onclick="deleteDay('${day.id}')" title="Delete Day">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="ex-exercise-list">
+                        ${day.exercises.map((ex, exIdx) => `
+                            <div class="ex-exercise-item">
+                                <div class="ex-exercise-info">
+                                    <div class="ex-exercise-name">${ex.name}</div>
+                                    <div class="ex-exercise-detail">${ex.sets} x ${ex.repsTarget} | Rest ${ex.rest}</div>
+                                    ${ex.notes ? `<div class="ex-exercise-notes">💡 ${ex.notes}</div>` : ''}
+                                </div>
+                                <div class="ex-exercise-actions">
+                                    ${exIdx > 0 ? `<button class="ex-move-btn" onclick="moveExercise('${day.id}', ${exIdx}, -1)" title="Move Up">⬆️</button>` : '<div style="width:32px"></div>'}
+                                    ${exIdx < day.exercises.length - 1 ? `<button class="ex-move-btn" onclick="moveExercise('${day.id}', ${exIdx}, 1)" title="Move Down">⬇️</button>` : '<div style="width:32px"></div>'}
+                                    <button class="ex-action-btn" onclick="editExercise('${day.id}', ${exIdx})" title="Edit">✏️</button>
+                                    <button class="ex-action-btn" onclick="deleteExercise('${day.id}', ${exIdx})" title="Delete">🗑️</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="btn btn-secondary btn-sm" style="margin-top:8px; width:100%" onclick="addExercise('${day.id}')">
+                        ➕ Add Exercise
+                    </button>
+                </div>
+            `).join('')}
+        </div>
+
+                      <button class="btn btn-success" style="margin-top:16px" onclick="addDay()">
+            ➕ Add Training Day
+        </button>
+
+        <button class="btn btn-primary" style="margin-top:10px; width:100%" onclick="openSplitBuilder()">
+            🏗️ Build from Split Template
+        </button>
+
+        <button class="btn btn-secondary" style="margin-top:10px; width:100%" onclick="openSaveProgramModal()">
+            💾 Save Current Program
+        </button>
+
+        <button class="btn btn-secondary" style="margin-top:10px; width:100%" onclick="openLoadProgramModal()">
+            📂 Load Saved Program
+        </button>
+
+        <button class="btn btn-secondary" style="margin-top:10px; width:100%" onclick="downloadCurrentWorkout()">
+            ⬇️ Download Current Workout
+        </button>
+
+        <button class="btn btn-secondary" style="margin-top:10px; width:100%" onclick="document.getElementById('importWorkoutFile').click()">
+            📥 Import Workout File
+        </button>
+        <input type="file" id="importWorkoutFile" accept=".json,application/json" style="display:none" onchange="importWorkoutFile(event)">
+
+        ${custom ? `
+            <button class="btn btn-danger" style="margin-top:10px" onclick="resetProgram()">
+                🔄 Reset to Default Program
+            </button>
+        ` : ''}
+
+        <!-- Exercise Form Modal -->
+        <div id="exModal" class="ex-modal hidden">
+            <div class="ex-modal-overlay" onclick="closeExModal()"></div>
+            <div class="ex-modal-content">
+                <div class="ex-modal-header">
+                    <h3 id="exModalTitle">Edit</h3>
+                    <button class="ex-modal-close" onclick="closeExModal()">✕</button>
+                </div>
+                <div id="exModalBody"></div>
+            </div>
+        </div>
+
+        <!-- Exercise Database Picker Modal -->
+        <div id="exDBPicker" class="ex-db-picker hidden">
+            <div class="ex-db-overlay" onclick="closeExercisePicker()"></div>
+            <div class="ex-db-content">
+                <div class="ex-db-header">
+                    <h3>📚 Exercise Database</h3>
+                    <button class="ex-modal-close" onclick="closeExercisePicker()">✕</button>
+                </div>
+                <div class="ex-db-search-wrap">
+                    <input type="text" id="dbSearchInput" class="ex-db-search"
+                        placeholder="🔍  Search exercises..."
+                        oninput="dbPickerSearch=this.value; renderDBList()"
+                        autocomplete="off" autocorrect="off" spellcheck="false">
+                </div>
+                <div class="ex-db-categories" id="dbCategories"></div>
+                <div class="ex-db-list" id="dbList"></div>
+            </div>
+        </div>
+    `;
+}
+
+// ==================== EXERCISE DATABASE PICKER ====================
+
+function openExercisePicker() {
+    // Reset state
+    dbPickerSearch = '';
+    dbPickerCategory = 'All';
+
+    const picker = document.getElementById('exDBPicker');
+    if (!picker) {
+        console.error('Exercise picker modal not found in DOM');
+        showToast('Exercise picker not ready. Try again after visiting Exercise Manager.', 'error');
+        return;
+    }
+
+    // Render category chips
+    const catEl = document.getElementById('dbCategories');
+    if (catEl) {
+        catEl.innerHTML = DB_CATEGORIES.map(cat => `
+            <button class="ex-db-chip ${cat === dbPickerCategory ? 'active' : ''}"
+                    onclick="selectDBCategory('${cat}')">
+                ${cat}
+            </button>
+        `).join('');
+    }
+
+    // Clear search
+    const searchEl = document.getElementById('dbSearchInput');
+    if (searchEl) searchEl.value = '';
+
+    // Render list
+    renderDBList();
+
+    // Show picker
+    picker.classList.remove('hidden');
+
+    // Focus search
+    setTimeout(() => {
+        const s = document.getElementById('dbSearchInput');
+        if (s) s.focus();
+    }, 150);
+}
+
+function closeExercisePicker() {
+    document.getElementById('exDBPicker').classList.add('hidden');
+}
+
+function selectDBCategory(cat) {
+    dbPickerCategory = cat;
+    // Update chip styles
+    document.querySelectorAll('.ex-db-chip').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.trim() === cat);
+    });
+    renderDBList();
+}
+
+function renderDBList() {
+    const search = (dbPickerSearch || '').toLowerCase().trim();
+    const cat = dbPickerCategory;
+
+    let results = EXERCISE_DATABASE;
+
+    // Filter by category
+    if (cat !== 'All') {
+        results = results.filter(e => e.category === cat);
+    }
+
+    // Filter by search
+    if (search) {
+        results = results.filter(e =>
+            e.name.toLowerCase().includes(search) ||
+            e.category.toLowerCase().includes(search) ||
+            e.equipment.toLowerCase().includes(search)
+        );
+    }
+
+    const listEl = document.getElementById('dbList');
+    if (!listEl) return;
+
+    if (results.length === 0) {
+        listEl.innerHTML = `
+            <div class="empty-state" style="padding:30px 16px">
+                <div class="empty-icon">🔍</div>
+                <p>No exercises found.<br>Try a different search or category.</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top:12px; width:auto"
+                        onclick="useCustomExerciseName()">
+                    ✏️ Use "${dbPickerSearch}" as custom name
+                </button>
+            </div>`;
+        return;
+    }
+
+    // Group by category if showing All
+    let html = '';
+    if (cat === 'All') {
+        const grouped = {};
+        results.forEach(e => {
+            if (!grouped[e.category]) grouped[e.category] = [];
+            grouped[e.category].push(e);
+        });
+        Object.keys(grouped).forEach(group => {
+            html += `<div class="ex-db-group-label">${group}</div>`;
+            html += grouped[group].map(e => renderDBItem(e)).join('');
+        });
+    } else {
+        html = results.map(e => renderDBItem(e)).join('');
+    }
+
+    listEl.innerHTML = html;
+}
+
+function renderDBItem(ex) {
+    const color = EQUIPMENT_COLORS[ex.equipment] || '#718096';
+    const safeName = ex.name.replace(/'/g, "\\'");
+    const safeNotes = (ex.notes || '').replace(/'/g, "\\'");
+    const videoBtn = ex.videoUrl
+        ? `<span class="video-badge" onclick="event.stopPropagation(); openVideo('${ex.videoUrl}')" title="Watch form">▶️</span>`
+        : '';
+
+    return `
+        <button class="ex-db-item" onclick="selectExerciseFromDB('${safeName}', '${safeNotes}')">
+            <div class="ex-db-item-name">${ex.name} ${videoBtn}</div>
+            <div class="ex-db-item-meta">
+                <span class="ex-db-badge" style="background:${color}22; color:${color}; border:1px solid ${color}44">
+                    ${ex.equipment}
+                </span>
+                ${ex.notes ? `<span class="ex-db-notes">${ex.notes}</span>` : ''}
+            </div>
+        </button>`;
+}
+function selectExerciseFromDB(name, notes) {
+    // Fill in the form fields
+    const nameInput = document.getElementById('exNameInput');
+    const notesInput = document.getElementById('exNotesInput');
+    if (nameInput) nameInput.value = name;
+    if (notesInput && notesInput.value === '') notesInput.value = notes;
+
+    // Close picker and focus the sets field
+    closeExercisePicker();
+    setTimeout(() => {
+        const setsInput = document.getElementById('exSetsInput');
+        if (setsInput) setsInput.focus();
+    }, 150);
+
+    showToast(`✅ ${name} selected`);
+
+// Support temporary swap from Gym Log
+    if (window.tempOnSelectExercise) {
+    window.tempOnSelectExercise(name);
+    delete window.tempOnSelectExercise;
+    return;
+}
+}
+
+function useCustomExerciseName() {
+    // Fill name field with whatever was typed in search
+    const nameInput = document.getElementById('exNameInput');
+    if (nameInput && dbPickerSearch) nameInput.value = dbPickerSearch;
+    closeExercisePicker();
+    setTimeout(() => {
+        const setsInput = document.getElementById('exSetsInput');
+        if (setsInput) setsInput.focus();
+    }, 150);
+}
+
+// ==================== EXERCISE FORM BODY (shared) ====================
+
+function exerciseFormBody(ex) {
+    const restOptions = ['30s','45s','60s','90s','120s','180s'];
+    const restLabels = { '120s': '2 minutes', '180s': '3 minutes' };
+    const name     = ex ? ex.name       : '';
+    const sets     = ex ? ex.sets       : 3;
+    const reps     = ex ? ex.repsTarget : '';
+    const rest     = ex ? ex.rest       : '60s';
+    const notes    = ex ? (ex.notes || '') : '';
+
+    return `
+        <!-- Database Browse Button -->
+        <button type="button" class="ex-browse-db-btn" onclick="openExercisePicker()">
+            📚 Browse Exercise Database (${EXERCISE_DATABASE.length} exercises)
+        </button>
+
+        <div class="form-group" style="margin-top:14px">
+            <label class="form-label">Exercise Name</label>
+            <input type="text" id="exNameInput" class="form-input"
+                   value="${name}" placeholder="Type a name or browse above...">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+            <div class="form-group">
+                <label class="form-label">Sets</label>
+                <input type="number" id="exSetsInput" class="form-input"
+                       value="${sets}" min="1" max="10" inputmode="numeric">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Rep Target</label>
+                <input type="text" id="exRepsInput" class="form-input"
+                       value="${reps}" placeholder="e.g. 10-12">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Rest Period</label>
+            <select id="exRestInput" class="form-input">
+                ${restOptions.map(r => `
+                    <option value="${r}" ${r === rest ? 'selected' : ''}>
+                        ${restLabels[r] || r.replace('s',' seconds')}
+                    </option>`).join('')}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Coaching Notes (optional)</label>
+            <input type="text" id="exNotesInput" class="form-input"
+                   value="${notes}" placeholder="e.g. Squeeze at the top">
+        </div>
+    `;
+}
+
+// ==================== DAY MANAGEMENT ====================
+
+function addDay() {
+    const program = getTrainingProgram();
+    const usedColors = program.days.map(d => d.color);
+    const availableColor = DAY_COLORS.find(c => !usedColors.includes(c)) || DAY_COLORS[program.days.length % DAY_COLORS.length];
+
+    editingDayId = null;
+    openExModal('Add Training Day', `
+        <div class="form-group">
+            <label class="form-label">Day Name</label>
+            <input type="text" id="dayNameInput" class="form-input" placeholder="e.g. Push Day, Arms, etc.">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Day of Week</label>
+            <select id="dayOfWeekInput" class="form-input">
+                ${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday','Alternate']
+                    .map(d => `<option value="${d}">${d === 'Alternate' ? 'Alternate (not in weekly cycle)' : d}</option>`).join('')}
+            </select>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:6px">
+                Alternate days stay off the calendar until you tap them on Gym Log or Dashboard to replace a day.
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Color</label>
+            <div class="ex-color-grid">
+                ${DAY_COLORS.map(c => `
+                    <button class="ex-color-btn ${c === availableColor ? 'selected' : ''}"
+                            style="background:${c}"
+                            onclick="selectColor(this,'${c}')"
+                            data-color="${c}"></button>
+                `).join('')}
+            </div>
+            <input type="hidden" id="dayColorInput" value="${availableColor}">
+        </div>
+        <button class="btn btn-primary" onclick="saveDayForm()">💾 Save Day</button>
+    `);
+}
+
+function editDay(dayId) {
+    const program = getTrainingProgram();
+    const day = program.days.find(d => d.id === dayId);
+    if (!day) return;
+
+    editingDayId = dayId;
+    openExModal('Edit Training Day', `
+        <div class="form-group">
+            <label class="form-label">Day Name</label>
+            <input type="text" id="dayNameInput" class="form-input" value="${day.name}">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Day of Week</label>
+            <select id="dayOfWeekInput" class="form-input">
+                ${['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday','Alternate']
+                    .map(d => `<option value="${d}" ${d === (day.alternate ? 'Alternate' : day.dayOfWeek) ? 'selected' : ''}>${d === 'Alternate' ? 'Alternate (not in weekly cycle)' : d}</option>`).join('')}
+            </select>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:6px">
+                Weekdays swap if that slot is taken. Alternate is a bench session you can slot in for one day without changing the rotation.
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Color</label>
+            <div class="ex-color-grid">
+                ${DAY_COLORS.map(c => `
+                    <button class="ex-color-btn ${c === day.color ? 'selected' : ''}"
+                            style="background:${c}"
+                            onclick="selectColor(this,'${c}')"
+                            data-color="${c}"></button>
+                `).join('')}
+            </div>
+            <input type="hidden" id="dayColorInput" value="${day.color}">
+        </div>
+        <button class="btn btn-primary" onclick="saveDayForm()">💾 Save Changes</button>
+    `);
+}
+
+function saveDayForm() {
+    const name     = document.getElementById('dayNameInput').value.trim();
+    const dayOfWeek = document.getElementById('dayOfWeekInput').value;
+    const color    = document.getElementById('dayColorInput').value;
+
+    if (!name) { showToast('Please enter a day name', 'error'); return; }
+
+    const program    = getTrainingProgram();
+    const newProgram = JSON.parse(JSON.stringify(program));
+
+    if (editingDayId) {
+        const day = newProgram.days.find(d => d.id === editingDayId);
+        if (day) {
+            applyDaySlot(newProgram, editingDayId, dayOfWeek);
+            day.name = name;
+            day.color = color;
+        }
+    } else {
+        const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/_+$/, '') + '_' + Date.now();
+        const isAlt = dayOfWeek === 'Alternate';
+        newProgram.days.push({ id, name, dayOfWeek: isAlt ? 'Alternate' : dayOfWeek, alternate: isAlt, color, exercises: [] });
+    }
+
+    saveTrainingProgram(newProgram);
+    closeExModal();
+    renderExercises();
+    if (typeof renderGym === 'function' && document.getElementById('page-gym')) {
+        try { renderGym(); } catch (e) { /* gym page not mounted */ }
+    }
+    showToast(editingDayId ? '✅ Day updated!' : '✅ Day added!');
+}
+
+function applyDaySlot(program, dayId, newWeekday) {
+    const day = program.days.find(d => d.id === dayId);
+    if (!day) return;
+    const makingAlt = newWeekday === 'Alternate';
+    if (makingAlt) {
+        day.dayOfWeek = 'Alternate';
+        day.alternate = true;
+        return;
+    }
+    const occupant = program.days.find(d => d.id !== dayId && !d.alternate && d.dayOfWeek === newWeekday);
+    if (occupant) {
+        occupant.dayOfWeek = day.alternate ? 'Alternate' : day.dayOfWeek;
+        occupant.alternate = day.alternate === true;
+    }
+    day.dayOfWeek = newWeekday;
+    day.alternate = false;
+}
+
+function swapProgramWeekdays(program, dayId, newWeekday) {
+    applyDaySlot(program, dayId, newWeekday);
+}
+
+function reassignDayWeekday(dayId, newWeekday) {
+    const program = getTrainingProgram();
+    const day = program.days.find(d => d.id === dayId);
+    if (!day) return;
+    const currentSlot = day.alternate ? 'Alternate' : day.dayOfWeek;
+    if (currentSlot === newWeekday) return;
+
+    const occupant = newWeekday !== 'Alternate'
+        ? program.days.find(d => d.id !== dayId && !d.alternate && d.dayOfWeek === newWeekday)
+        : null;
+    const newProgram = JSON.parse(JSON.stringify(program));
+    applyDaySlot(newProgram, dayId, newWeekday);
+    saveTrainingProgram(newProgram);
+    renderExercises();
+    if (typeof renderGym === 'function' && document.getElementById('page-gym')) {
+        try { renderGym(); } catch (e) { /* gym page not mounted */ }
+    }
+
+    if (occupant) {
+        showToast(`Permanently swapped ${day.name} ↔ ${occupant.name}`);
+    } else if (newWeekday === 'Alternate') {
+        showToast(`${day.name} is now an alternate (off-cycle)`);
+    } else {
+        showToast(`${day.name} is now ${newWeekday}`);
+    }
+}
+
+function deleteDay(dayId) {
+    const program = getTrainingProgram();
+    const day = program.days.find(d => d.id === dayId);
+    if (!day) return;
+    if (!confirm(`Delete "${day.name}" and all its exercises?\n\nThis cannot be undone.`)) return;
+
+    const newProgram = JSON.parse(JSON.stringify(program));
+    newProgram.days = newProgram.days.filter(d => d.id !== dayId);
+    saveTrainingProgram(newProgram);
+    renderExercises();
+    showToast('🗑️ Day deleted');
+}
+
+// ==================== EXERCISE MANAGEMENT ====================
+
+function addExercise(dayId) {
+    editingDayId = dayId;
+    editingExerciseIdx = null;
+
+    const program = getTrainingProgram();
+    const day = program.days.find(d => d.id === dayId);
+
+    openExModal(`Add Exercise - ${day.name}`,
+        exerciseFormBody(null) +
+        `<button class="btn btn-primary" onclick="saveExerciseForm()">💾 Add Exercise</button>`
+    );
+}
+
+function editExercise(dayId, exIdx) {
+    editingDayId = dayId;
+    editingExerciseIdx = exIdx;
+
+    const program = getTrainingProgram();
+    const day = program.days.find(d => d.id === dayId);
+    const ex = day.exercises[exIdx];
+    if (!ex) return;
+
+    openExModal('Edit Exercise',
+        exerciseFormBody(ex) +
+        `<button class="btn btn-primary" onclick="saveExerciseForm()">💾 Save Changes</button>`
+    );
+}
+
+function saveExerciseForm() {
+    const name       = document.getElementById('exNameInput').value.trim();
+    const sets       = parseInt(document.getElementById('exSetsInput').value) || 3;
+    const repsTarget = document.getElementById('exRepsInput').value.trim() || '10-12';
+    const rest       = document.getElementById('exRestInput').value;
+    const notes      = document.getElementById('exNotesInput').value.trim();
+
+    if (!name) { showToast('Please enter an exercise name', 'error'); return; }
+
+    const program    = getTrainingProgram();
+    const newProgram = JSON.parse(JSON.stringify(program));
+    const day        = newProgram.days.find(d => d.id === editingDayId);
+    if (!day) return;
+
+    const exercise = { name, sets, repsTarget, rest, notes };
+
+    if (editingExerciseIdx !== null) {
+        day.exercises[editingExerciseIdx] = exercise;
+    } else {
+        day.exercises.push(exercise);
+    }
+
+    saveTrainingProgram(newProgram);
+    closeExModal();
+    renderExercises();
+    showToast(editingExerciseIdx !== null ? '✅ Exercise updated!' : '✅ Exercise added!');
+}
+
+function deleteExercise(dayId, exIdx) {
+    const program = getTrainingProgram();
+    const day = program.days.find(d => d.id === dayId);
+    const ex = day.exercises[exIdx];
+    if (!confirm(`Delete "${ex.name}"?`)) return;
+
+    const newProgram = JSON.parse(JSON.stringify(program));
+    const newDay = newProgram.days.find(d => d.id === dayId);
+    newDay.exercises.splice(exIdx, 1);
+    saveTrainingProgram(newProgram);
+    renderExercises();
+    showToast('🗑️ Exercise deleted');
+}
+
+function moveExercise(dayId, exIdx, direction) {
+    const program    = getTrainingProgram();
+    const newProgram = JSON.parse(JSON.stringify(program));
+    const day        = newProgram.days.find(d => d.id === dayId);
+
+    const newIdx = exIdx + direction;
+    if (newIdx < 0 || newIdx >= day.exercises.length) return;
+
+    const temp = day.exercises[exIdx];
+    day.exercises[exIdx] = day.exercises[newIdx];
+    day.exercises[newIdx] = temp;
+
+    saveTrainingProgram(newProgram);
+    renderExercises();
+}
+
+// ==================== RESET ====================
+
+function resetProgram() {
+    if (!confirm('Reset to the default 5-day Push/Pull/Legs split?\n\nYour custom exercises will be lost.')) return;
+    if (!confirm('Are you sure? This cannot be undone.')) return;
+    resetTrainingProgram();
+    renderExercises();
+    showToast('🔄 Program reset to defaults');
+}
+
+// ==================== MODAL HELPERS ====================
+
+function openExModal(title, bodyHtml) {
+    document.getElementById('exModalTitle').textContent = title;
+    document.getElementById('exModalBody').innerHTML = bodyHtml;
+    document.getElementById('exModal').classList.remove('hidden');
+    setTimeout(() => {
+        const first = document.querySelector('#exModalBody input[type="text"]');
+        if (first) first.focus();
+    }, 100);
+}
+
+function closeExModal() {
+    document.getElementById('exModal').classList.add('hidden');
+    editingDayId = null;
+    editingExerciseIdx = null;
+}
+
+function selectColor(btn, color) {
+    document.querySelectorAll('.ex-color-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    document.getElementById('dayColorInput').value = color;
+}
+// ==================== WORKOUT BUILDER (SPLIT TEMPLATES) ====================
+
+function openSplitBuilder() {
+    const templates = Object.values(SPLIT_TEMPLATES);
+    const body = `
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px">
+            Choose a starting split. This will replace your current program. You can fully customize it afterward.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+            ${templates.map(t => `
+                <button class="btn btn-secondary" style="text-align:left; padding:14px"
+                        onclick="applySplitTemplate('${t.id}')">
+                    <div style="font-weight:600; font-size:15px">${t.name}</div>
+                    <div style="font-size:12px; opacity:0.8; margin-top:4px">${t.description}</div>
+                </button>
+            `).join('')}
+        </div>
+    `;
+    openExModal('🏗️ Workout Builder', body);
+}
+
+function applySplitTemplate(templateId) {
+    const template = SPLIT_TEMPLATES[templateId];
+    if (!template) return;
+
+    if (isCustomProgram()) {
+        if (!confirm(`Replace your current custom program with the "${template.name}" template?\n\nThis cannot be undone.`)) return;
+    } else {
+        if (!confirm(`Load the "${template.name}" template?`)) return;
+    }
+
+    // Deep clone so we don't mutate the original template
+    const newProgram = JSON.parse(JSON.stringify({ days: template.days }));
+    saveTrainingProgram(newProgram);
+    closeExModal();
+    renderExercises();
+    showToast(`Loaded ${template.name} template`);
+}
+// ==================== SAVE / LOAD PROGRAMS ====================
+
+function openSaveProgramModal() {
+    const body = `
+        <div class="form-group">
+            <label class="form-label">Program Name</label>
+            <input type="text" id="saveProgramName" class="form-input"
+                   placeholder="e.g. My Summer PPL, Full Body Cut..."
+                   maxlength="40">
+        </div>
+        <button class="btn btn-success" style="width:100%; margin-top:12px"
+                onclick="confirmSaveProgram()">
+            💾 Save Program
+        </button>
+    `;
+    openExModal('💾 Save Current Program', body);
+
+    setTimeout(() => {
+        const input = document.getElementById('saveProgramName');
+        if (input) input.focus();
+    }, 100);
+}
+
+function confirmSaveProgram() {
+    const input = document.getElementById('saveProgramName');
+    const name = input ? input.value.trim() : '';
+    if (!name) {
+        showToast('Please enter a name', 'error');
+        return;
+    }
+
+    const existing = getSavedPrograms();
+    if (existing[name]) {
+        if (!confirm(`A program named "${name}" already exists. Overwrite it?`)) return;
+    }
+
+    if (saveCurrentProgramAs(name)) {
+        closeExModal();
+        showToast(`Saved as "${name}"`);
+    } else {
+        showToast('Failed to save', 'error');
+    }
+}
+
+function openLoadProgramModal() {
+    const programs = getSavedPrograms();
+    const names = Object.keys(programs);
+
+    if (names.length === 0) {
+        openExModal('📂 Load Saved Program', `
+            <div style="text-align:center; padding:20px; color:var(--text-muted)">
+                <div style="font-size:32px; margin-bottom:12px">📂</div>
+                <p>No saved programs yet.</p>
+                <p style="font-size:13px">Save your current program first using the "Save Current Program" button.</p>
+            </div>
+        `);
+        return;
+    }
+
+    const body = `
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:14px">
+            Select a program to load. This will replace your current program.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+            ${names.map(name => {
+                const dayCount = programs[name].days ? programs[name].days.length : 0;
+                return `
+                    <div style="display:flex; gap:8px; align-items:center">
+                        <button class="btn btn-secondary" style="flex:1; text-align:left; padding:12px"
+                                onclick="confirmLoadProgram('${name.replace(/'/g, "\\'")}')">
+                            <div style="font-weight:600">${name}</div>
+                            <div style="font-size:12px; opacity:0.75">${dayCount} training day${dayCount !== 1 ? 's' : ''}</div>
+                        </button>
+                        <button class="btn btn-danger btn-sm" style="padding:10px 12px"
+                                onclick="confirmDeleteProgram('${name.replace(/'/g, "\\'")}')"
+                                title="Delete">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+    openExModal('📂 Load Saved Program', body);
+}
+
+function confirmLoadProgram(name) {
+    if (!confirm(`Load "${name}"?\n\nYour current program will be replaced.`)) return;
+
+    if (loadSavedProgram(name)) {
+        closeExModal();
+        renderExercises();
+        showToast(`Loaded "${name}"`);
+    } else {
+        showToast('Failed to load program', 'error');
+    }
+}
+
+function confirmDeleteProgram(name) {
+    if (!confirm(`Delete saved program "${name}"?\n\nThis cannot be undone.`)) return;
+
+    if (deleteSavedProgram(name)) {
+        showToast(`Deleted "${name}"`);
+        openLoadProgramModal(); // refresh the list
+    } else {
+        showToast('Failed to delete', 'error');
+    }
+}
+// ==================== WORKOUT BUILDER (SPLIT TEMPLATES) ====================
+
+function openSplitBuilder() {
+    const templates = Object.values(SPLIT_TEMPLATES);
+    const body = `
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:16px">
+            Choose a starting split. This will replace your current program. You can fully customize it afterward.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+            ${templates.map(t => `
+                <button class="btn btn-secondary" style="text-align:left; padding:14px"
+                        onclick="applySplitTemplate('${t.id}')">
+                    <div style="font-weight:600; font-size:15px">${t.name}</div>
+                    <div style="font-size:12px; opacity:0.8; margin-top:4px">${t.description}</div>
+                </button>
+            `).join('')}
+        </div>
+    `;
+    openExModal('🏗️ Workout Builder', body);
+}
+
+function applySplitTemplate(templateId) {
+    const template = SPLIT_TEMPLATES[templateId];
+    if (!template) return;
+
+    // Offer to save the current program first
+    if (isCustomProgram()) {
+        const saveFirst = confirm(
+            `You currently have a custom program.\n\n` +
+            `Would you like to SAVE it before loading the "${template.name}" template?\n\n` +
+            `OK = Save first, then load template\n` +
+            `Cancel = Load template without saving (current program will be lost)`
+        );
+
+        if (saveFirst) {
+            const name = prompt('Enter a name for your current program:', getActiveProgramName() || 'My Program');
+            if (name && name.trim()) {
+                saveCurrentProgramAs(name.trim());
+                showToast(`Saved current program as "${name.trim()}"`);
+            } else {
+                showToast('Template load cancelled', 'error');
+                return;
+            }
+        }
+    } else {
+        if (!confirm(`Load the "${template.name}" template?`)) return;
+    }
+
+    // Apply the template
+    const newProgram = JSON.parse(JSON.stringify({ days: template.days }));
+    saveTrainingProgram(newProgram);
+    setActiveProgramName(null);               // template is not a named saved program
+    closeExModal();
+    renderExercises();
+    showToast(`Loaded ${template.name} template`);
+}
+
+// ==================== SAVE / LOAD PROGRAMS ====================
+
+function openSaveProgramModal() {
+    const body = `
+        <div class="form-group">
+            <label class="form-label">Program Name</label>
+            <input type="text" id="saveProgramName" class="form-input"
+                   placeholder="e.g. My Summer PPL, Full Body Cut..."
+                   maxlength="40">
+        </div>
+        <button class="btn btn-success" style="width:100%; margin-top:12px"
+                onclick="confirmSaveProgram()">
+            💾 Save Program
+        </button>
+    `;
+    openExModal('💾 Save Current Program', body);
+
+    setTimeout(() => {
+        const input = document.getElementById('saveProgramName');
+        if (input) input.focus();
+    }, 100);
+}
+
+function confirmSaveProgram() {
+    const input = document.getElementById('saveProgramName');
+    const name = input ? input.value.trim() : '';
+    if (!name) {
+        showToast('Please enter a name', 'error');
+        return;
+    }
+
+    const existing = getSavedPrograms();
+    if (existing[name]) {
+        if (!confirm(`A program named "${name}" already exists. Overwrite it?`)) return;
+    }
+
+    if (saveCurrentProgramAs(name)) {
+        closeExModal();
+        renderExercises();
+        showToast(`Saved as "${name}"`);
+    } else {
+        showToast('Failed to save', 'error');
+    }
+}
+
+function openLoadProgramModal() {
+    const programs = getSavedPrograms();
+    const names = Object.keys(programs);
+
+    if (names.length === 0) {
+        openExModal('📂 Load Saved Program', `
+            <div style="text-align:center; padding:20px; color:var(--text-muted)">
+                <div style="font-size:32px; margin-bottom:12px">📂</div>
+                <p>No saved programs yet.</p>
+                <p style="font-size:13px">Save your current program first using the "Save Current Program" button.</p>
+            </div>
+        `);
+        return;
+    }
+
+    const body = `
+        <div style="font-size:13px; color:var(--text-muted); margin-bottom:14px">
+            Select a program to load. This will replace your current program.
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px">
+            ${names.map(name => {
+                const dayCount = programs[name].days ? programs[name].days.length : 0;
+                return `
+                    <div style="display:flex; gap:8px; align-items:center">
+                        <button class="btn btn-secondary" style="flex:1; text-align:left; padding:12px"
+                                onclick="confirmLoadProgram('${name.replace(/'/g, "\\'")}')">
+                            <div style="font-weight:600">${name}</div>
+                            <div style="font-size:12px; opacity:0.75">${dayCount} training day${dayCount !== 1 ? 's' : ''}</div>
+                        </button>
+                        <button class="btn btn-danger btn-sm" style="padding:10px 12px"
+                                onclick="confirmDeleteProgram('${name.replace(/'/g, "\\'")}')"
+                                title="Delete">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+            }).join('')}
+        </div>
+    `;
+    openExModal('📂 Load Saved Program', body);
+}
+
+function confirmLoadProgram(name) {
+    if (!confirm(`Load "${name}"?\n\nYour current program will be replaced.`)) return;
+
+    if (loadSavedProgram(name)) {
+        closeExModal();
+        renderExercises();
+        showToast(`Loaded "${name}"`);
+    } else {
+        showToast('Failed to load program', 'error');
+    }
+}
+
+function confirmDeleteProgram(name) {
+    if (!confirm(`Delete saved program "${name}"?\n\nThis cannot be undone.`)) return;
+
+    if (deleteSavedProgram(name)) {
+        showToast(`Deleted "${name}"`);
+        openLoadProgramModal(); // refresh the list
+    } else {
+        showToast('Failed to delete', 'error');
+    }
+}
+
+
+function slugifyWorkoutName(name) {
+    return String(name || 'workout')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || 'workout';
+}
+
+function downloadFile(filename, contents, mime) {
+    const blob = new Blob([contents], { type: mime || 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+}
+
+function formatWorkoutAsText(program, name) {
+    const lines = [];
+    lines.push(name || 'Current Workout');
+    lines.push('Exported ' + (typeof getLocalDateString === 'function' ? getLocalDateString() : new Date().toISOString().slice(0, 10)));
+    lines.push('');
+    (program.days || []).forEach((day, i) => {
+        const when = (day.alternate || day.dayOfWeek === 'Alternate') ? 'Alternate' : (day.dayOfWeek || '');
+        lines.push((i + 1) + '. ' + (day.name || 'Day') + (when ? ' - ' + when : ''));
+        (day.exercises || []).forEach((ex, j) => {
+            const detail = [ex.sets && (ex.sets + ' x ' + (ex.repsTarget || '')), ex.rest && ('Rest ' + ex.rest)].filter(Boolean).join(' | ');
+            lines.push('   ' + (j + 1) + ') ' + (ex.name || 'Exercise') + (detail ? ' - ' + detail : ''));
+            if (ex.notes) lines.push('      Note: ' + ex.notes);
+        });
+        lines.push('');
+    });
+    return lines.join('\n');
+}
+
+function downloadCurrentWorkout() {
+    const program = getTrainingProgram();
+    if (!program || !Array.isArray(program.days) || program.days.length === 0) {
+        showToast('No workout to download', 'error');
+        return;
+    }
+    const name = getActiveProgramName() || 'current-workout';
+    const stamp = typeof getLocalDateString === 'function' ? getLocalDateString() : new Date().toISOString().slice(0, 10);
+    const slug = slugifyWorkoutName(name);
+    const payload = {
+        type: 'fitness-tracker-workout',
+        version: 1,
+        name: name,
+        exportedAt: new Date().toISOString(),
+        program: program
+    };
+    downloadFile(slug + '-' + stamp + '.json', JSON.stringify(payload, null, 2), 'application/json');
+    downloadFile(slug + '-' + stamp + '.txt', formatWorkoutAsText(program, name), 'text/plain');
+    showToast('Workout downloaded (JSON + text)');
+}
+
+function importWorkoutFile(event) {
+    const file = event.target.files && event.target.files[0];
+    event.target.value = '';
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            const program = data.program && Array.isArray(data.program.days) ? data.program
+                : (data.days && Array.isArray(data.days) ? data : null);
+            if (!program || !program.days.length) {
+                showToast('That file is not a valid workout', 'error');
+                return;
+            }
+            if (!confirm('Replace the current workout with the imported file?')) return;
+            saveTrainingProgram(program);
+            if (data.name) setActiveProgramName(String(data.name));
+            renderExercises();
+            showToast('Workout imported');
+        } catch (err) {
+            console.error(err);
+            showToast('Could not read that file', 'error');
+        }
+    };
+    reader.readAsText(file);
+}
