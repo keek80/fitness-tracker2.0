@@ -3,6 +3,7 @@ let currentGymDay = null;
 let currentGymDate = getLocalDateString();
 let autoSelectedDay = false;
 let currentSubstitutions = {}; // Temporary swaps for this session only
+let currentSetCounts = {}; // Session-only set count overrides
 
 const DAY_NAME_MAP = {
     0: 'Sunday', 1: 'Monday', 2: 'Tuesday', 3: 'Wednesday',
@@ -95,6 +96,27 @@ function getProgressionSuggestion(prevWeights, prevReps, repsTarget) {
     }
 
     return { suggestedWeight, message, type, lastWeight: bestWeight };
+}
+
+
+function addSet(exIdx, originalName) {
+    const day = getTrainingProgram().days.find(d => d.id === currentGymDay);
+    if (!day) return;
+    const base = day.exercises[exIdx]?.sets || 3;
+    const current = currentSetCounts[originalName] || base;
+    currentSetCounts[originalName] = current + 1;
+    renderGym();
+}
+
+function removeSet(exIdx, originalName) {
+    const day = getTrainingProgram().days.find(d => d.id === currentGymDay);
+    if (!day) return;
+    const base = day.exercises[exIdx]?.sets || 3;
+    const current = currentSetCounts[originalName] || base;
+    if (current > 1) {
+        currentSetCounts[originalName] = current - 1;
+        renderGym();
+    }
 }
 
 function applyProgression(exIdx, suggestedWeight) {
@@ -274,6 +296,7 @@ function renderGym() {
         <div id="exerciseList">
             ${day.exercises.map((ex, i) => {
                 const displayName = currentSubstitutions[ex.name] || ex.name;
+                const numSets = currentSetCounts[ex.name] || ex.sets;
                 const isSubstituted = !!currentSubstitutions[ex.name];
 
                                const saved = existingLog?.exercises?.find(e => (e.originalName || e.name) === ex.name);
@@ -311,16 +334,16 @@ function renderGym() {
                 const savedWeights = saved?.weights
                     ? saved.weights
                     : saved?.weight
-                        ? Array(ex.sets).fill(saved.weight)
-                        : Array.from({ length: ex.sets }, (_, si) =>
+                        ? Array(numSets).fill(saved.weight)
+                        : Array.from({ length: numSets }, (_, si) =>
                             numericPrevWeights[si] > 0 ? numericPrevWeights[si] : ''
                           );
-                const savedReps = saved?.sets || Array(ex.sets).fill('');
+                const savedReps = saved?.sets || Array(numSets).fill('');
 
                 let prevDisplay = '';
                 if (lastWeightMax > 0 || prevSets.some(r => Number(r) > 0)) {
                     const parts = [];
-                    const n = Math.max(numericPrevWeights.length, prevSets.length, ex.sets);
+                    const n = Math.max(numericPrevWeights.length, prevSets.length, numSets);
                     for (let si = 0; si < n; si++) {
                         const w = numericPrevWeights[si] || 0;
                         const r = Number(prevSets[si]) || 0;
@@ -365,13 +388,13 @@ function renderGym() {
                         ${displayName} ${prBadge} ${videoBtn}
                         <button class="ex-action-btn" onclick="swapExercise(${i}, '${ex.name}')" style="float:right; font-size:18px;" title="Swap for this session">🔄</button>
                 </div>
-                    <div class="exercise-target">${ex.sets} × ${ex.repsTarget} · Rest ${ex.rest}${ex.notes ? ' · ' + ex.notes : ''}</div>
+                    <div class="exercise-target">${numSets} × ${ex.repsTarget} · Rest ${ex.rest}${ex.notes ? ' · ' + ex.notes : ''}</div>
                     ${prevDisplay}
                     ${progressionHtml}
                     ${isAutoLoaded ? `<div style="font-size:11px; color:var(--accent-orange); margin-bottom:8px; padding:5px 10px; background:rgba(255,170,0,0.08); border-radius:6px; border:1px solid rgba(255,170,0,0.25);">⬆️ Weights pre-loaded from last session — enter your reps below</div>` : ''}
                     <div class="per-set-grid">
                         <div class="per-set-header"><span>SET</span><span>WEIGHT (lbs)</span><span>REPS</span></div>
-                        ${Array.from({length: ex.sets}, (_, s) => `
+                        ${Array.from({length: numSets}, (_, s) => `
                             <div class="per-set-row">
                                 <div class="set-num-badge">${s + 1}</div>
                                  <input type="number" class="set-input gym-weight" data-idx="${i}" data-set="${s}"
@@ -382,7 +405,11 @@ function renderGym() {
                             </div>
                         `).join('')}
                     </div>
-                    <button class="fill-down-btn" onclick="fillWeightsDown(${i}, ${ex.sets})" title="Copy Set 1 weight to all sets">↓ Apply Set 1 weight to all sets</button>
+                    <button class="fill-down-btn" onclick="fillWeightsDown(${i}, ${numSets})" title="Copy Set 1 weight to all sets">↓ Apply Set 1 weight to all sets</button>
+                    <div style="display:flex; gap:8px; margin:6px 0 10px;">
+                        <button class="fill-btn" type="button" onclick="addSet(${i}, '${ex.name}')" title="Add a set for this session">+ Set</button>
+                        <button class="fill-btn" type="button" onclick="removeSet(${i}, '${ex.name}')" title="Remove last set" ${numSets <= 1 ? 'disabled style="opacity:0.4"' : ''}>− Set</button>
+                    </div>
                     <div class="notes-row">
                         <input type="text" class="notes-input gym-notes" data-idx="${i}" value="${saved?.notes || ''}" placeholder="Notes for this exercise...">
                     </div>
